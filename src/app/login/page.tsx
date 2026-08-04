@@ -105,6 +105,19 @@ export default function LoginPage() {
       <p className="mt-8 text-center text-sm text-white/80">
         Agenda, prontuário, internação e estoque em um só lugar.
       </p>
+
+      <p className="mt-3 text-center text-xs text-white/70">
+        <Link href="/termos-de-uso" className="hover:text-white hover:underline">
+          Termos de Uso
+        </Link>
+        {" · "}
+        <Link
+          href="/politica-de-privacidade"
+          className="hover:text-white hover:underline"
+        >
+          Política de Privacidade
+        </Link>
+      </p>
     </main>
   );
 }

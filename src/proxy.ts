@@ -37,8 +37,14 @@ export default async function proxy(request: NextRequest) {
 
   const path = request.nextUrl.pathname;
   const paginaDeAuth = path === "/login" || path === "/cadastro";
+  // Páginas legais públicas — precisam abrir sem login (exigência da Meta/LGPD)
+  // e continuar acessíveis para quem já está logado.
+  const paginaPublica =
+    path === "/politica-de-privacidade" ||
+    path === "/termos-de-uso" ||
+    path === "/exclusao-de-dados";
 
-  if (!user && !paginaDeAuth) {
+  if (!user && !paginaDeAuth && !paginaPublica) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);

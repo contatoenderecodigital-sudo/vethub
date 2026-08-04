@@ -57,15 +57,15 @@ const GRUPOS: Grupo[] = [
     titulo: "Configurações",
     somenteAdmin: true,
     itens: [
+      { href: "/configuracoes/whatsapp", rotulo: "WhatsApp", icone: MessageCircle },
       { href: "/configuracoes/usuarios", rotulo: "Equipe", icone: UserCog },
       { href: "/configuracoes/clinica", rotulo: "Clínica", icone: Building2 },
     ],
   },
 ];
 
-// Roadmap: módulos das Fases 2 e 3, visíveis mas ainda não disponíveis
+// Roadmap: módulos da Fase 3, visíveis mas ainda não disponíveis
 const EM_BREVE: { rotulo: string; icone: LucideIcon }[] = [
-  { rotulo: "WhatsApp", icone: MessageCircle },
   { rotulo: "Internação", icone: BedDouble },
   { rotulo: "Estoque", icone: Package },
   { rotulo: "PDV", icone: ShoppingCart },

@@ -84,9 +84,9 @@ export default async function AppLayout({
           <NavLateral ehAdmin={usuario.papel === "admin"} />
 
           {/* Bloco do usuário */}
-          <div className="border-t border-zinc-200/60 p-3">
+          <div className="border-t border-white/20 p-3">
             <div className="flex items-center gap-3 rounded-lg px-2 py-1.5">
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand/10 text-sm font-bold text-brand-dark">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white/20 text-sm font-bold text-white">
                 {iniciais(usuario.nome)}
               </span>
               <div className="min-w-0 flex-1">
@@ -102,7 +102,7 @@ export default async function AppLayout({
                   type="submit"
                   aria-label="Sair"
                   title="Sair"
-                  className="flex size-8 cursor-pointer items-center justify-center rounded-lg text-ink-muted transition-colors hover:bg-zinc-100 hover:text-danger"
+                  className="flex size-8 cursor-pointer items-center justify-center rounded-lg text-ink-muted transition-colors hover:bg-white/15 hover:text-red-100"
                 >
                   <LogOut className="size-4" />
                 </button>

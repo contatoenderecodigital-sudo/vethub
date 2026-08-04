@@ -5,12 +5,15 @@ type Variante = "primary" | "secondary" | "ghost" | "danger";
 type Tamanho = "sm" | "md" | "lg";
 
 // Botões usam verde chapado (#059669) — gradiente é só para a marca.
+// Sobre o degradê da marca: primário é BRANCO cheio (destaque máximo),
+// secundário é vidro translúcido — clássico de UI sobre fundo colorido.
 const VARIANTES: Record<Variante, string> = {
-  primary: "bg-brand text-white shadow-sm shadow-brand/25 hover:bg-brand-dark",
+  primary:
+    "bg-white text-brand-dark font-semibold shadow-lg shadow-black/10 hover:bg-white/90",
   secondary:
-    "border border-white/70 bg-white/60 text-ink backdrop-blur-md hover:bg-white/90",
-  ghost: "text-ink-muted hover:bg-white/60 hover:text-ink",
-  danger: "bg-danger text-white hover:bg-red-700",
+    "border border-white/40 bg-white/15 text-white backdrop-blur-md hover:bg-white/25",
+  ghost: "text-white/75 hover:bg-white/15 hover:text-white",
+  danger: "bg-danger text-white shadow-lg shadow-black/10 hover:bg-red-700",
 };
 
 const TAMANHOS: Record<Tamanho, string> = {
@@ -22,7 +25,7 @@ const TAMANHOS: Record<Tamanho, string> = {
 const BASE =
   "inline-flex items-center justify-center gap-2 font-medium transition-colors " +
   "disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-2 " +
-  "focus-visible:outline-offset-2 focus-visible:outline-brand cursor-pointer";
+  "focus-visible:outline-offset-2 focus-visible:outline-white cursor-pointer";
 
 export function classesBotao(variante: Variante = "primary", tamanho: Tamanho = "md") {
   return `${BASE} ${VARIANTES[variante]} ${TAMANHOS[tamanho]}`;

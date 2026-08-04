@@ -111,12 +111,12 @@ export default async function PetsPage({
         />
       ) : (
         <div className="glass overflow-hidden rounded-2xl">
-          <ul className="divide-y divide-zinc-200/60">
+          <ul className="divide-y divide-white/15">
             {pets.map((p) => (
               <li key={p.id}>
                 <Link
                   href={`/pets/${p.id}`}
-                  className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-brand-mint/10"
+                  className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-white/10"
                 >
                   <IconeEspecie especie={p.especie} tamanho="sm" />
                   <div className="min-w-0 flex-1">

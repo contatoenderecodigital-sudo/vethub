@@ -62,7 +62,7 @@ export function AgendamentoForm({
   return (
     <form onSubmit={handleSubmit(aoEnviar)} className="space-y-4" noValidate>
       {erro && (
-        <p className="rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger">
+        <p className="rounded-lg bg-red-400/25 px-3 py-2 text-sm text-red-100">
           {erro}
         </p>
       )}

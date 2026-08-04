@@ -88,14 +88,14 @@ export default async function TutoresPage({
         />
       ) : (
         <div className="glass overflow-hidden rounded-2xl">
-          <ul className="divide-y divide-zinc-200/60">
+          <ul className="divide-y divide-white/15">
             {tutores.map((t) => (
               <li key={t.id}>
                 <Link
                   href={`/tutores/${t.id}`}
-                  className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-brand-mint/10"
+                  className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-white/10"
                 >
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand/10 text-xs font-bold text-brand-dark">
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white/20 text-xs font-bold text-white">
                     {iniciais(t.nome)}
                   </span>
                   <div className="min-w-0 flex-1">

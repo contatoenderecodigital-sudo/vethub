@@ -118,12 +118,12 @@ export function AnexoUpload({
           compacta ? "px-4 py-6" : "px-6 py-12"
         } ${
           arrastando
-            ? "border-brand bg-brand-mint/20"
-            : "border-edge bg-white/40 hover:border-brand/50 hover:bg-brand-mint/10"
+            ? "border-brand bg-white/15"
+            : "border-edge bg-white/40 hover:border-brand/50 hover:bg-white/10"
         } ${enviando ? "pointer-events-none opacity-70" : ""}`}
       >
         <span
-          className={`flex items-center justify-center rounded-full bg-brand-mint/30 text-brand-dark ${
+          className={`flex items-center justify-center rounded-full bg-white/20 text-white ${
             compacta ? "size-10" : "size-14"
           }`}
         >
@@ -159,7 +159,7 @@ export function AnexoUpload({
       {erros.length > 0 && (
         <ul className="mt-2 space-y-1">
           {erros.map((e) => (
-            <li key={e} className="flex items-start gap-1.5 text-sm text-danger">
+            <li key={e} className="flex items-start gap-1.5 text-sm text-red-100">
               <CircleAlert className="mt-0.5 size-4 shrink-0" />
               {e}
             </li>

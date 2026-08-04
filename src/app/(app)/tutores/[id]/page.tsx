@@ -82,7 +82,7 @@ export default async function TutorPage({
       />
 
       {erro && (
-        <p className="mb-4 rounded-lg border border-danger/25 bg-white/80 px-3 py-2 text-sm font-medium text-danger backdrop-blur-md">
+        <p className="mb-4 rounded-lg border border-red-300/40 bg-red-400/25 px-3 py-2 text-sm font-medium text-red-50 backdrop-blur-md">
           {erro}
         </p>
       )}
@@ -101,7 +101,7 @@ export default async function TutorPage({
                   href={`https://wa.me/${zap}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-brand hover:underline"
+                  className="text-brand-mint hover:underline"
                 >
                   {formatTelefone(tutor.telefone)}
                 </a>
@@ -130,7 +130,7 @@ export default async function TutorPage({
                 {formatEndereco(tutor)}
               </dd>
             </div>
-            <div className="flex items-center justify-between gap-4 border-t border-zinc-200/60 pt-3">
+            <div className="flex items-center justify-between gap-4 border-t border-white/20 pt-3">
               <dt className="text-ink-muted">LGPD</dt>
               <dd>
                 {tutor.consentimento_lgpd ? (
@@ -162,12 +162,12 @@ export default async function TutorPage({
               mensagem="Cadastre o primeiro pet deste tutor."
             />
           ) : (
-            <ul className="divide-y divide-zinc-200/60">
+            <ul className="divide-y divide-white/15">
               {pets.map((p) => (
                 <li key={p.id}>
                   <Link
                     href={`/pets/${p.id}`}
-                    className="flex items-center gap-3 py-2.5 transition-colors hover:bg-brand-mint/10"
+                    className="flex items-center gap-3 py-2.5 transition-colors hover:bg-white/10"
                   >
                     <IconeEspecie especie={p.especie} tamanho="sm" />
                     <div className="min-w-0 flex-1">

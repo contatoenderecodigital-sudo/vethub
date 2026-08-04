@@ -91,7 +91,7 @@ export default async function OrcamentoPage({
               {pet ? (
                 <Link
                   href={`/pets/${pet.id}`}
-                  className="font-medium text-brand hover:underline"
+                  className="font-medium text-brand-mint hover:underline"
                 >
                   {pet.nome}
                 </Link>
@@ -106,7 +106,7 @@ export default async function OrcamentoPage({
                   {" · "}
                   <Link
                     href={`/consultas/${orcamento.consulta_id}`}
-                    className="inline-flex items-center gap-1 align-bottom text-brand hover:underline"
+                    className="inline-flex items-center gap-1 align-bottom text-brand-mint hover:underline"
                   >
                     <Stethoscope className="size-3.5" />
                     Ver consulta
@@ -158,7 +158,7 @@ export default async function OrcamentoPage({
       </div>
 
       {erro && (
-        <p className="mb-4 rounded-lg border border-danger/25 bg-white/80 px-3 py-2 text-sm font-medium text-danger backdrop-blur-md">
+        <p className="mb-4 rounded-lg border border-red-300/40 bg-red-400/25 px-3 py-2 text-sm font-medium text-red-50 backdrop-blur-md">
           {erro}
         </p>
       )}
@@ -166,14 +166,14 @@ export default async function OrcamentoPage({
       <div className="glass overflow-x-auto rounded-2xl">
         <table className="w-full min-w-[32rem] text-sm">
           <thead>
-            <tr className="border-b border-zinc-200/60 text-left text-xs uppercase tracking-wider text-ink-muted">
+            <tr className="border-b border-white/20 text-left text-xs uppercase tracking-wider text-ink-muted">
               <th className="px-4 py-3 font-medium">Descrição</th>
               <th className="w-20 px-4 py-3 text-right font-medium">Qtd</th>
               <th className="w-32 px-4 py-3 text-right font-medium">Valor unit.</th>
               <th className="w-32 px-4 py-3 text-right font-medium">Subtotal</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-zinc-200/60">
+          <tbody className="divide-y divide-white/15">
             {(itens ?? []).map((item) => (
               <tr key={item.id}>
                 <td className="px-4 py-3 text-ink">{item.descricao}</td>
@@ -190,7 +190,7 @@ export default async function OrcamentoPage({
             ))}
           </tbody>
           <tfoot>
-            <tr className="border-t-2 border-zinc-200/60 bg-brand-mint/10">
+            <tr className="border-t-2 border-white/20 bg-brand-mint/10">
               <td colSpan={3} className="px-4 py-3 text-right font-bold text-ink">
                 TOTAL
               </td>

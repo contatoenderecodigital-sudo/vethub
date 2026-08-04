@@ -11,7 +11,7 @@ export function Wordmark({
   className?: string;
 }) {
   const vet = sobre === "escuro" ? "text-white" : "text-ink";
-  const hub = sobre === "escuro" ? "text-brand-light" : "text-brand";
+  const hub = sobre === "escuro" ? "text-brand-light" : "text-brand-mint";
   return (
     <span className={`wordmark select-none ${className}`}>
       <span className={vet}>Vet</span>

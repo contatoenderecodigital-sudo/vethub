@@ -98,12 +98,12 @@ export function NavLateral({ ehAdmin }: { ehAdmin: boolean }) {
                   href={item.href}
                   className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                     ativo
-                      ? "bg-brand/15 text-brand-dark shadow-sm shadow-brand/10"
-                      : "text-ink-muted hover:bg-white/70 hover:text-ink"
+                      ? "bg-white/25 text-white shadow-sm shadow-brand/10"
+                      : "text-ink-muted hover:bg-white/15 hover:text-ink"
                   }`}
                 >
                   <item.icone
-                    className={`size-[18px] shrink-0 ${ativo ? "text-brand" : ""}`}
+                    className={`size-[18px] shrink-0 ${ativo ? "text-brand-mint" : ""}`}
                     strokeWidth={ativo ? 2.2 : 1.8}
                   />
                   {item.rotulo}
@@ -127,7 +127,7 @@ export function NavLateral({ ehAdmin }: { ehAdmin: boolean }) {
             >
               <item.icone className="size-[18px] shrink-0" strokeWidth={1.8} />
               {item.rotulo}
-              <span className="ml-auto rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-ink-muted/70">
+              <span className="ml-auto rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-ink-muted/70">
                 breve
               </span>
             </span>
@@ -158,7 +158,7 @@ export function NavInferior() {
             key={item.href}
             href={item.href}
             className={`flex flex-1 flex-col items-center gap-1 py-2 text-[10px] font-medium ${
-              ativo ? "text-brand" : "text-ink-muted"
+              ativo ? "text-brand-mint" : "text-ink-muted"
             }`}
           >
             <item.icone className="size-5" strokeWidth={ativo ? 2.2 : 1.8} />

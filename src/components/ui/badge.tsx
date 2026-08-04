@@ -6,13 +6,14 @@ import {
 
 type Tom = "success" | "pending" | "danger" | "info" | "neutro" | "brand";
 
+// Tons claros para leitura sobre o vidro no degradê verde
 const TONS: Record<Tom, string> = {
-  success: "bg-success/10 text-success",
-  pending: "bg-pending/10 text-amber-700",
-  danger: "bg-danger/10 text-danger",
-  info: "bg-info/10 text-info",
-  neutro: "bg-zinc-100 text-ink-muted",
-  brand: "bg-brand/10 text-brand-dark",
+  success: "bg-emerald-300/25 text-emerald-50",
+  pending: "bg-amber-300/30 text-amber-50",
+  danger: "bg-red-400/30 text-red-50",
+  info: "bg-cyan-300/25 text-cyan-50",
+  neutro: "bg-white/20 text-white/85",
+  brand: "bg-white/25 text-white",
 };
 
 export function Badge({

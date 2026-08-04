@@ -68,7 +68,7 @@ export function PetForm({
   return (
     <form onSubmit={handleSubmit(aoEnviar)} className="space-y-4" noValidate>
       {erro && (
-        <p className="rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger">{erro}</p>
+        <p className="rounded-lg bg-red-400/25 px-3 py-2 text-sm text-red-100">{erro}</p>
       )}
 
       <Campo rotulo="Tutor" obrigatorio erro={errors.tutor_id?.message}>
@@ -167,10 +167,10 @@ export function PetForm({
         />
       </Campo>
 
-      <label className="flex items-start gap-2 rounded-lg border border-white/60 bg-white/50 p-3 text-sm text-ink-muted">
+      <label className="flex items-start gap-2 rounded-lg border border-white/25 bg-white/10 p-3 text-sm text-ink-muted">
         <input
           type="checkbox"
-          className="mt-0.5 size-4 accent-[#059669]"
+          className="mt-0.5 size-4 accent-[#34D399]"
           {...register("castrado")}
         />
         <span>O pet é castrado.</span>

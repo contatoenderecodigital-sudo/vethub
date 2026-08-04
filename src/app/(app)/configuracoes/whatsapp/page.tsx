@@ -52,15 +52,15 @@ export default async function WhatsappPage() {
         <CardTitulo>O que a conexão libera</CardTitulo>
         <ul className="grid gap-3 text-sm text-ink-muted sm:grid-cols-3">
           <li className="flex items-start gap-2">
-            <CalendarCheck className="mt-0.5 size-4 shrink-0 text-brand" />
+            <CalendarCheck className="mt-0.5 size-4 shrink-0 text-brand-mint" />
             Confirmação automática de agendamento direto no WhatsApp do tutor
           </li>
           <li className="flex items-start gap-2">
-            <Syringe className="mt-0.5 size-4 shrink-0 text-brand" />
+            <Syringe className="mt-0.5 size-4 shrink-0 text-brand-mint" />
             Lembrete de vacina e de retorno na data certa
           </li>
           <li className="flex items-start gap-2">
-            <MessageCircle className="mt-0.5 size-4 shrink-0 text-brand" />
+            <MessageCircle className="mt-0.5 size-4 shrink-0 text-brand-mint" />
             Chatbot que agenda sozinho, sem ocupar a recepção
           </li>
         </ul>
@@ -110,14 +110,14 @@ export default async function WhatsappPage() {
           </dl>
 
           {conexao.status === "erro" && (
-            <p className="mt-4 flex items-start gap-2 rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger">
+            <p className="mt-4 flex items-start gap-2 rounded-lg bg-red-400/25 px-3 py-2 text-sm text-red-100">
               <CircleAlert className="mt-0.5 size-4 shrink-0" />
               A conexão foi salva, mas a inscrição nos eventos falhou.
               Desconecte e conecte de novo.
             </p>
           )}
 
-          <div className="mt-6 border-t border-zinc-200/60 pt-4">
+          <div className="mt-6 border-t border-white/20 pt-4">
             <form action={desconectarWhatsapp}>
               <ConfirmButton
                 variante="secondary"
@@ -184,7 +184,7 @@ export default async function WhatsappPage() {
 
           <Card>
             <p className="flex items-start gap-2 text-sm text-ink-muted">
-              <ShieldCheck className="mt-0.5 size-4 shrink-0 text-brand" />
+              <ShieldCheck className="mt-0.5 size-4 shrink-0 text-brand-mint" />
               A conexão usa o fluxo oficial da Meta (Embedded Signup). O VetHub
               nunca vê sua senha do Facebook, e as credenciais de acesso ficam
               guardadas apenas no servidor, jamais no navegador. Ao conectar, o
@@ -197,7 +197,7 @@ export default async function WhatsappPage() {
         /* ---------------- App Meta ainda não configurado ---------------- */
         <Card>
           <div className="mb-3 flex items-center gap-2">
-            <CircleCheck className="size-5 text-pending" />
+            <CircleCheck className="size-5 text-amber-200" />
             <CardTitulo className="mb-0">Integração em preparação</CardTitulo>
           </div>
           <p className="text-sm text-ink-muted">

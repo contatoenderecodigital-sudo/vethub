@@ -48,13 +48,13 @@ export default async function UsuariosPage({
       />
 
       {erro && (
-        <p className="mb-4 rounded-lg border border-danger/25 bg-white/80 px-3 py-2 text-sm font-medium text-danger backdrop-blur-md">
+        <p className="mb-4 rounded-lg border border-red-300/40 bg-red-400/25 px-3 py-2 text-sm font-medium text-red-50 backdrop-blur-md">
           {erro}
         </p>
       )}
 
       <div className="glass overflow-hidden rounded-2xl">
-        <ul className="divide-y divide-zinc-200/60">
+        <ul className="divide-y divide-white/15">
           {(membros ?? []).map((m) => {
             const alterarComId = alterarPapel.bind(null, m.id);
             const removerComId = removerUsuario.bind(null, m.id);
@@ -101,7 +101,7 @@ export default async function UsuariosPage({
                       <ConfirmButton
                         variante="ghost"
                         mensagem={`Remover ${m.nome} da clínica? O acesso será revogado.`}
-                        className="text-danger"
+                        className="text-red-100"
                       >
                         <Trash2 className="size-4" />
                         Remover

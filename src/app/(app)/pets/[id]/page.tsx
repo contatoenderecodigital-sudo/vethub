@@ -117,7 +117,7 @@ export default async function PetPage({
       </div>
 
       {erro && (
-        <p className="mb-4 rounded-lg border border-danger/25 bg-white/80 px-3 py-2 text-sm font-medium text-danger backdrop-blur-md">
+        <p className="mb-4 rounded-lg border border-red-300/40 bg-red-400/25 px-3 py-2 text-sm font-medium text-red-50 backdrop-blur-md">
           {erro}
         </p>
       )}
@@ -132,7 +132,7 @@ export default async function PetPage({
                 {pet.tutor ? (
                   <Link
                     href={`/tutores/${pet.tutor_id}`}
-                    className="text-brand hover:underline"
+                    className="text-brand-mint hover:underline"
                   >
                     {pet.tutor.nome}
                   </Link>
@@ -215,12 +215,12 @@ export default async function PetPage({
               mensagem="Este pet ainda não tem consultas registradas."
             />
           ) : (
-            <ul className="divide-y divide-zinc-200/60">
+            <ul className="divide-y divide-white/15">
               {consultas.map((c) => (
                 <li key={c.id}>
                   <Link
                     href={`/consultas/${c.id}`}
-                    className="flex items-center gap-3 py-2.5 transition-colors hover:bg-brand-mint/10"
+                    className="flex items-center gap-3 py-2.5 transition-colors hover:bg-white/10"
                   >
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium text-ink">
@@ -247,7 +247,7 @@ export default async function PetPage({
               mensagem="Este pet ainda não tem agendamentos."
             />
           ) : (
-            <ul className="divide-y divide-zinc-200/60">
+            <ul className="divide-y divide-white/15">
               {agendamentos.map((a) => (
                 <li
                   key={a.id}

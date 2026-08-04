@@ -87,7 +87,7 @@ export function BuscaCombobox({
           setSelecionado(null);
         }}
         onFocus={() => opcoes.length > 0 && setAberto(true)}
-        className="h-10 w-full rounded-lg border border-edge bg-surface px-3 text-sm text-ink placeholder:text-zinc-400 focus:border-brand focus:outline-2 focus:outline-brand/30"
+        className="h-10 w-full rounded-lg border border-white/30 bg-white/15 px-3 text-sm text-white backdrop-blur-sm placeholder:text-white/50 transition-colors focus:border-white/60 focus:bg-white/20 focus:outline-2 focus:outline-white/40"
       />
       {buscando && (
         <span className="absolute right-3 top-2.5 text-xs text-ink-muted">…</span>
@@ -104,7 +104,7 @@ export function BuscaCombobox({
                   setAberto(false);
                   aoSelecionar?.(o);
                 }}
-                className="flex w-full flex-col items-start px-3 py-2 text-left text-sm hover:bg-brand-mint/20"
+                className="flex w-full flex-col items-start px-3 py-2 text-left text-sm hover:bg-white/15"
               >
                 <span className="font-medium text-ink">{o.rotulo}</span>
                 {o.detalhe && (

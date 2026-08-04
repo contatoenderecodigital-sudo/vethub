@@ -27,7 +27,7 @@ export function Pagination({
   };
 
   const classe =
-    "inline-flex h-9 items-center gap-1 rounded-lg border border-white/60 bg-white/60 px-3 text-sm font-medium text-ink backdrop-blur-md hover:bg-white/85";
+    "inline-flex h-9 items-center gap-1 rounded-lg border border-white/40 bg-white/15 px-3 text-sm font-medium text-white backdrop-blur-md hover:bg-white/25";
 
   return (
     <nav className="mt-4 flex items-center justify-between gap-2" aria-label="Paginação">

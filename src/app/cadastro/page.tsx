@@ -69,7 +69,7 @@ export default function CadastroPage() {
 
         <form onSubmit={handleSubmit(cadastrar)} className="space-y-4" noValidate>
           {erro && (
-            <p className="rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger">
+            <p className="rounded-lg bg-red-400/25 px-3 py-2 text-sm text-red-100">
               {erro}
             </p>
           )}
@@ -127,7 +127,7 @@ export default function CadastroPage() {
 
         <p className="mt-6 text-center text-sm text-ink-muted">
           Já tem conta?{" "}
-          <Link href="/login" className="font-medium text-brand hover:underline">
+          <Link href="/login" className="font-medium text-brand-mint hover:underline">
             Entrar
           </Link>
         </p>

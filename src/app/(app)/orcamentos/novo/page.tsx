@@ -50,7 +50,7 @@ export default async function NovoOrcamentoPage({
       <Card>
         <form action={criarOrcamento} className="space-y-4">
           {erro && (
-            <p className="rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger">
+            <p className="rounded-lg bg-red-400/25 px-3 py-2 text-sm text-red-100">
               {erro}
             </p>
           )}
@@ -71,7 +71,7 @@ export default async function NovoOrcamentoPage({
 
           <div className="space-y-1.5">
             <span className="block text-sm font-medium text-ink">
-              Itens do orçamento<span className="text-danger"> *</span>
+              Itens do orçamento<span className="text-red-100"> *</span>
             </span>
             <ItensEditor />
           </div>

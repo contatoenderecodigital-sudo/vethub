@@ -91,7 +91,7 @@ export function EnderecoCampos<T extends FieldValues & EnderecoValores>() {
               })}
             />
             {buscando && (
-              <LoaderCircle className="absolute right-3 top-3 size-4 animate-spin text-brand" />
+              <LoaderCircle className="absolute right-3 top-3 size-4 animate-spin text-brand-mint" />
             )}
           </div>
         </Campo>
@@ -104,7 +104,7 @@ export function EnderecoCampos<T extends FieldValues & EnderecoValores>() {
       </div>
 
       {avisoCep && (
-        <p className="rounded-lg bg-pending/10 px-3 py-2 text-xs font-medium text-amber-700">
+        <p className="rounded-lg bg-amber-300/25 px-3 py-2 text-xs font-medium text-amber-50">
           {avisoCep}
         </p>
       )}

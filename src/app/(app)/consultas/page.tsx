@@ -108,7 +108,7 @@ export default async function ConsultasPage({
         </label>
         <button
           type="submit"
-          className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-lg border border-white/70 bg-white/60 px-4 text-sm font-medium text-ink backdrop-blur-md transition-colors hover:bg-white/90"
+          className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-lg border border-white/40 bg-white/15 px-4 text-sm font-medium text-white backdrop-blur-md transition-colors hover:bg-white/25"
         >
           Filtrar
         </button>
@@ -137,12 +137,12 @@ export default async function ConsultasPage({
         />
       ) : (
         <div className="glass overflow-hidden rounded-2xl">
-          <ul className="divide-y divide-zinc-200/60">
+          <ul className="divide-y divide-white/15">
             {consultas.map((c) => (
               <li key={c.id}>
                 <Link
                   href={`/consultas/${c.id}`}
-                  className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-brand-mint/10"
+                  className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-white/10"
                 >
                   <IconeEspecie especie={c.pet?.especie} tamanho="sm" />
                   <div className="min-w-0 flex-1">

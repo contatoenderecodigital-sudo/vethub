@@ -169,7 +169,7 @@ export default async function ConsultaPage({
       />
 
       {erro && (
-        <p className="mb-4 rounded-lg border border-danger/25 bg-white/80 px-3 py-2 text-sm font-medium text-danger backdrop-blur-md">
+        <p className="mb-4 rounded-lg border border-red-300/40 bg-red-400/25 px-3 py-2 text-sm font-medium text-red-50 backdrop-blur-md">
           {erro}
         </p>
       )}
@@ -182,7 +182,7 @@ export default async function ConsultaPage({
             <div className="min-w-0">
               <Link
                 href={`/pets/${pet.id}`}
-                className="block truncate text-sm font-semibold text-brand hover:underline"
+                className="block truncate text-sm font-semibold text-brand-mint hover:underline"
               >
                 {pet.nome}
               </Link>
@@ -192,7 +192,7 @@ export default async function ConsultaPage({
               </p>
             </div>
           </div>
-          <dl className="mt-4 space-y-2.5 border-t border-zinc-200/60 pt-3 text-sm">
+          <dl className="mt-4 space-y-2.5 border-t border-white/20 pt-3 text-sm">
             <div className="flex items-center gap-2">
               <dt className="flex items-center text-ink-muted">
                 <User className="size-4" strokeWidth={1.8} aria-hidden />
@@ -202,7 +202,7 @@ export default async function ConsultaPage({
                 {pet.tutor ? (
                   <Link
                     href={`/tutores/${pet.tutor.id}`}
-                    className="text-brand hover:underline"
+                    className="text-brand-mint hover:underline"
                   >
                     {pet.tutor.nome}
                   </Link>
@@ -302,7 +302,7 @@ export default async function ConsultaPage({
                             href={a.urlAssinada}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-xs font-medium text-brand hover:underline"
+                            className="inline-flex items-center gap-1 text-xs font-medium text-brand-mint hover:underline"
                           >
                             Abrir
                             <ExternalLink className="size-3.5" aria-hidden />

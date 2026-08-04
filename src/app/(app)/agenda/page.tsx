@@ -116,7 +116,7 @@ export default async function AgendaPage({
       />
 
       {erro && (
-        <p className="mb-4 rounded-lg border border-danger/25 bg-white/80 px-3 py-2 text-sm font-medium text-danger backdrop-blur-md">
+        <p className="mb-4 rounded-lg border border-red-300/40 bg-red-400/25 px-3 py-2 text-sm font-medium text-red-50 backdrop-blur-md">
           {erro}
         </p>
       )}
@@ -192,13 +192,13 @@ export default async function AgendaPage({
         />
       ) : (
         <div className="glass overflow-hidden rounded-2xl">
-          <ul className="divide-y divide-zinc-200/60">
+          <ul className="divide-y divide-white/15">
             {agendamentos.map((a) => (
               <li
                 key={a.id}
-                className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 transition-colors hover:bg-brand-mint/10"
+                className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 transition-colors hover:bg-white/10"
               >
-                <span className="w-14 shrink-0 text-lg font-bold tabular-nums text-brand-dark">
+                <span className="w-14 shrink-0 text-lg font-bold tabular-nums text-white">
                   {formatHora(a.data_hora)}
                 </span>
 

@@ -83,7 +83,7 @@ export function ConsultaForm({
   return (
     <form onSubmit={handleSubmit(aoEnviar)} className="space-y-4" noValidate>
       {erro && (
-        <p className="rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger">
+        <p className="rounded-lg bg-red-400/25 px-3 py-2 text-sm text-red-100">
           {erro}
         </p>
       )}
@@ -154,7 +154,7 @@ export function ConsultaForm({
       </Campo>
 
       {errors.root?.message && (
-        <p className="text-sm font-medium text-danger" role="alert">
+        <p className="text-sm font-medium text-red-100" role="alert">
           {errors.root.message}
         </p>
       )}

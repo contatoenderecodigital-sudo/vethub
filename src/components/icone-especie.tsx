@@ -43,7 +43,7 @@ export function IconeEspecie({
     tamanho === "lg" ? "size-6" : tamanho === "sm" ? "size-4" : "size-5";
   return (
     <span
-      className={`flex ${caixa} shrink-0 items-center justify-center rounded-full bg-brand-mint/30 text-brand-dark`}
+      className={`flex ${caixa} shrink-0 items-center justify-center rounded-full bg-white/20 text-white`}
       aria-hidden
     >
       {iconeDa(especie, icone)}

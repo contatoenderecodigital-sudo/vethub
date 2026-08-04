@@ -14,8 +14,8 @@ export function EmptyState({
   icone?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/50 bg-white/55 px-6 py-12 text-center backdrop-blur-xl">
-      <div className="mb-3 flex size-14 items-center justify-center rounded-full bg-brand-mint/30 text-brand-dark">
+    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/40 bg-white/10 px-6 py-12 text-center backdrop-blur-lg">
+      <div className="mb-3 flex size-14 items-center justify-center rounded-full bg-white/20 text-white">
         {icone ?? <PawPrint className="size-7" strokeWidth={1.8} />}
       </div>
       <h3 className="text-base font-semibold text-ink">{titulo}</h3>

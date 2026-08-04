@@ -64,10 +64,10 @@ export function ClinicaForm({
     <FormProvider {...form}>
     <form onSubmit={handleSubmit(aoEnviar)} className="space-y-4" noValidate>
       {erro && (
-        <p className="rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger">{erro}</p>
+        <p className="rounded-lg bg-red-400/25 px-3 py-2 text-sm text-red-100">{erro}</p>
       )}
       {ok && (
-        <p className="flex items-center gap-2 rounded-lg bg-success/10 px-3 py-2 text-sm text-success">
+        <p className="flex items-center gap-2 rounded-lg bg-emerald-300/25 px-3 py-2 text-sm text-emerald-100">
           <Check className="size-4" />
           Dados salvos.
         </p>
@@ -114,7 +114,7 @@ export function ClinicaForm({
         </Campo>
       </div>
 
-      <div className="border-t border-zinc-200/60 pt-4">
+      <div className="border-t border-white/20 pt-4">
         <EnderecoCampos<ClinicaFormValores> />
       </div>
 

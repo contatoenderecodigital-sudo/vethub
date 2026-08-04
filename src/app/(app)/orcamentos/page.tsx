@@ -118,12 +118,12 @@ export default async function OrcamentosPage({
         />
       ) : (
         <div className="glass overflow-hidden rounded-2xl">
-          <ul className="divide-y divide-zinc-200/60">
+          <ul className="divide-y divide-white/15">
             {orcamentos.map((o) => (
               <li key={o.id}>
                 <Link
                   href={`/orcamentos/${o.id}`}
-                  className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-brand-mint/10"
+                  className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-white/10"
                 >
                   <IconeEspecie especie={o.pet?.especie} tamanho="sm" />
                   <div className="min-w-0 flex-1">

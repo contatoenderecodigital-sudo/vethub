@@ -113,7 +113,7 @@ export default async function DashboardPage() {
             href={t.href}
             className="glass group rounded-2xl p-4 transition-all hover:shadow-lg hover:shadow-brand/10"
           >
-            <span className="mb-3 flex size-9 items-center justify-center rounded-lg bg-brand/10 text-brand-dark">
+            <span className="mb-3 flex size-9 items-center justify-center rounded-lg bg-white/20 text-white">
               <t.icone className="size-[18px]" strokeWidth={1.8} />
             </span>
             <p className="text-2xl font-bold text-ink">{t.valor}</p>
@@ -128,7 +128,7 @@ export default async function DashboardPage() {
           <CardTitulo className="mb-0">Agenda de hoje</CardTitulo>
           <Link
             href="/agenda"
-            className="inline-flex items-center gap-1 text-sm font-medium text-brand hover:underline"
+            className="inline-flex items-center gap-1 text-sm font-medium text-brand-mint hover:underline"
           >
             Ver agenda completa
             <ChevronRight className="size-4" />
@@ -148,14 +148,14 @@ export default async function DashboardPage() {
             }
           />
         ) : (
-          <ul className="divide-y divide-zinc-200/60">
+          <ul className="divide-y divide-white/15">
             {(agendaHoje.data as unknown as Agendamento[]).map((a) => (
               <li key={a.id}>
                 <Link
                   href="/agenda"
-                  className="flex items-center gap-3 py-2.5 transition-colors hover:bg-brand-mint/10"
+                  className="flex items-center gap-3 py-2.5 transition-colors hover:bg-white/10"
                 >
-                  <span className="w-12 shrink-0 text-sm font-bold text-brand-dark tabular-nums">
+                  <span className="w-12 shrink-0 text-sm font-bold text-white tabular-nums">
                     {formatHora(a.data_hora)}
                   </span>
                   <IconeEspecie especie={a.pet?.especie} tamanho="sm" />

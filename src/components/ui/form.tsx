@@ -1,9 +1,10 @@
 import type { ComponentProps, ReactNode } from "react";
 
 const CAMPO_BASE =
-  "w-full rounded-lg border border-zinc-200/80 bg-white/70 px-3 text-sm text-ink " +
-  "placeholder:text-zinc-400 transition-colors focus:border-brand focus:bg-white " +
-  "focus:outline-2 focus:outline-brand/30 disabled:bg-zinc-100/60 disabled:text-ink-muted";
+  "w-full rounded-lg border border-white/30 bg-white/15 px-3 text-sm text-white " +
+  "backdrop-blur-sm [color-scheme:dark] placeholder:text-white/50 transition-colors " +
+  "focus:border-white/60 focus:bg-white/20 focus:outline-2 focus:outline-white/40 " +
+  "disabled:bg-white/10 disabled:text-white/50";
 
 export function Input({ className = "", ...props }: ComponentProps<"input">) {
   return <input className={`${CAMPO_BASE} h-10 ${className}`} {...props} />;
@@ -41,11 +42,11 @@ export function Campo({
     <div className={`space-y-1.5 ${className}`}>
       <label htmlFor={htmlFor} className="block text-sm font-medium text-ink">
         {rotulo}
-        {obrigatorio && <span className="text-danger"> *</span>}
+        {obrigatorio && <span className="text-red-100"> *</span>}
       </label>
       {children}
       {erro ? (
-        <p className="text-xs font-medium text-danger" role="alert">
+        <p className="text-xs font-medium text-red-100" role="alert">
           {erro}
         </p>
       ) : (

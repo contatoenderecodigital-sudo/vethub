@@ -695,3 +695,161 @@ export function usoDaVia(valor: string | null | undefined): string | null {
   if (!valor) return null;
   return VIAS_ADMINISTRACAO.find((v) => v.valor === valor)?.uso ?? null;
 }
+
+// ------------------------------------------------------------------
+// Fornecedores e compras (entrada de mercadoria)
+// ------------------------------------------------------------------
+
+export interface Fornecedor extends Endereco {
+  id: string;
+  clinica_id: string;
+  nome: string;
+  razao_social: string | null;
+  cnpj: string | null;
+  telefone: string | null;
+  email: string | null;
+  contato: string | null;
+  observacao: string | null;
+  ativo: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * `pendente` = nota lançada, mercadoria ainda não conferida.
+ * `recebida` = deu entrada no estoque e gerou a conta a pagar.
+ * `cancelada` = sai dos totais (se já recebida, o estoque é estornado).
+ */
+export type CompraStatus = "pendente" | "recebida" | "cancelada";
+
+export interface Compra {
+  id: string;
+  clinica_id: string;
+  fornecedor_id: string | null;
+  numero_nota: string | null;
+  /** Coluna `date` — sempre YYYY-MM-DD (formatar com formatDataISO). */
+  data: string;
+  /** Somente leitura: um trigger recalcula a partir dos itens + frete. */
+  valor_total: number;
+  frete: number;
+  status: CompraStatus;
+  observacao: string | null;
+  registrado_por: string | null;
+  created_at: string;
+  updated_at: string;
+  fornecedor?: Pick<Fornecedor, "id" | "nome"> | null;
+  itens?: CompraItem[];
+}
+
+export interface CompraItem {
+  id: string;
+  compra_id: string;
+  item_id: string | null;
+  descricao: string;
+  quantidade: number;
+  valor_unitario: number;
+  lote: string | null;
+  validade: string | null;
+}
+
+export const ROTULO_STATUS_COMPRA: Record<CompraStatus, string> = {
+  pendente: "Pendente",
+  recebida: "Recebida",
+  cancelada: "Cancelada",
+};
+
+// ------------------------------------------------------------------
+// Comissões dos profissionais
+// ------------------------------------------------------------------
+
+export interface Comissao {
+  id: string;
+  clinica_id: string;
+  profissional_id: string;
+  venda_id: string | null;
+  venda_item_id: string | null;
+  consulta_id: string | null;
+  descricao: string;
+  base_calculo: number;
+  percentual: number;
+  valor: number;
+  /** Coluna `date` — sempre YYYY-MM-DD. */
+  data: string;
+  pago: boolean;
+  pago_em: string | null;
+  created_at: string;
+  profissional?: Pick<Usuario, "id" | "nome"> | null;
+}
+
+// ------------------------------------------------------------------
+// Planos e assinaturas (receita recorrente)
+// ------------------------------------------------------------------
+
+/** `suspensa` pausa a cobrança sem perder o histórico; `cancelada` encerra. */
+export type AssinaturaStatus = "ativa" | "suspensa" | "cancelada";
+
+/**
+ * Um benefício incluído no plano. `item_id` aponta para o serviço/produto
+ * do catálogo (opcional — o benefício pode ser só texto livre).
+ * `desconto_percentual` vale para o que passar da franquia do mês.
+ */
+export interface PlanoBeneficio {
+  id: string;
+  clinica_id: string;
+  /** O item com tipo='plano' ao qual este benefício pertence. */
+  plano_item_id: string;
+  item_id: string | null;
+  descricao: string;
+  quantidade_mes: number;
+  desconto_percentual: number | null;
+  created_at: string;
+  item?: Pick<Item, "id" | "nome" | "tipo"> | null;
+}
+
+/** A assinatura de um tutor (opcionalmente amarrada a um pet). */
+export interface Assinatura {
+  id: string;
+  clinica_id: string;
+  tutor_id: string;
+  pet_id: string | null;
+  plano_item_id: string;
+  valor_mensal: number;
+  /** Dia do mês da cobrança — o banco limita de 1 a 28. */
+  dia_cobranca: number;
+  inicio: string;
+  fim: string | null;
+  status: AssinaturaStatus;
+  observacao: string | null;
+  created_at: string;
+  updated_at: string;
+  tutor?: Pick<Tutor, "id" | "nome"> | null;
+  pet?: Pick<Pet, "id" | "nome"> | null;
+  plano?: Pick<Item, "id" | "nome" | "preco_venda"> | null;
+}
+
+/** Um consumo de benefício ("Banho do Thor") dentro da assinatura. */
+export interface UsoBeneficio {
+  id: string;
+  clinica_id: string;
+  assinatura_id: string;
+  beneficio_id: string | null;
+  agendamento_id: string | null;
+  descricao: string;
+  data: string;
+  created_at: string;
+}
+
+export const ROTULO_STATUS_ASSINATURA: Record<AssinaturaStatus, string> = {
+  ativa: "Ativa",
+  suspensa: "Suspensa",
+  cancelada: "Cancelada",
+};
+
+export const STATUS_ASSINATURA: {
+  valor: AssinaturaStatus;
+  rotulo: string;
+}[] = [
+  { valor: "ativa", rotulo: "Ativa" },
+  { valor: "suspensa", rotulo: "Suspensa" },
+  { valor: "cancelada", rotulo: "Cancelada" },
+];

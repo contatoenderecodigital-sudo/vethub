@@ -21,6 +21,7 @@ import {
   PawPrint,
   Percent,
   Pill,
+  Repeat,
   Ruler,
   ShoppingCart,
   Stethoscope,
@@ -28,6 +29,7 @@ import {
   Tag,
   Tags,
   TriangleAlert,
+  Truck,
   UserCog,
   Users,
   Wallet,
@@ -69,7 +71,8 @@ const GRUPOS: Grupo[] = [
       { href: "/consultas", rotulo: "Consultas", icone: Stethoscope },
       { href: "/receitas", rotulo: "Receituário", icone: Pill },
       { href: "/internacao", rotulo: "Internação", icone: BedDouble },
-      { href: "/banho-tosa", rotulo: "Banho e tosa", icone: Bath, breve: true },
+      { href: "/banho-tosa", rotulo: "Banho e tosa", icone: Bath },
+      { href: "/banho-tosa/fichas", rotulo: "Fichas de tosa", icone: ClipboardList },
     ],
   },
   {
@@ -78,7 +81,7 @@ const GRUPOS: Grupo[] = [
     itens: [
       { href: "/tutores", rotulo: "Tutores", icone: Users },
       { href: "/pets", rotulo: "Pets", icone: PawPrint },
-      { href: "/fornecedores", rotulo: "Fornecedores", icone: Handshake, breve: true },
+      { href: "/fornecedores", rotulo: "Fornecedores", icone: Handshake },
     ],
   },
   {
@@ -91,7 +94,7 @@ const GRUPOS: Grupo[] = [
       { href: "/itens/unidades", rotulo: "Unidades", icone: Ruler },
       { href: "/estoque", rotulo: "Estoque", icone: Boxes },
       { href: "/estoque/validade", rotulo: "Controle de validade", icone: TriangleAlert },
-      { href: "/itens/planos", rotulo: "Planos", icone: ClipboardList, breve: true },
+      { href: "/compras", rotulo: "Compras", icone: Truck },
     ],
   },
   {
@@ -104,15 +107,21 @@ const GRUPOS: Grupo[] = [
       { href: "/financeiro/receber", rotulo: "Contas a receber", icone: Wallet },
       { href: "/financeiro/pagar", rotulo: "Contas a pagar", icone: Wallet },
       { href: "/financeiro/comissoes", rotulo: "Comissões", icone: Percent, breve: true },
+      { href: "/planos", rotulo: "Planos", icone: ClipboardList },
+      { href: "/planos/assinaturas", rotulo: "Assinaturas", icone: Repeat },
     ],
   },
   {
     titulo: "Relatórios",
     icone: ChartColumn,
     itens: [
-      { href: "/relatorios/atendimentos", rotulo: "Atendimentos", icone: CalendarDays, breve: true },
-      { href: "/relatorios/insumos", rotulo: "Insumos", icone: Syringe, breve: true },
-      { href: "/relatorios/financeiro", rotulo: "Financeiro", icone: DollarSign, breve: true },
+      { href: "/relatorios", rotulo: "Todos os relatórios", icone: ChartColumn },
+      { href: "/relatorios/atendimentos", rotulo: "Atendimentos", icone: CalendarDays },
+      { href: "/relatorios/faturamento", rotulo: "Faturamento", icone: DollarSign },
+      { href: "/relatorios/insumos", rotulo: "Insumos", icone: Syringe },
+      { href: "/relatorios/estoque", rotulo: "Estoque", icone: Boxes },
+      { href: "/relatorios/financeiro", rotulo: "Financeiro", icone: Wallet },
+      { href: "/relatorios/clientes", rotulo: "Clientes", icone: Users },
     ],
   },
   {

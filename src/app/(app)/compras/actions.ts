@@ -1,0 +1,425 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { getSessao } from "@/lib/auth";
+import type { CompraStatus, Papel } from "@/lib/types";
+import {
+  centavos,
+  compraSchema,
+  ERRO_ITENS,
+  itensDoForm,
+  rotuloDaNota,
+  somarDias,
+  valorOuZero,
+} from "./schema";
+
+/**
+ * Server actions da entrada de mercadoria. Toda action:
+ * getSessao() → papel → zod → clinica_id do usuário logado
+ * (o RLS ainda confere de novo no banco).
+ */
+
+/** Receber e cancelar mexem em estoque e financeiro: só administrador. */
+const PAPEIS_ADMIN: Papel[] = ["admin"];
+
+/** Prazo padrão da conta a pagar gerada ao receber a mercadoria. */
+const DIAS_PARA_VENCIMENTO = 30;
+
+type Supabase = Awaited<ReturnType<typeof getSessao>>["supabase"];
+
+interface LinhaItemCompra {
+  id: string;
+  item_id: string | null;
+  descricao: string;
+  quantidade: number;
+  valor_unitario: number;
+  lote: string | null;
+  validade: string | null;
+}
+
+interface ItemCatalogo {
+  id: string;
+  nome: string;
+  controla_estoque: boolean;
+  estoque_atual: number;
+}
+
+function comErro(destino: string, mensagem: string): never {
+  const separador = destino.includes("?") ? "&" : "?";
+  redirect(`${destino}${separador}erro=${encodeURIComponent(mensagem)}`);
+}
+
+function primeiro<T>(valor: T | T[] | null | undefined): T | null {
+  return Array.isArray(valor) ? (valor[0] ?? null) : (valor ?? null);
+}
+
+function revalidarCompras(id?: string) {
+  revalidatePath("/compras");
+  if (id) revalidatePath(`/compras/${id}`);
+  revalidatePath("/fornecedores");
+}
+
+/** Receber/cancelar mexe em estoque e contas — revalida tudo que exibe isso. */
+function revalidarEstoqueEFinanceiro() {
+  revalidatePath("/estoque");
+  revalidatePath("/estoque/validade");
+  revalidatePath("/itens");
+  revalidatePath("/financeiro");
+  revalidatePath("/financeiro/pagar");
+  revalidatePath("/dashboard");
+}
+
+/** Itens da compra + ficha de catálogo dos que apontam para um produto. */
+async function carregarItens(supabase: Supabase, compraId: string) {
+  const { data } = await supabase
+    .from("compra_item")
+    .select("id, item_id, descricao, quantidade, valor_unitario, lote, validade")
+    .eq("compra_id", compraId)
+    .order("id")
+    .returns<LinhaItemCompra[]>();
+
+  const linhas = data ?? [];
+  const ids = [...new Set(linhas.map((l) => l.item_id).filter(Boolean))] as string[];
+
+  const catalogo = new Map<string, ItemCatalogo>();
+  if (ids.length > 0) {
+    const { data: itens } = await supabase
+      .from("item")
+      .select("id, nome, controla_estoque, estoque_atual")
+      .in("id", ids)
+      .returns<ItemCatalogo[]>();
+    for (const item of itens ?? []) catalogo.set(item.id, item);
+  }
+
+  return { linhas, catalogo };
+}
+
+// ------------------------------------------------------------------
+// Lançamento da compra
+// ------------------------------------------------------------------
+
+export async function criarCompra(formData: FormData) {
+  const { supabase, usuario } = await getSessao();
+  const destino = "/compras/nova";
+
+  const resultado = compraSchema.safeParse({
+    fornecedor_id: String(formData.get("fornecedor_id") ?? ""),
+    numero_nota: String(formData.get("numero_nota") ?? ""),
+    data: String(formData.get("data") ?? ""),
+    frete: valorOuZero(String(formData.get("frete") ?? "")),
+    observacao: String(formData.get("observacao") ?? ""),
+  });
+
+  if (!resultado.success) {
+    comErro(destino, resultado.error.issues[0]?.message ?? "Verifique os campos.");
+  }
+
+  const itens = itensDoForm(formData);
+  if (!itens) comErro(destino, ERRO_ITENS);
+
+  const v = resultado.data;
+
+  // valor_total é recalculado por trigger (itens + frete) — nunca escrever aqui.
+  const { data: compra, error } = await supabase
+    .from("compra")
+    .insert({
+      clinica_id: usuario.clinica_id,
+      fornecedor_id: v.fornecedor_id,
+      numero_nota: v.numero_nota || null,
+      data: v.data,
+      frete: centavos(v.frete),
+      observacao: v.observacao || null,
+      registrado_por: usuario.id,
+    })
+    .select("id")
+    .single<{ id: string }>();
+
+  if (error || !compra) comErro(destino, "Não foi possível lançar a compra.");
+
+  const { error: erroItens } = await supabase.from("compra_item").insert(
+    itens.map((i) => ({
+      compra_id: compra.id,
+      item_id: i.item_id || null,
+      descricao: i.descricao,
+      quantidade: i.quantidade,
+      valor_unitario: centavos(i.valor_unitario),
+      lote: i.lote || null,
+      validade: i.validade || null,
+    }))
+  );
+
+  if (erroItens) {
+    // Evita compra órfã sem itens (e com total zerado).
+    await supabase.from("compra").delete().eq("id", compra.id);
+    comErro(destino, "Não foi possível salvar os itens da compra.");
+  }
+
+  revalidarCompras();
+  redirect(`/compras/${compra.id}`);
+}
+
+// ------------------------------------------------------------------
+// Receber mercadoria: estoque + custo + conta a pagar
+// ------------------------------------------------------------------
+
+export async function receberCompra(id: string) {
+  const { supabase, usuario } = await getSessao();
+  const destino = `/compras/${id}`;
+
+  if (!PAPEIS_ADMIN.includes(usuario.papel)) {
+    comErro(destino, "Só o administrador pode receber mercadoria.");
+  }
+
+  const { data: compra } = await supabase
+    .from("compra")
+    .select(
+      "id, status, data, numero_nota, valor_total, fornecedor:fornecedor_id (id, nome)"
+    )
+    .eq("id", id)
+    .single<{
+      id: string;
+      status: CompraStatus;
+      data: string;
+      numero_nota: string | null;
+      valor_total: number;
+      fornecedor: { id: string; nome: string } | { id: string; nome: string }[] | null;
+    }>();
+
+  if (!compra) comErro(destino, "Compra não encontrada.");
+  if (compra.status === "recebida") comErro(destino, "Esta compra já foi recebida.");
+  if (compra.status === "cancelada") {
+    comErro(destino, "Compra cancelada não pode ser recebida.");
+  }
+
+  const { linhas, catalogo } = await carregarItens(supabase, id);
+  if (linhas.length === 0) comErro(destino, "A compra não tem itens para receber.");
+
+  const rotulo = rotuloDaNota(compra.numero_nota);
+
+  // 1) Lotes informados: reaproveita o existente ou cria com a validade da nota.
+  const movimentacoes: Record<string, unknown>[] = [];
+
+  for (const linha of linhas) {
+    if (!linha.item_id) continue;
+    const item = catalogo.get(linha.item_id);
+    if (!item) continue;
+
+    // Custo do catálogo passa a ser o da última entrada.
+    await supabase
+      .from("item")
+      .update({ preco_custo: centavos(Number(linha.valor_unitario)) })
+      .eq("id", item.id);
+
+    if (!item.controla_estoque) continue;
+
+    let loteId: string | null = null;
+    const codigo = (linha.lote ?? "").trim();
+
+    if (codigo) {
+      const { data: existente } = await supabase
+        .from("lote")
+        .select("id, validade")
+        .eq("item_id", item.id)
+        .eq("codigo", codigo)
+        .maybeSingle<{ id: string; validade: string | null }>();
+
+      if (existente) {
+        loteId = existente.id;
+        // A nota trouxe validade e o lote ainda não tinha: completa o cadastro.
+        if (linha.validade && !existente.validade) {
+          await supabase
+            .from("lote")
+            .update({ validade: linha.validade })
+            .eq("id", existente.id);
+        }
+      } else {
+        const { data: novo, error: erroLote } = await supabase
+          .from("lote")
+          .insert({
+            clinica_id: usuario.clinica_id,
+            item_id: item.id,
+            codigo,
+            validade: linha.validade || null,
+            quantidade: 0, // o trigger acerta a partir das movimentações
+          })
+          .select("id")
+          .single<{ id: string }>();
+
+        if (erroLote || !novo) {
+          comErro(destino, `Não foi possível criar o lote "${codigo}".`);
+        }
+        loteId = novo.id;
+      }
+    }
+
+    movimentacoes.push({
+      clinica_id: usuario.clinica_id,
+      item_id: item.id,
+      lote_id: loteId,
+      tipo: "entrada",
+      quantidade: Number(linha.quantidade),
+      valor_unitario: centavos(Number(linha.valor_unitario)),
+      motivo: rotulo,
+      origem: "compra",
+      registrado_por: usuario.id,
+    });
+  }
+
+  // 2) Entradas no estoque em um único insert (o trigger soma os saldos).
+  if (movimentacoes.length > 0) {
+    const { error } = await supabase
+      .from("movimentacao_estoque")
+      .insert(movimentacoes);
+    if (error) comErro(destino, "Não foi possível dar entrada no estoque.");
+  }
+
+  // 3) Compra recebida
+  const { error: erroStatus } = await supabase
+    .from("compra")
+    .update({ status: "recebida" })
+    .eq("id", id);
+
+  if (erroStatus) comErro(destino, "Não foi possível atualizar a compra.");
+
+  // 4) Conta a pagar do fornecedor, com vencimento em 30 dias
+  const fornecedor = primeiro(compra.fornecedor);
+  const { error: erroConta } = await supabase.from("conta").insert({
+    clinica_id: usuario.clinica_id,
+    tipo: "pagar",
+    descricao: rotulo,
+    fornecedor: fornecedor?.nome ?? null,
+    valor: centavos(Number(compra.valor_total)),
+    vencimento: somarDias(compra.data, DIAS_PARA_VENCIMENTO),
+    observacao: "Gerada automaticamente ao receber a mercadoria.",
+    registrado_por: usuario.id,
+  });
+
+  revalidarCompras(id);
+  revalidarEstoqueEFinanceiro();
+
+  if (erroConta) {
+    comErro(
+      destino,
+      "Mercadoria recebida, mas a conta a pagar não foi gerada — lance manualmente."
+    );
+  }
+
+  redirect(destino);
+}
+
+// ------------------------------------------------------------------
+// Cancelar compra (estorna o estoque se já tinha sido recebida)
+// ------------------------------------------------------------------
+
+export async function cancelarCompra(id: string) {
+  const { supabase, usuario } = await getSessao();
+  const destino = `/compras/${id}`;
+
+  if (!PAPEIS_ADMIN.includes(usuario.papel)) {
+    comErro(destino, "Só o administrador pode cancelar compras.");
+  }
+
+  const { data: compra } = await supabase
+    .from("compra")
+    .select("id, status, numero_nota, fornecedor:fornecedor_id (id, nome)")
+    .eq("id", id)
+    .single<{
+      id: string;
+      status: CompraStatus;
+      numero_nota: string | null;
+      fornecedor: { id: string; nome: string } | { id: string; nome: string }[] | null;
+    }>();
+
+  if (!compra) comErro(destino, "Compra não encontrada.");
+  if (compra.status === "cancelada") comErro(destino, "Esta compra já está cancelada.");
+
+  const rotulo = rotuloDaNota(compra.numero_nota);
+
+  if (compra.status === "recebida") {
+    const { linhas, catalogo } = await carregarItens(supabase, id);
+
+    // Quanto precisa voltar por produto (a mesma linha pode aparecer 2x na nota).
+    const aEstornar = new Map<string, number>();
+    for (const linha of linhas) {
+      if (!linha.item_id) continue;
+      const item = catalogo.get(linha.item_id);
+      if (!item?.controla_estoque) continue;
+      aEstornar.set(
+        item.id,
+        (aEstornar.get(item.id) ?? 0) + Number(linha.quantidade)
+      );
+    }
+
+    // Sem saldo não dá para estornar sem deixar o estoque negativo.
+    for (const [itemId, quantidade] of aEstornar) {
+      const item = catalogo.get(itemId);
+      if (!item) continue;
+      if (Number(item.estoque_atual) < quantidade) {
+        comErro(
+          destino,
+          `Saldo insuficiente para estornar "${item.nome}": a entrada foi de ${quantidade} e há ${Number(item.estoque_atual)} em estoque. Ajuste o estoque antes de cancelar.`
+        );
+      }
+    }
+
+    const saidas: Record<string, unknown>[] = [];
+    for (const linha of linhas) {
+      if (!linha.item_id) continue;
+      const item = catalogo.get(linha.item_id);
+      if (!item?.controla_estoque) continue;
+
+      let loteId: string | null = null;
+      const codigo = (linha.lote ?? "").trim();
+      if (codigo) {
+        const { data: lote } = await supabase
+          .from("lote")
+          .select("id")
+          .eq("item_id", item.id)
+          .eq("codigo", codigo)
+          .maybeSingle<{ id: string }>();
+        loteId = lote?.id ?? null;
+      }
+
+      saidas.push({
+        clinica_id: usuario.clinica_id,
+        item_id: item.id,
+        lote_id: loteId,
+        tipo: "saida",
+        quantidade: Number(linha.quantidade),
+        valor_unitario: centavos(Number(linha.valor_unitario)),
+        motivo: `Estorno — ${rotulo} cancelada`,
+        origem: "compra",
+        registrado_por: usuario.id,
+      });
+    }
+
+    if (saidas.length > 0) {
+      const { error } = await supabase.from("movimentacao_estoque").insert(saidas);
+      if (error) comErro(destino, "Não foi possível estornar o estoque.");
+    }
+
+    // A conta a pagar gerada no recebimento também sai dos totais. Não existe
+    // vínculo compra→conta no banco, então casa-se pela descrição da nota.
+    const fornecedor = primeiro(compra.fornecedor);
+    let contas = supabase
+      .from("conta")
+      .update({ status: "cancelada" })
+      .eq("tipo", "pagar")
+      .eq("descricao", rotulo)
+      .eq("status", "aberta");
+    if (fornecedor?.nome) contas = contas.eq("fornecedor", fornecedor.nome);
+    await contas;
+  }
+
+  const { error } = await supabase
+    .from("compra")
+    .update({ status: "cancelada" })
+    .eq("id", id);
+
+  if (error) comErro(destino, "Não foi possível cancelar a compra.");
+
+  revalidarCompras(id);
+  revalidarEstoqueEFinanceiro();
+  redirect(destino);
+}

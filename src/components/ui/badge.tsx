@@ -38,6 +38,7 @@ const TOM_AGENDAMENTO: Record<AgendamentoStatus, Tom> = {
   agendado: "info",
   check_in: "pending",
   atendido: "brand",
+  pronto: "brand",
   check_out: "success",
   cancelado: "danger",
 };

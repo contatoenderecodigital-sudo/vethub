@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { ChevronRight, Plus, Search, Users } from "lucide-react";
 import { getSessao } from "@/lib/auth";
-import { formatTelefone } from "@/lib/format";
+import { formatBRL, formatTelefone } from "@/lib/format";
+import type { LancamentoFinanceiro } from "@/lib/types";
 import { PageHeader } from "@/components/ui/page-header";
+import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Pagination } from "@/components/ui/pagination";
@@ -41,6 +43,23 @@ export default async function TutoresPage({
 
   const { data: tutores, count } = await query;
   const totalPaginas = Math.ceil((count ?? 0) / POR_PAGINA);
+
+  // Saldo devedor sem N+1: UMA consulta com os ids desta página e a soma
+  // feita em memória (crédito - débito). Negativo = o tutor deve.
+  const saldos = new Map<string, number>();
+  const idsDaPagina = (tutores ?? []).map((t) => t.id);
+  if (idsDaPagina.length > 0) {
+    const { data: lancamentos } = await supabase
+      .from("lancamento_financeiro")
+      .select("tutor_id, tipo, valor")
+      .in("tutor_id", idsDaPagina)
+      .returns<Pick<LancamentoFinanceiro, "tutor_id" | "tipo" | "valor">[]>();
+
+    for (const l of lancamentos ?? []) {
+      const sinal = l.tipo === "credito" ? 1 : -1;
+      saldos.set(l.tutor_id, (saldos.get(l.tutor_id) ?? 0) + sinal * Number(l.valor));
+    }
+  }
 
   return (
     <div>
@@ -89,26 +108,34 @@ export default async function TutoresPage({
       ) : (
         <div className="glass overflow-hidden rounded-2xl">
           <ul className="divide-y divide-white/15">
-            {tutores.map((t) => (
-              <li key={t.id}>
-                <Link
-                  href={`/tutores/${t.id}`}
-                  className="mx-2 my-1 flex items-center gap-3 rounded-xl px-2.5 py-2.5 transition-colors hover:bg-white/15"
-                >
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white/20 text-xs font-bold text-white">
-                    {iniciais(t.nome)}
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium text-ink">{t.nome}</p>
-                    <p className="truncate text-sm text-ink-muted 2xl:text-base">
-                      {formatTelefone(t.telefone)}
-                      {t.email ? ` · ${t.email}` : ""}
-                    </p>
-                  </div>
-                  <ChevronRight className="size-4 shrink-0 text-ink-muted" />
-                </Link>
-              </li>
-            ))}
+            {tutores.map((t) => {
+              const saldo = saldos.get(t.id) ?? 0;
+              return (
+                <li key={t.id}>
+                  <Link
+                    href={`/tutores/${t.id}`}
+                    className="mx-2 my-1 flex items-center gap-3 rounded-xl px-2.5 py-2.5 transition-colors hover:bg-white/15"
+                  >
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white/20 text-xs font-bold text-white">
+                      {iniciais(t.nome)}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-medium text-ink">{t.nome}</p>
+                      <p className="truncate text-sm text-ink-muted 2xl:text-base">
+                        {formatTelefone(t.telefone)}
+                        {t.email ? ` · ${t.email}` : ""}
+                      </p>
+                    </div>
+                    {saldo < -0.005 && (
+                      <Badge tom="danger" className="shrink-0">
+                        Deve {formatBRL(Math.abs(saldo))}
+                      </Badge>
+                    )}
+                    <ChevronRight className="size-4 shrink-0 text-ink-muted" />
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </div>
       )}

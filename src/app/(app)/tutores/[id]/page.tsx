@@ -22,6 +22,7 @@ import { ConfirmButton } from "@/components/ui/confirm-button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { IconeEspecie } from "@/components/icone-especie";
 import { excluirTutor } from "../actions";
+import { CardFinanceiro } from "./financeiro";
 
 export const metadata = { title: "Tutor" };
 
@@ -185,6 +186,11 @@ export default async function TutorPage({
             </ul>
           )}
         </Card>
+
+        {/* Financeiro ocupa a linha inteira abaixo dos dois cards */}
+        <div className="lg:col-span-2">
+          <CardFinanceiro tutorId={id} />
+        </div>
       </div>
     </div>
   );

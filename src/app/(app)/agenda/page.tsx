@@ -20,12 +20,14 @@ import type {
   Usuario,
 } from "@/lib/types";
 import { PageHeader } from "@/components/ui/page-header";
-import { Badge, BadgeAgendamento } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Select } from "@/components/ui/form";
 import { IconeEspecie } from "@/components/icone-especie";
+import { AlternadorVisao } from "./alternador-visao";
+import { StatusSelect } from "./status-select";
 import { atualizarStatus } from "./actions";
 
 export const metadata = { title: "Agenda" };
@@ -121,6 +123,10 @@ export default async function AgendaPage({
         </p>
       )}
 
+      <div className="mb-4">
+        <AlternadorVisao visao="lista" data={data} vet={vet} />
+      </div>
+
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <ButtonLink
@@ -191,7 +197,8 @@ export default async function AgendaPage({
           }
         />
       ) : (
-        <div className="glass overflow-hidden rounded-2xl">
+        // sem overflow-hidden: o menu de situação abre para fora do card
+        <div className="glass rounded-2xl">
           <ul className="divide-y divide-white/15">
             {agendamentos.map((a) => (
               <li
@@ -226,7 +233,7 @@ export default async function AgendaPage({
 
                 <div className="flex flex-wrap items-center gap-2">
                   <Badge>{ROTULO_TIPO[a.tipo]}</Badge>
-                  <BadgeAgendamento status={a.status} />
+                  <StatusSelect id={a.id} status={a.status} />
                 </div>
 
                 {a.status === "agendado" && (

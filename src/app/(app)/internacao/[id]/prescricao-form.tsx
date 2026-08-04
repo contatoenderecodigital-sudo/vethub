@@ -1,0 +1,149 @@
+"use client";
+
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Pill } from "lucide-react";
+import { Campo, Input, Select, Textarea } from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import { prescricaoSchema, type PrescricaoFormValores } from "../schema";
+import { VIAS } from "../tipos";
+
+const VAZIO: PrescricaoFormValores = {
+  medicamento: "",
+  dose: "",
+  via: "",
+  frequencia_horas: "",
+  horarios: "",
+  dias: "",
+  observacao: "",
+};
+
+/**
+ * Nova prescrição, inline no painel do paciente. Os horários informados
+ * viram automaticamente o checklist das próximas 48 h (server action).
+ */
+export function PrescricaoForm({
+  action,
+}: {
+  action: (formData: FormData) => Promise<void>;
+}) {
+  const [enviando, setEnviando] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isValid },
+  } = useForm<PrescricaoFormValores>({
+    resolver: zodResolver(prescricaoSchema),
+    mode: "onChange",
+    defaultValues: VAZIO,
+  });
+
+  async function aoEnviar(valores: PrescricaoFormValores) {
+    setEnviando(true);
+    try {
+      const fd = new FormData();
+      Object.entries(valores).forEach(([campo, valor]) => fd.set(campo, valor));
+      await action(fd);
+      reset(VAZIO);
+    } finally {
+      setEnviando(false);
+    }
+  }
+
+  return (
+    <form
+      onSubmit={handleSubmit(aoEnviar)}
+      className="mb-4 space-y-3 rounded-xl border border-white/20 bg-white/10 p-3"
+      noValidate
+    >
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Campo
+          rotulo="Medicamento"
+          htmlFor="medicamento"
+          obrigatorio
+          erro={errors.medicamento?.message}
+        >
+          <Input
+            id="medicamento"
+            placeholder="Ex.: Dipirona"
+            aria-invalid={!!errors.medicamento}
+            {...register("medicamento")}
+          />
+        </Campo>
+        <Campo rotulo="Dose" htmlFor="dose" obrigatorio erro={errors.dose?.message}>
+          <Input
+            id="dose"
+            placeholder="Ex.: 1,2 mL"
+            aria-invalid={!!errors.dose}
+            {...register("dose")}
+          />
+        </Campo>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-3">
+        <Campo rotulo="Via" htmlFor="via" erro={errors.via?.message}>
+          <Select id="via" {...register("via")}>
+            <option value="">— Não informada —</option>
+            {VIAS.map((v) => (
+              <option key={v} value={v}>
+                {v}
+              </option>
+            ))}
+          </Select>
+        </Campo>
+        <Campo
+          rotulo="Frequência (h)"
+          htmlFor="frequencia_horas"
+          dica="A cada quantas horas"
+          erro={errors.frequencia_horas?.message}
+        >
+          <Input
+            id="frequencia_horas"
+            inputMode="numeric"
+            placeholder="8"
+            {...register("frequencia_horas")}
+          />
+        </Campo>
+        <Campo
+          rotulo="Duração (dias)"
+          htmlFor="dias"
+          dica="Deixe vazio p/ contínuo"
+          erro={errors.dias?.message}
+        >
+          <Input id="dias" inputMode="numeric" placeholder="3" {...register("dias")} />
+        </Campo>
+      </div>
+
+      <Campo
+        rotulo="Horários"
+        htmlFor="horarios"
+        dica="Separados por vírgula — geram o checklist das próximas 48 h"
+        erro={errors.horarios?.message}
+      >
+        <Input
+          id="horarios"
+          placeholder="08:00, 16:00, 00:00"
+          aria-invalid={!!errors.horarios}
+          {...register("horarios")}
+        />
+      </Campo>
+
+      <Campo rotulo="Observação" htmlFor="observacao" erro={errors.observacao?.message}>
+        <Textarea
+          id="observacao"
+          rows={2}
+          placeholder="Ex.: diluir em 10 mL de SF, aplicar lentamente…"
+          {...register("observacao")}
+        />
+      </Campo>
+
+      <Button type="submit" tamanho="sm" disabled={!isValid || enviando}>
+        <Pill className="size-4" />
+        {enviando ? "Salvando…" : "Adicionar prescrição"}
+      </Button>
+    </form>
+  );
+}

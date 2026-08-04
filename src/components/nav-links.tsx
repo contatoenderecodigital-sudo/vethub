@@ -40,6 +40,7 @@ const GRUPOS: Grupo[] = [
     itens: [
       { href: "/agenda", rotulo: "Agenda", icone: CalendarDays },
       { href: "/consultas", rotulo: "Consultas", icone: Stethoscope },
+      { href: "/internacao", rotulo: "Internação", icone: BedDouble },
     ],
   },
   {
@@ -66,7 +67,6 @@ const GRUPOS: Grupo[] = [
 
 // Roadmap: módulos da Fase 3, visíveis mas ainda não disponíveis
 const EM_BREVE: { rotulo: string; icone: LucideIcon }[] = [
-  { rotulo: "Internação", icone: BedDouble },
   { rotulo: "Estoque", icone: Package },
   { rotulo: "PDV", icone: ShoppingCart },
   { rotulo: "Banho e tosa", icone: Bath },

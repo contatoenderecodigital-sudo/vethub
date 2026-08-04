@@ -56,6 +56,74 @@ export function idadeDoPet(nascimento: string | null | undefined): string {
   return resto > 0 ? `${anos} a ${resto} m` : `${anos} ${anos === 1 ? "ano" : "anos"}`;
 }
 
+/**
+ * Idade completa do jeito que a clínica fala: "2 anos, 3 meses e 16 dias".
+ * Contas em cima do calendário (não em milissegundos) para não escorregar
+ * com meses de tamanhos diferentes nem com horário de verão.
+ */
+export function idadeDetalhada(nascimento: string | null | undefined): string {
+  if (!nascimento || !/^\d{4}-\d{2}-\d{2}$/.test(nascimento)) return "—";
+
+  const [anoN, mesN, diaN] = nascimento.split("-").map(Number);
+  const [anoH, mesH, diaH] = hojeISO().split("-").map(Number);
+
+  let anos = anoH - anoN;
+  let meses = mesH - mesN;
+  let dias = diaH - diaN;
+
+  if (dias < 0) {
+    meses -= 1;
+    // dia 0 do mês de hoje = último dia do mês anterior
+    dias += new Date(Date.UTC(anoH, mesH - 1, 0)).getUTCDate();
+  }
+  if (meses < 0) {
+    anos -= 1;
+    meses += 12;
+  }
+  if (anos < 0) return "—";
+
+  const partes: string[] = [];
+  if (anos > 0) partes.push(`${anos} ${anos === 1 ? "ano" : "anos"}`);
+  if (meses > 0) partes.push(`${meses} ${meses === 1 ? "mês" : "meses"}`);
+  if (dias > 0) partes.push(`${dias} ${dias === 1 ? "dia" : "dias"}`);
+
+  if (partes.length === 0) return "Menos de 1 dia";
+  if (partes.length === 1) return partes[0];
+  return `${partes.slice(0, -1).join(", ")} e ${partes[partes.length - 1]}`;
+}
+
+/** Peso em quilos no padrão pt-BR: 4,5 kg · 40 kg. */
+export function formatPeso(valor: number | string | null | undefined): string {
+  if (valor === null || valor === undefined || valor === "") return "—";
+  const n = typeof valor === "string" ? parseFloat(valor) : valor;
+  if (!Number.isFinite(n)) return "—";
+  return `${n.toLocaleString("pt-BR", { maximumFractionDigits: 2 })} kg`;
+}
+
+/**
+ * Data pura (coluna `date`, sem hora) → DD/MM/YYYY.
+ * Não passa por fuso: "2025-09-18" viraria 17/09 se convertido de UTC
+ * para America/Sao_Paulo.
+ */
+export function formatDataISO(iso: string | null | undefined): string {
+  if (!iso) return "—";
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
+  return m ? `${m[3]}/${m[2]}/${m[1]}` : formatData(iso);
+}
+
+/**
+ * Dias inteiros de hoje (São Paulo) até a data informada.
+ * Negativo = já passou. Usado nos avisos de reforço de vacina.
+ */
+export function diasAte(iso: string | null | undefined): number | null {
+  if (!iso || !/^\d{4}-\d{2}-\d{2}/.test(iso)) return null;
+  const [a, m, d] = iso.slice(0, 10).split("-").map(Number);
+  const [ah, mh, dh] = hojeISO().split("-").map(Number);
+  const alvo = Date.UTC(a, m - 1, d);
+  const hoje = Date.UTC(ah, mh - 1, dh);
+  return Math.round((alvo - hoje) / 86_400_000);
+}
+
 export const ROTULO_TIPO: Record<AgendamentoTipo, string> = {
   consulta: "Consulta",
   retorno: "Retorno",
@@ -67,6 +135,7 @@ export const ROTULO_STATUS_AGENDAMENTO: Record<AgendamentoStatus, string> = {
   agendado: "Agendado",
   check_in: "Check-in",
   atendido: "Atendido",
+  pronto: "Pronto",
   check_out: "Check-out",
   cancelado: "Cancelado",
 };

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import {
+  BedDouble,
   CalendarDays,
   ChevronRight,
   Clock,
@@ -29,7 +30,7 @@ export default async function DashboardPage() {
   const inicio = `${hoje}T00:00:00-03:00`;
   const fim = `${hoje}T23:59:59-03:00`;
 
-  const [agendaHoje, aguardando, tutores, pets, orcamentosAbertos] =
+  const [agendaHoje, aguardando, internados, tutores, pets, orcamentosAbertos] =
     await Promise.all([
       supabase
         .from("agendamento")
@@ -48,6 +49,10 @@ export default async function DashboardPage() {
         .gte("data_hora", inicio)
         .lte("data_hora", fim)
         .eq("status", "check_in"),
+      supabase
+        .from("internacao")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "internado"),
       supabase.from("tutor").select("id", { count: "exact", head: true }),
       supabase.from("pet").select("id", { count: "exact", head: true }),
       supabase
@@ -75,6 +80,12 @@ export default async function DashboardPage() {
       valor: aguardando.count ?? 0,
       href: "/agenda",
       icone: Clock,
+    },
+    {
+      rotulo: "Internados",
+      valor: internados.count ?? 0,
+      href: "/internacao",
+      icone: BedDouble,
     },
     { rotulo: "Tutores", valor: tutores.count ?? 0, href: "/tutores", icone: Users },
     { rotulo: "Pets", valor: pets.count ?? 0, href: "/pets", icone: PawPrint },
@@ -106,7 +117,7 @@ export default async function DashboardPage() {
       />
 
       {/* Indicadores */}
-      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
         {tiles.map((t) => (
           <Link
             key={t.rotulo}

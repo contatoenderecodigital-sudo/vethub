@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# VetHub
 
-## Getting Started
+Sistema de gestão para clínicas veterinárias, hospitais veterinários e petshops.
+**A central que junta agenda, prontuário, internação e estoque em um só lugar.**
 
-First, run the development server:
+SaaS multi-tenant: cada clínica é um tenant, isolado no banco via Row Level Security (RLS) do Supabase.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Stack
+
+- **Next.js** (App Router) + TypeScript
+- **Tailwind CSS** v4
+- **Supabase** (Postgres + Auth + Storage), isolamento por RLS
+- **Vercel** (deploy)
+- Fase 2: n8n + WhatsApp
+
+## Rodando localmente
+
+1. **Instale as dependências**
+
+   ```bash
+   npm install
+   ```
+
+2. **Configure o ambiente**
+
+   Copie `.env.example` para `.env.local` e preencha com os valores do painel
+   do Supabase (Settings → API). A chave `service_role` fica **somente** no
+   servidor — nunca é exposta ao navegador.
+
+3. **Aplique as migrações**
+
+   ```bash
+   npx supabase db push --db-url "SUA_STRING_DO_POOLER_SESSION_MODE"
+   ```
+
+   Use a string do pooler em **Session mode (porta 5432)** para migrações.
+   O app em produção usa o pooler em **Transaction mode (porta 6543)**.
+
+4. **Rode o teste de isolamento de tenant** (obrigatório antes de qualquer deploy)
+
+   ```bash
+   npm test
+   ```
+
+   O teste cria duas clínicas e confirma que uma nunca enxerga os dados da outra.
+
+5. **Suba o servidor**
+
+   ```bash
+   npm run dev
+   ```
+
+   Acesse http://localhost:3000, crie sua clínica em **/cadastro** e pronto.
+
+## Estrutura
+
+```
+supabase/migrations/   migrações versionadas (schema, RLS, storage)
+tests/                 teste de isolamento de tenant
+src/
+  proxy.ts             proteção de rotas + renovação de sessão
+  lib/supabase/        clients (browser, server, admin)
+  lib/                 auth, types, formatadores
+  components/          kit de UI (marca VetHub) + navegação
+  app/
+    login, cadastro    autenticação
+    api/               route handlers (cadastro, buscas)
+    (app)/             área logada: dashboard, agenda, tutores,
+                       pets, consultas, orçamentos, equipe
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Papéis
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **admin** — dono da clínica: tudo + gestão de equipe
+- **veterinario** — atende, escreve prontuário, monta orçamento
+- **recepcao** — agenda, check-in/out, cadastra tutor e pet
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Segurança
 
-## Learn More
+- RLS ativo em todas as tabelas; policies usam `clinica_do_usuario()` em subselect.
+- Teste automatizado de isolamento entre clínicas (`tests/tenant-isolation.test.ts`).
+- `service_role` só em route handlers/server actions; o front usa apenas a chave `anon`.
+- Senha forte obrigatória; consentimento LGPD registrado no cadastro do tutor.
 
-To learn more about Next.js, take a look at the following resources:
+## Fases
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Fase 1 (este MVP):** auth multi-tenant, tutores, pets, agenda com
+  check-in/check-out, prontuário com anexos, orçamentos, equipe.
+- **Fase 2:** automação WhatsApp (confirmação, lembretes, chatbot) + PWA.
+- **Fase 3:** internação, estoque, PDV, banho e tosa, financeiro.

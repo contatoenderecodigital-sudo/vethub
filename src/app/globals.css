@@ -1,26 +1,54 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+ * VetHub — identidade visual
+ * Verde = vida, saúde e recuperação.
+ * Gradiente (escuro → claro) só para marca, cabeçalho, login e áreas grandes.
+ * Botões e elementos de interface usam verde chapado (--color-brand).
+ * Nunca usar azul ou roxo na identidade.
+ */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@theme {
+  /* Família verde */
+  --color-brand-dark: #047857;
+  --color-brand: #059669;
+  --color-brand-light: #34d399;
+  --color-brand-mint: #6ee7b7;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Neutros */
+  --color-page: #fafafa;
+  --color-surface: #ffffff;
+  --color-ink: #18181b;
+  --color-ink-muted: #52525b;
+  --color-edge: #e4e4e7;
+
+  /* Status (essenciais no painel de internação) */
+  --color-success: #059669;
+  --color-pending: #f59e0b;
+  --color-danger: #dc2626;
+  --color-info: #0891b2;
+
+  /* Tipografia */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-page);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+/* Gradiente da marca: de #047857 para #34D399, na diagonal */
+.bg-brand-gradient {
+  background-image: linear-gradient(
+    135deg,
+    var(--color-brand-dark),
+    var(--color-brand-light)
+  );
+}
+
+/* Wordmark: VetHub junto, sem espaço, tracking levemente apertado */
+.wordmark {
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }

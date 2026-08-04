@@ -162,17 +162,25 @@ body::before {
     inset 0 1px 0 rgb(255 255 255 / 0.45);
 }
 
-/* Menus flutuantes (dropdowns, autocomplete): precisam ser OPACOS, senão
-   o conteúdo da página atravessa e o menu fica ilegível. Painel escuro
-   na cor do tema, com sombra forte para descolar da página. */
+/* Menus flutuantes (dropdowns, autocomplete): mesmo vidro do resto, só
+   que com blur MUITO mais pesado — o que está atrás vira borrão de cor,
+   nunca texto legível. Nada de painel escuro: quebraria a linguagem. */
 .glass-menu {
-  background: color-mix(in srgb, var(--tema-profundo) 94%, transparent);
-  -webkit-backdrop-filter: blur(24px) saturate(1.4);
-  backdrop-filter: blur(24px) saturate(1.4);
-  border: 1px solid rgb(255 255 255 / 0.22);
+  background: rgb(255 255 255 / 0.4);
+  -webkit-backdrop-filter: blur(44px) saturate(1.9);
+  backdrop-filter: blur(44px) saturate(1.9);
+  border: 1px solid rgb(255 255 255 / 0.55);
   box-shadow:
-    0 20px 50px rgb(0 0 0 / 0.4),
-    inset 0 1px 0 rgb(255 255 255 / 0.14);
+    0 18px 48px rgb(0 0 0 / 0.22),
+    inset 0 1px 0 rgb(255 255 255 / 0.6);
+}
+
+/* Navegadores sem backdrop-filter (o borrão não acontece): compensa com
+   opacidade, senão o menu fica ilegível. */
+@supports not (backdrop-filter: blur(1px)) {
+  .glass-menu {
+    background: color-mix(in srgb, var(--tema-escuro) 92%, white);
+  }
 }
 
 /* Options de <select> abrem no menu nativo (fundo branco do sistema) —

@@ -79,7 +79,7 @@ export function SeletorTema() {
           role="menu"
           className="glass-menu absolute right-0 z-50 mt-2 w-60 rounded-2xl p-3"
         >
-          <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-white/60">
+          <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-white/75 drop-shadow-sm">
             Cor do sistema
           </p>
           <div className="grid grid-cols-4 gap-2">
@@ -106,8 +106,8 @@ export function SeletorTema() {
                   )}
                 </span>
                 <span
-                  className={`text-[10px] leading-tight ${
-                    atual === tema.id ? "font-semibold text-white" : "text-white/65"
+                  className={`text-[10px] leading-tight drop-shadow-sm ${
+                    atual === tema.id ? "font-semibold text-white" : "text-white/80"
                   }`}
                 >
                   {tema.nome}

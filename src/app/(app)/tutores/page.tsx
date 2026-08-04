@@ -93,7 +93,7 @@ export default async function TutoresPage({
               <li key={t.id}>
                 <Link
                   href={`/tutores/${t.id}`}
-                  className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-white/10"
+                  className="mx-2 my-1 flex items-center gap-3 rounded-xl px-2.5 py-2.5 transition-colors hover:bg-white/15"
                 >
                   <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white/20 text-xs font-bold text-white">
                     {iniciais(t.nome)}

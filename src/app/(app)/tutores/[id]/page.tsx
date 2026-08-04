@@ -167,7 +167,7 @@ export default async function TutorPage({
                 <li key={p.id}>
                   <Link
                     href={`/pets/${p.id}`}
-                    className="flex items-center gap-3 py-2.5 transition-colors hover:bg-white/10"
+                    className="-mx-2 flex items-center gap-3 rounded-xl px-2 py-2.5 transition-colors hover:bg-white/15"
                   >
                     <IconeEspecie especie={p.especie} tamanho="sm" />
                     <div className="min-w-0 flex-1">

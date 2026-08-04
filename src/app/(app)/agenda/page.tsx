@@ -196,7 +196,7 @@ export default async function AgendaPage({
             {agendamentos.map((a) => (
               <li
                 key={a.id}
-                className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 transition-colors hover:bg-white/10"
+                className="mx-2 my-1 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl px-2.5 py-3 transition-colors hover:bg-white/15"
               >
                 <span className="w-14 shrink-0 text-lg font-bold tabular-nums text-white">
                   {formatHora(a.data_hora)}

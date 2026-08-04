@@ -111,12 +111,12 @@ export default async function DashboardPage() {
           <Link
             key={t.rotulo}
             href={t.href}
-            className="glass group rounded-2xl p-4 transition-all hover:shadow-lg hover:shadow-brand/10"
+            className="glass group flex flex-col items-center rounded-2xl p-4 text-center transition-all hover:bg-white/20 hover:shadow-lg hover:shadow-black/10"
           >
-            <span className="mb-3 flex size-9 items-center justify-center rounded-lg bg-white/20 text-white">
-              <t.icone className="size-[18px]" strokeWidth={1.8} />
+            <span className="mb-2 flex size-10 items-center justify-center rounded-xl bg-white/20 text-white">
+              <t.icone className="size-5" strokeWidth={1.8} />
             </span>
-            <p className="text-2xl font-bold text-ink">{t.valor}</p>
+            <p className="text-2xl font-bold text-ink tabular-nums">{t.valor}</p>
             <p className="mt-0.5 text-xs text-ink-muted">{t.rotulo}</p>
           </Link>
         ))}
@@ -153,7 +153,7 @@ export default async function DashboardPage() {
               <li key={a.id}>
                 <Link
                   href="/agenda"
-                  className="flex items-center gap-3 py-2.5 transition-colors hover:bg-white/10"
+                  className="-mx-2 flex items-center gap-3 rounded-xl px-2 py-2.5 transition-colors hover:bg-white/15"
                 >
                   <span className="w-12 shrink-0 text-sm font-bold text-white tabular-nums">
                     {formatHora(a.data_hora)}

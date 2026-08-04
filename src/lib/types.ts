@@ -26,6 +26,8 @@ export type OrcamentoStatus = "aberto" | "aprovado" | "recusado";
 
 export type AnexoTipo = "foto" | "pdf" | "exame";
 
+export type ReceitaTipo = "simples" | "controlada" | "manipulada";
+
 export type Sexo = "macho" | "femea";
 
 export type Porte = "mini" | "pequeno" | "medio" | "grande" | "gigante";
@@ -204,6 +206,77 @@ export interface LancamentoFinanceiro {
   created_at: string;
 }
 
+// ------------------------------------------------------------------
+// Financeiro: contas a pagar / a receber e categorias
+// ------------------------------------------------------------------
+
+/** Conta a `receber` (entra dinheiro) ou a `pagar` (sai dinheiro). */
+export type ContaTipo = "receber" | "pagar";
+
+/** `parcial` = recebeu/pagou parte; `cancelada` some dos totais. */
+export type ContaStatus = "aberta" | "paga" | "parcial" | "cancelada";
+
+/** Categoria de `receita` casa com conta a receber; `despesa`, com a pagar. */
+export type CategoriaTipo = "receita" | "despesa";
+
+export interface CategoriaFinanceira {
+  id: string;
+  clinica_id: string;
+  nome: string;
+  tipo: CategoriaTipo;
+  created_at: string;
+}
+
+export interface Conta {
+  id: string;
+  clinica_id: string;
+  tipo: ContaTipo;
+  descricao: string;
+  categoria_id: string | null;
+  tutor_id: string | null;
+  venda_id: string | null;
+  fornecedor: string | null;
+  valor: number;
+  valor_pago: number;
+  vencimento: string;
+  pagamento: string | null;
+  forma_pagamento: string | null;
+  status: ContaStatus;
+  observacao: string | null;
+  registrado_por: string | null;
+  created_at: string;
+  updated_at: string;
+  categoria?: Pick<CategoriaFinanceira, "id" | "nome" | "tipo"> | null;
+  tutor?: Pick<Tutor, "id" | "nome"> | null;
+}
+
+export const ROTULO_STATUS_CONTA: Record<ContaStatus, string> = {
+  aberta: "Em aberto",
+  parcial: "Parcial",
+  paga: "Paga",
+  cancelada: "Cancelada",
+};
+
+export const TIPOS_CONTA: { valor: ContaTipo; rotulo: string }[] = [
+  { valor: "receber", rotulo: "A receber (entrada)" },
+  { valor: "pagar", rotulo: "A pagar (saída)" },
+];
+
+/** Qual família de categoria vale para cada tipo de conta. */
+export const CATEGORIA_DO_TIPO: Record<ContaTipo, CategoriaTipo> = {
+  receber: "receita",
+  pagar: "despesa",
+};
+
+/** Saldo ainda em aberto de uma conta (nunca negativo). */
+export function saldoDaConta(conta: {
+  valor: number | string;
+  valor_pago: number | string;
+}): number {
+  const saldo = Number(conta.valor) - Number(conta.valor_pago);
+  return saldo > 0 ? Math.round(saldo * 100) / 100 : 0;
+}
+
 // Opções fixas para selects
 export const ESPECIES = [
   "Cachorro",
@@ -279,4 +352,346 @@ export const FORMAS_PAGAMENTO: { valor: FormaPagamento; rotulo: string }[] = [
 export function rotuloFormaPagamento(valor: string | null | undefined): string | null {
   if (!valor) return null;
   return FORMAS_PAGAMENTO.find((f) => f.valor === valor)?.rotulo ?? valor;
+}
+
+// ==================================================================
+// PDV / vendas + caixa
+// ==================================================================
+
+export type CaixaStatus = "aberto" | "fechado";
+
+export type VendaStatus = "aberta" | "paga" | "cancelada";
+
+/**
+ * No PDV existe uma forma a mais que no extrato: "fiado" (venda em aberto).
+ * Ela vira débito no extrato do tutor + conta a receber, nunca dinheiro no caixa.
+ */
+export type FormaPagamentoVenda = FormaPagamento | "fiado";
+
+export interface Caixa {
+  id: string;
+  clinica_id: string;
+  aberto_por: string | null;
+  fechado_por: string | null;
+  abertura: string;
+  fechamento: string | null;
+  valor_abertura: number;
+  valor_fechamento: number | null;
+  observacao: string | null;
+  status: CaixaStatus;
+}
+
+export interface Venda {
+  id: string;
+  clinica_id: string;
+  caixa_id: string | null;
+  tutor_id: string | null;
+  pet_id: string | null;
+  consulta_id: string | null;
+  orcamento_id: string | null;
+  numero: number;
+  data: string;
+  subtotal: number;
+  desconto: number;
+  valor_total: number;
+  status: VendaStatus;
+  vendedor_id: string | null;
+  observacao: string | null;
+  itens?: VendaItem[];
+  pagamentos?: PagamentoVenda[];
+}
+
+export interface VendaItem {
+  id: string;
+  venda_id: string;
+  item_id: string | null;
+  descricao: string;
+  quantidade: number;
+  valor_unitario: number;
+  desconto: number;
+  profissional_id: string | null;
+}
+
+export interface PagamentoVenda {
+  id: string;
+  venda_id: string;
+  forma: string;
+  valor: number;
+  parcelas: number;
+  autorizacao: string | null;
+}
+
+/** Item do catálogo, na forma reduzida que o PDV usa para montar o carrinho. */
+export interface ItemVenda {
+  id: string;
+  nome: string;
+  preco_venda: number;
+  controla_estoque: boolean;
+  estoque_atual: number;
+}
+
+export const FORMAS_PAGAMENTO_VENDA: {
+  valor: FormaPagamentoVenda;
+  rotulo: string;
+}[] = [
+  ...FORMAS_PAGAMENTO,
+  { valor: "fiado", rotulo: "Fiado (a receber)" },
+];
+
+/** Só o crédito é parcelado no PDV. */
+export const FORMAS_PARCELAVEIS: FormaPagamentoVenda[] = ["credito"];
+
+export const ROTULO_STATUS_VENDA: Record<VendaStatus, string> = {
+  aberta: "Em aberto",
+  paga: "Paga",
+  cancelada: "Cancelada",
+};
+
+/** Rótulo da forma no PDV (inclui "fiado"; valor desconhecido cai no texto). */
+export function rotuloFormaVenda(valor: string | null | undefined): string {
+  if (!valor) return "—";
+  return FORMAS_PAGAMENTO_VENDA.find((f) => f.valor === valor)?.rotulo ?? valor;
+}
+
+// ------------------------------------------------------------------
+// Itens (catálogo) e estoque
+// ------------------------------------------------------------------
+
+/** Um item do catálogo é produto, serviço ou plano (mesma tabela, tipada). */
+export type ItemTipo = "produto" | "servico" | "plano";
+
+/** Um grupo/subgrupo pode servir a produtos, serviços ou aos dois. */
+export type GrupoTipo = "produto" | "servico" | "ambos";
+
+/** Entrada soma no estoque; saída, perda e ajuste subtraem. */
+export type MovimentacaoTipo = "entrada" | "saida" | "ajuste" | "perda";
+
+export interface Marca {
+  id: string;
+  clinica_id: string;
+  nome: string;
+  created_at: string;
+}
+
+export interface UnidadeMedida {
+  id: string;
+  clinica_id: string;
+  nome: string;
+  sigla: string;
+  fracionavel: boolean;
+  created_at: string;
+}
+
+/** Categoria do catálogo. Pai nulo = grupo; pai preenchido = subgrupo. */
+export interface GrupoItem {
+  id: string;
+  clinica_id: string;
+  nome: string;
+  grupo_pai_id: string | null;
+  tipo: GrupoTipo;
+  created_at: string;
+}
+
+export interface Item {
+  id: string;
+  clinica_id: string;
+  tipo: ItemTipo;
+  nome: string;
+  codigo: string | null;
+  codigo_barras: string | null;
+  descricao: string | null;
+  grupo_id: string | null;
+  marca_id: string | null;
+  unidade_id: string | null;
+  preco_venda: number;
+  preco_custo: number;
+  comissao_percentual: number | null;
+  controla_estoque: boolean;
+  /** Somente leitura: um trigger recalcula a cada movimentação. */
+  estoque_atual: number;
+  estoque_minimo: number;
+  medicamento: boolean;
+  principio_ativo: string | null;
+  requer_receita: boolean;
+  vacina: boolean;
+  duracao_minutos: number | null;
+  ativo: boolean;
+  created_at: string;
+  updated_at: string;
+  grupo?: Pick<GrupoItem, "id" | "nome"> | null;
+  marca?: Pick<Marca, "id" | "nome"> | null;
+  unidade?: Pick<UnidadeMedida, "id" | "nome" | "sigla"> | null;
+}
+
+/** Lote de um produto, com validade. A quantidade também vem do trigger. */
+export interface Lote {
+  id: string;
+  clinica_id: string;
+  item_id: string;
+  codigo: string;
+  validade: string | null;
+  quantidade: number;
+  created_at: string;
+  item?: Pick<Item, "id" | "nome" | "codigo"> | null;
+}
+
+export interface MovimentacaoEstoque {
+  id: string;
+  clinica_id: string;
+  item_id: string;
+  lote_id: string | null;
+  tipo: MovimentacaoTipo;
+  quantidade: number;
+  valor_unitario: number | null;
+  motivo: string | null;
+  origem: string | null;
+  consulta_id: string | null;
+  internacao_id: string | null;
+  registrado_por: string | null;
+  data: string;
+  created_at: string;
+}
+
+/** Tipos oferecidos no cadastro (plano ganha tela própria mais adiante). */
+export const TIPOS_ITEM: { valor: ItemTipo; rotulo: string; plural: string }[] = [
+  { valor: "produto", rotulo: "Produto", plural: "Produtos" },
+  { valor: "servico", rotulo: "Serviço", plural: "Serviços" },
+];
+
+export const ROTULO_TIPO_ITEM: Record<ItemTipo, string> = {
+  produto: "Produto",
+  servico: "Serviço",
+  plano: "Plano",
+};
+
+export const TIPOS_GRUPO: { valor: GrupoTipo; rotulo: string }[] = [
+  { valor: "produto", rotulo: "Produtos" },
+  { valor: "servico", rotulo: "Serviços" },
+  { valor: "ambos", rotulo: "Produtos e serviços" },
+];
+
+export const TIPOS_MOVIMENTACAO: {
+  valor: MovimentacaoTipo;
+  rotulo: string;
+  dica: string;
+}[] = [
+  { valor: "entrada", rotulo: "Entrada", dica: "Compra, devolução, inventário para cima" },
+  { valor: "saida", rotulo: "Saída", dica: "Uso no atendimento, venda" },
+  { valor: "perda", rotulo: "Perda", dica: "Quebra, vencimento, extravio" },
+  { valor: "ajuste", rotulo: "Ajuste", dica: "Correção do saldo para baixo" },
+];
+
+export const ROTULO_MOVIMENTACAO: Record<MovimentacaoTipo, string> = {
+  entrada: "Entrada",
+  saida: "Saída",
+  ajuste: "Ajuste",
+  perda: "Perda",
+};
+
+// ------------------------------------------------------------------
+// Receituário
+// ------------------------------------------------------------------
+
+/** Cabeçalho da receita veterinária (tabela `receita`). */
+export interface Receita {
+  id: string;
+  clinica_id: string;
+  pet_id: string;
+  consulta_id: string | null;
+  veterinario_id: string | null;
+  tipo: ReceitaTipo;
+  /** Coluna `date` — sempre YYYY-MM-DD (formatar com formatDataISO). */
+  data: string;
+  orientacoes: string | null;
+  retorno_em: string | null;
+  created_at: string;
+  pet?: Pet;
+  veterinario?: Pick<Usuario, "id" | "nome">;
+  itens?: ReceitaItem[];
+}
+
+/** Um medicamento prescrito dentro da receita (tabela `receita_item`). */
+export interface ReceitaItem {
+  id: string;
+  receita_id: string;
+  item_id: string | null;
+  medicamento: string;
+  concentracao: string | null;
+  forma_farmaceutica: string | null;
+  quantidade: string | null;
+  posologia: string;
+  via: string | null;
+  observacao: string | null;
+  ordem: number;
+}
+
+export const TIPOS_RECEITA: {
+  valor: ReceitaTipo;
+  rotulo: string;
+  dica: string;
+}[] = [
+  { valor: "simples", rotulo: "Simples", dica: "Receita comum, via única" },
+  {
+    valor: "controlada",
+    rotulo: "Controlada",
+    dica: "Controle especial — impressa em duas vias",
+  },
+  { valor: "manipulada", rotulo: "Manipulada", dica: "Fórmula manipulada" },
+];
+
+export const ROTULO_TIPO_RECEITA: Record<ReceitaTipo, string> = {
+  simples: "Simples",
+  controlada: "Controlada",
+  manipulada: "Manipulada",
+};
+
+/** Formas farmacêuticas oferecidas no editor de medicamentos. */
+export const FORMAS_FARMACEUTICAS: { valor: string; rotulo: string }[] = [
+  { valor: "comprimido", rotulo: "Comprimido" },
+  { valor: "capsula", rotulo: "Cápsula" },
+  { valor: "suspensao", rotulo: "Suspensão" },
+  { valor: "solucao", rotulo: "Solução" },
+  { valor: "pomada", rotulo: "Pomada" },
+  { valor: "injetavel", rotulo: "Injetável" },
+  { valor: "sache", rotulo: "Sachê" },
+  { valor: "outro", rotulo: "Outro" },
+];
+
+/**
+ * Vias de administração. `uso` é o cabeçalho clássico da receita impressa
+ * ("Uso oral"), que agrupa os medicamentos da mesma via.
+ */
+export const VIAS_ADMINISTRACAO: {
+  valor: string;
+  rotulo: string;
+  uso: string;
+}[] = [
+  { valor: "oral", rotulo: "Oral", uso: "Uso oral" },
+  { valor: "topica", rotulo: "Tópica", uso: "Uso tópico" },
+  { valor: "otologica", rotulo: "Otológica", uso: "Uso otológico" },
+  { valor: "oftalmica", rotulo: "Oftálmica", uso: "Uso oftálmico" },
+  { valor: "im", rotulo: "Intramuscular (IM)", uso: "Uso intramuscular" },
+  { valor: "sc", rotulo: "Subcutânea (SC)", uso: "Uso subcutâneo" },
+  { valor: "iv", rotulo: "Intravenosa (IV)", uso: "Uso intravenoso" },
+  { valor: "retal", rotulo: "Retal", uso: "Uso retal" },
+];
+
+/** Rótulo da forma farmacêutica (valor livre no banco → cai no próprio texto). */
+export function rotuloFormaFarmaceutica(
+  valor: string | null | undefined
+): string | null {
+  if (!valor) return null;
+  return FORMAS_FARMACEUTICAS.find((f) => f.valor === valor)?.rotulo ?? valor;
+}
+
+/** Rótulo curto da via ("Intramuscular (IM)"). */
+export function rotuloVia(valor: string | null | undefined): string | null {
+  if (!valor) return null;
+  return VIAS_ADMINISTRACAO.find((v) => v.valor === valor)?.rotulo ?? valor;
+}
+
+/** Cabeçalho de uso da receita impressa ("Uso oral"). */
+export function usoDaVia(valor: string | null | undefined): string | null {
+  if (!valor) return null;
+  return VIAS_ADMINISTRACAO.find((v) => v.valor === valor)?.uso ?? null;
 }

@@ -2,20 +2,35 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import {
   Bath,
   BedDouble,
+  Boxes,
   Building2,
   CalendarDays,
+  ChartColumn,
+  ChevronDown,
+  ClipboardList,
+  DollarSign,
   FileText,
+  Handshake,
   LayoutDashboard,
   MessageCircle,
   Package,
   PawPrint,
+  Percent,
+  Pill,
+  Ruler,
   ShoppingCart,
   Stethoscope,
+  Syringe,
+  Tag,
+  Tags,
+  TriangleAlert,
   UserCog,
   Users,
+  Wallet,
   type LucideIcon,
 } from "lucide-react";
 
@@ -23,39 +38,86 @@ interface Item {
   href: string;
   rotulo: string;
   icone: LucideIcon;
+  /** Rota ainda não construída: aparece esmaecida com selo "breve". */
+  breve?: boolean;
 }
 
 interface Grupo {
-  titulo?: string;
+  titulo: string;
+  icone: LucideIcon;
   itens: Item[];
   somenteAdmin?: boolean;
 }
 
+/**
+ * Navegação em dois níveis: cada categoria abre um submenu (accordion),
+ * no estilo dos ERPs do setor. A categoria que contém a rota atual abre
+ * sozinha; o usuário pode abrir/fechar as outras.
+ */
+const INICIO: Item = {
+  href: "/dashboard",
+  rotulo: "Início",
+  icone: LayoutDashboard,
+};
+
 const GRUPOS: Grupo[] = [
   {
-    itens: [{ href: "/dashboard", rotulo: "Início", icone: LayoutDashboard }],
-  },
-  {
     titulo: "Atendimento",
+    icone: Stethoscope,
     itens: [
       { href: "/agenda", rotulo: "Agenda", icone: CalendarDays },
       { href: "/consultas", rotulo: "Consultas", icone: Stethoscope },
+      { href: "/receitas", rotulo: "Receituário", icone: Pill },
       { href: "/internacao", rotulo: "Internação", icone: BedDouble },
+      { href: "/banho-tosa", rotulo: "Banho e tosa", icone: Bath, breve: true },
     ],
   },
   {
     titulo: "Cadastros",
+    icone: Users,
     itens: [
       { href: "/tutores", rotulo: "Tutores", icone: Users },
       { href: "/pets", rotulo: "Pets", icone: PawPrint },
+      { href: "/fornecedores", rotulo: "Fornecedores", icone: Handshake, breve: true },
+    ],
+  },
+  {
+    titulo: "Itens",
+    icone: Package,
+    itens: [
+      { href: "/itens", rotulo: "Produtos e serviços", icone: Package },
+      { href: "/itens/grupos", rotulo: "Grupos e subgrupos", icone: Tags },
+      { href: "/itens/marcas", rotulo: "Marcas", icone: Tag },
+      { href: "/itens/unidades", rotulo: "Unidades", icone: Ruler },
+      { href: "/estoque", rotulo: "Estoque", icone: Boxes },
+      { href: "/estoque/validade", rotulo: "Controle de validade", icone: TriangleAlert },
+      { href: "/itens/planos", rotulo: "Planos", icone: ClipboardList, breve: true },
     ],
   },
   {
     titulo: "Financeiro",
-    itens: [{ href: "/orcamentos", rotulo: "Orçamentos", icone: FileText }],
+    icone: DollarSign,
+    itens: [
+      { href: "/financeiro", rotulo: "Painel financeiro", icone: ChartColumn },
+      { href: "/orcamentos", rotulo: "Orçamentos", icone: FileText },
+      { href: "/pdv", rotulo: "PDV e vendas", icone: ShoppingCart },
+      { href: "/financeiro/receber", rotulo: "Contas a receber", icone: Wallet },
+      { href: "/financeiro/pagar", rotulo: "Contas a pagar", icone: Wallet },
+      { href: "/financeiro/comissoes", rotulo: "Comissões", icone: Percent, breve: true },
+    ],
+  },
+  {
+    titulo: "Relatórios",
+    icone: ChartColumn,
+    itens: [
+      { href: "/relatorios/atendimentos", rotulo: "Atendimentos", icone: CalendarDays, breve: true },
+      { href: "/relatorios/insumos", rotulo: "Insumos", icone: Syringe, breve: true },
+      { href: "/relatorios/financeiro", rotulo: "Financeiro", icone: DollarSign, breve: true },
+    ],
   },
   {
     titulo: "Configurações",
+    icone: UserCog,
     somenteAdmin: true,
     itens: [
       { href: "/configuracoes/whatsapp", rotulo: "WhatsApp", icone: MessageCircle },
@@ -65,75 +127,119 @@ const GRUPOS: Grupo[] = [
   },
 ];
 
-// Roadmap: módulos da Fase 3, visíveis mas ainda não disponíveis
-const EM_BREVE: { rotulo: string; icone: LucideIcon }[] = [
-  { rotulo: "Estoque", icone: Package },
-  { rotulo: "PDV", icone: ShoppingCart },
-  { rotulo: "Banho e tosa", icone: Bath },
-];
-
 function estaAtivo(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(href + "/");
 }
 
-/** Navegação lateral (desktop), agrupada por seção. */
+/** A categoria fica ativa quando alguma rota dela é a atual. */
+function grupoAtivo(pathname: string, grupo: Grupo) {
+  return grupo.itens.some((i) => !i.breve && estaAtivo(pathname, i.href));
+}
+
+/** Navegação lateral (desktop), com submenus expansíveis. */
 export function NavLateral({ ehAdmin }: { ehAdmin: boolean }) {
   const pathname = usePathname();
+  const visiveis = GRUPOS.filter((g) => !g.somenteAdmin || ehAdmin);
+
+  // Estado derivado: a categoria da rota atual fica aberta sozinha; o
+  // clique do usuário guarda só a exceção àquela regra. Assim navegar já
+  // abre a seção certa sem effect nenhum.
+  const [alternados, setAlternados] = useState<Record<string, boolean>>({});
+
+  const estaAberto = (grupo: Grupo) =>
+    alternados[grupo.titulo] ?? grupoAtivo(pathname, grupo);
+
+  function alternar(grupo: Grupo) {
+    setAlternados((atual) => ({
+      ...atual,
+      [grupo.titulo]: !estaAberto(grupo),
+    }));
+  }
+
+  const inicioAtivo = estaAtivo(pathname, INICIO.href);
 
   return (
-    <nav className="flex flex-col gap-5 p-3">
-      {GRUPOS.filter((g) => !g.somenteAdmin || ehAdmin).map((grupo, i) => (
-        <div key={grupo.titulo ?? i}>
-          {grupo.titulo && (
-            <p className="mb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-ink-muted/70">
-              {grupo.titulo}
-            </p>
-          )}
-          <div className="flex flex-col gap-0.5">
-            {grupo.itens.map((item) => {
-              const ativo = estaAtivo(pathname, item.href);
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                    ativo
-                      ? "bg-white/25 text-white shadow-sm shadow-brand/10"
-                      : "text-ink-muted hover:bg-white/15 hover:text-ink"
-                  }`}
-                >
-                  <item.icone
-                    className={`size-[18px] shrink-0 ${ativo ? "text-brand-mint" : ""}`}
-                    strokeWidth={ativo ? 2.2 : 1.8}
-                  />
-                  {item.rotulo}
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      ))}
+    <nav className="flex flex-col gap-1 p-3">
+      {/* Início fica solto no topo, sem categoria */}
+      <Link
+        href={INICIO.href}
+        className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+          inicioAtivo
+            ? "bg-white/25 text-white"
+            : "text-ink-muted hover:bg-white/15 hover:text-ink"
+        }`}
+      >
+        <INICIO.icone
+          className={`size-[18px] shrink-0 ${inicioAtivo ? "text-brand-mint" : ""}`}
+          strokeWidth={inicioAtivo ? 2.2 : 1.8}
+        />
+        {INICIO.rotulo}
+      </Link>
 
-      <div>
-        <p className="mb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-ink-muted/70">
-          Em breve
-        </p>
-        <div className="flex flex-col gap-0.5">
-          {EM_BREVE.map((item) => (
-            <span
-              key={item.rotulo}
-              className="flex cursor-default items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-ink-muted/50"
-              title="Disponível nas próximas fases"
+      {visiveis.map((grupo) => {
+        const aberto = estaAberto(grupo);
+        const temAtivo = grupoAtivo(pathname, grupo);
+
+        return (
+          <div key={grupo.titulo}>
+            <button
+              type="button"
+              onClick={() => alternar(grupo)}
+              aria-expanded={aberto}
+              className={`flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                temAtivo && !aberto
+                  ? "bg-white/15 text-white"
+                  : "text-ink-muted hover:bg-white/15 hover:text-ink"
+              }`}
             >
-              <item.icone className="size-[18px] shrink-0" strokeWidth={1.8} />
-              {item.rotulo}
-              <span className="ml-auto rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-ink-muted/70">
-                breve
-              </span>
-            </span>
-          ))}
-        </div>
-      </div>
+              <grupo.icone
+                className={`size-[18px] shrink-0 ${temAtivo ? "text-brand-mint" : ""}`}
+                strokeWidth={1.8}
+              />
+              <span className="flex-1 text-left">{grupo.titulo}</span>
+              <ChevronDown
+                className={`size-4 shrink-0 transition-transform ${
+                  aberto ? "rotate-180" : ""
+                }`}
+                strokeWidth={1.8}
+              />
+            </button>
+
+            {aberto && (
+              <div className="ml-[1.4rem] mt-0.5 flex flex-col gap-0.5 border-l border-white/20 pl-2">
+                {grupo.itens.map((item) =>
+                  item.breve ? (
+                    <span
+                      key={item.href}
+                      title="Disponível em breve"
+                      className="flex cursor-default items-center gap-2.5 rounded-lg px-3 py-1.5 text-sm text-ink-muted/45"
+                    >
+                      <item.icone className="size-4 shrink-0" strokeWidth={1.8} />
+                      <span className="flex-1 truncate">{item.rotulo}</span>
+                      <span className="rounded-full bg-white/15 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide">
+                        breve
+                      </span>
+                    </span>
+                  ) : (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`flex items-center gap-2.5 rounded-lg px-3 py-1.5 text-sm transition-colors ${
+                        estaAtivo(pathname, item.href)
+                          ? "bg-white/25 font-semibold text-white"
+                          : "text-ink-muted hover:bg-white/15 hover:text-ink"
+                      }`}
+                    >
+                      <item.icone className="size-4 shrink-0" strokeWidth={1.8} />
+                      <span className="truncate">{item.rotulo}</span>
+                    </Link>
+                  )
+                )}
+              </div>
+            )}
+          </div>
+        );
+      })}
     </nav>
   );
 }

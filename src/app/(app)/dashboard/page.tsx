@@ -7,12 +7,15 @@ import {
   FileText,
   PawPrint,
   Plus,
+  TriangleAlert,
   Users,
+  Wallet,
   type LucideIcon,
 } from "lucide-react";
 import { getSessao } from "@/lib/auth";
-import { formatHora, hojeISO, ROTULO_TIPO } from "@/lib/format";
-import type { Agendamento } from "@/lib/types";
+import { formatBRL, formatHora, hojeISO, ROTULO_TIPO } from "@/lib/format";
+import { saldoDaConta, type Agendamento, type Conta } from "@/lib/types";
+import { limitesDoMes } from "../financeiro/schema";
 import { BadgeAgendamento } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardTitulo } from "@/components/ui/card";
@@ -30,8 +33,18 @@ export default async function DashboardPage() {
   const inicio = `${hoje}T00:00:00-03:00`;
   const fim = `${hoje}T23:59:59-03:00`;
 
-  const [agendaHoje, aguardando, internados, tutores, pets, orcamentosAbertos] =
-    await Promise.all([
+  // Contas ainda em aberto até o fim do mês: alimentam o card do financeiro.
+  const mes = limitesDoMes(hoje);
+
+  const [
+    agendaHoje,
+    aguardando,
+    internados,
+    tutores,
+    pets,
+    orcamentosAbertos,
+    contasAbertas,
+  ] = await Promise.all([
       supabase
         .from("agendamento")
         .select(
@@ -59,7 +72,28 @@ export default async function DashboardPage() {
         .from("orcamento")
         .select("id", { count: "exact", head: true })
         .eq("status", "aberto"),
+      supabase
+        .from("conta")
+        .select("tipo, valor, valor_pago, vencimento")
+        .in("status", ["aberta", "parcial"])
+        .lte("vencimento", mes.fim)
+        .limit(500)
+        .returns<
+          Pick<Conta, "tipo" | "valor" | "valor_pago" | "vencimento">[]
+        >(),
     ]);
+
+  let aReceber = 0;
+  let aPagar = 0;
+  let vencidas = 0;
+  for (const c of contasAbertas.data ?? []) {
+    const saldo = saldoDaConta(c);
+    if (c.vencimento >= mes.inicio) {
+      if (c.tipo === "receber") aReceber += saldo;
+      else aPagar += saldo;
+    }
+    if (c.vencimento < hoje) vencidas += saldo;
+  }
 
   const primeiroNome = usuario.nome.split(" ")[0];
 
@@ -132,6 +166,61 @@ export default async function DashboardPage() {
           </Link>
         ))}
       </div>
+
+      {/* Financeiro do mês */}
+      <Card className="mb-6">
+        <div className="mb-3 flex items-center justify-between">
+          <CardTitulo className="mb-0 flex items-center gap-2">
+            <Wallet className="size-4" strokeWidth={1.8} aria-hidden />
+            Financeiro do mês
+          </CardTitulo>
+          <Link
+            href="/financeiro"
+            className="inline-flex items-center gap-1 text-sm font-medium text-brand-mint hover:underline"
+          >
+            Ver painel financeiro
+            <ChevronRight className="size-4" />
+          </Link>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-3">
+          <div className="rounded-xl border border-edge bg-white/10 p-4">
+            <p className="text-xs font-medium tracking-wide text-ink-muted uppercase">
+              A receber
+            </p>
+            <p className="mt-1 text-xl font-semibold text-emerald-50 tabular-nums">
+              {formatBRL(aReceber)}
+            </p>
+          </div>
+          <div className="rounded-xl border border-edge bg-white/10 p-4">
+            <p className="text-xs font-medium tracking-wide text-ink-muted uppercase">
+              A pagar
+            </p>
+            <p className="mt-1 text-xl font-semibold text-amber-50 tabular-nums">
+              {formatBRL(aPagar)}
+            </p>
+          </div>
+          <div
+            className={`rounded-xl border p-4 ${
+              vencidas > 0
+                ? "border-red-200/40 bg-red-400/20"
+                : "border-edge bg-white/10"
+            }`}
+          >
+            <p className="flex items-center gap-1.5 text-xs font-medium tracking-wide text-ink-muted uppercase">
+              <TriangleAlert className="size-3.5 shrink-0" strokeWidth={1.8} aria-hidden />
+              Vencidas
+            </p>
+            <p
+              className={`mt-1 text-xl font-semibold tabular-nums ${
+                vencidas > 0 ? "text-red-50" : "text-ink"
+              }`}
+            >
+              {formatBRL(vencidas)}
+            </p>
+          </div>
+        </div>
+      </Card>
 
       {/* Agenda de hoje */}
       <Card>

@@ -6,6 +6,7 @@ import {
   ChevronRight,
   Mars,
   Pencil,
+  Pill,
   ScanLine,
   Stethoscope,
   Trash2,
@@ -13,13 +14,20 @@ import {
   Venus,
 } from "lucide-react";
 import { getSessao } from "@/lib/auth";
-import { formatDataHora, idadeDetalhada, ROTULO_TIPO } from "@/lib/format";
+import {
+  formatDataHora,
+  formatDataISO,
+  idadeDetalhada,
+  ROTULO_TIPO,
+} from "@/lib/format";
 import {
   PORTES,
+  ROTULO_TIPO_RECEITA,
   TIPOS_PROTOCOLO,
   type AgendamentoStatus,
   type AgendamentoTipo,
   type Pet,
+  type ReceitaTipo,
   type TipoProtocolo,
 } from "@/lib/types";
 import { Badge, BadgeAgendamento } from "@/components/ui/badge";
@@ -48,6 +56,14 @@ interface AgendamentoResumo {
   status: AgendamentoStatus;
 }
 
+interface ReceitaResumo {
+  id: string;
+  data: string;
+  tipo: ReceitaTipo;
+  /** PostgREST devolve a contagem do relacionamento como [{ count }]. */
+  itens: { count: number }[] | null;
+}
+
 const ROTULO_SEXO = { macho: "Macho", femea: "Fêmea" } as const;
 
 const rotuloPorte = (valor: string | null) =>
@@ -72,22 +88,30 @@ export default async function PetPage({
 
   if (!pet) notFound();
 
-  const [{ data: consultas }, { data: agendamentos }] = await Promise.all([
-    supabase
-      .from("consulta")
-      .select("id, data, queixa, diagnostico")
-      .eq("pet_id", id)
-      .order("data", { ascending: false })
-      .limit(10)
-      .returns<ConsultaResumo[]>(),
-    supabase
-      .from("agendamento")
-      .select("id, data_hora, tipo, status")
-      .eq("pet_id", id)
-      .order("data_hora", { ascending: false })
-      .limit(10)
-      .returns<AgendamentoResumo[]>(),
-  ]);
+  const [{ data: consultas }, { data: agendamentos }, { data: receitas }] =
+    await Promise.all([
+      supabase
+        .from("consulta")
+        .select("id, data, queixa, diagnostico")
+        .eq("pet_id", id)
+        .order("data", { ascending: false })
+        .limit(10)
+        .returns<ConsultaResumo[]>(),
+      supabase
+        .from("agendamento")
+        .select("id, data_hora, tipo, status")
+        .eq("pet_id", id)
+        .order("data_hora", { ascending: false })
+        .limit(10)
+        .returns<AgendamentoResumo[]>(),
+      supabase
+        .from("receita")
+        .select("id, data, tipo, itens:receita_item (count)")
+        .eq("pet_id", id)
+        .order("data", { ascending: false })
+        .limit(5)
+        .returns<ReceitaResumo[]>(),
+    ]);
 
   const excluirComId = excluirPet.bind(null, id);
   const porte = rotuloPorte(pet.porte);
@@ -341,6 +365,53 @@ export default async function PetPage({
                   <BadgeAgendamento status={a.status} />
                 </li>
               ))}
+            </ul>
+          )}
+        </Card>
+
+        <Card>
+          <CardTitulo>Receitas</CardTitulo>
+          {!receitas || receitas.length === 0 ? (
+            <EmptyState
+              icone={<Pill className="size-7" strokeWidth={1.8} />}
+              titulo="Nenhuma receita"
+              mensagem="As receitas emitidas para este pet aparecem aqui."
+              acao={
+                usuario.papel !== "recepcao" && (
+                  <ButtonLink href={`/receitas/nova?pet=${id}`} variante="secondary">
+                    <Pill className="size-4" />
+                    Nova receita
+                  </ButtonLink>
+                )
+              }
+            />
+          ) : (
+            <ul className="divide-y divide-white/15">
+              {receitas.map((r) => {
+                const quantidade = r.itens?.[0]?.count ?? 0;
+                return (
+                  <li key={r.id}>
+                    <Link
+                      href={`/receitas/${r.id}`}
+                      className="-mx-2 flex items-center gap-3 rounded-xl px-2 py-2.5 transition-colors hover:bg-white/15"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-ink">
+                          {formatDataISO(r.data)}
+                          <span className="font-normal text-ink-muted">
+                            {` · ${ROTULO_TIPO_RECEITA[r.tipo]}`}
+                          </span>
+                        </p>
+                        <p className="truncate text-xs text-ink-muted">
+                          {quantidade}{" "}
+                          {quantidade === 1 ? "medicamento" : "medicamentos"}
+                        </p>
+                      </div>
+                      <ChevronRight className="size-4 shrink-0 text-ink-muted" />
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </Card>

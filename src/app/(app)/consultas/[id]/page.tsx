@@ -157,6 +157,13 @@ export default async function ConsultaPage({
                 </ConfirmButton>
               </form>
               <ButtonLink
+                href={`/receitas/nova?pet=${consulta.pet_id}&consulta=${id}`}
+                variante="secondary"
+              >
+                <Pill className="size-4" />
+                Receituário
+              </ButtonLink>
+              <ButtonLink
                 href={`/orcamentos/novo?pet=${consulta.pet_id}&consulta=${id}`}
                 variante="secondary"
               >

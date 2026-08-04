@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Paperclip, Upload } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Select } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
@@ -27,6 +28,7 @@ export function AnexoUpload({
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [tipo, setTipo] = useState<AnexoTipo>("foto");
+  const [nomeArquivo, setNomeArquivo] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
 
@@ -76,6 +78,7 @@ export function AnexoUpload({
       }
 
       if (inputRef.current) inputRef.current.value = "";
+      setNomeArquivo(null);
       router.refresh();
     } catch {
       setErro("Falha ao enviar o arquivo. Tente novamente.");
@@ -85,8 +88,11 @@ export function AnexoUpload({
   }
 
   return (
-    <div className="mt-4 rounded-lg border border-dashed border-edge p-3">
-      <p className="mb-2 text-sm font-medium text-ink">Adicionar anexo</p>
+    <div className="mt-4 rounded-xl border border-dashed border-edge p-4">
+      <p className="mb-3 flex items-center gap-1.5 text-sm font-medium text-ink">
+        <Paperclip className="size-4 text-ink-muted" strokeWidth={1.8} aria-hidden />
+        Adicionar anexo
+      </p>
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
         <Select
           aria-label="Tipo do anexo"
@@ -99,21 +105,33 @@ export function AnexoUpload({
           <option value="pdf">PDF</option>
           <option value="exame">Exame</option>
         </Select>
-        <input
-          ref={inputRef}
-          type="file"
-          accept="image/jpeg,image/png,image/webp,application/pdf"
-          disabled={enviando}
-          onChange={() => setErro(null)}
-          aria-label="Arquivo do anexo"
-          className="w-full cursor-pointer text-sm text-ink-muted file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-brand-mint/30 file:px-3 file:py-2 file:text-sm file:font-medium file:text-brand-dark hover:file:bg-brand-mint/50"
-        />
+        <label
+          className={`flex h-10 min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-lg border border-dashed border-edge px-3 text-sm transition-colors hover:border-brand/40 hover:bg-brand-mint/10 ${
+            nomeArquivo ? "text-ink" : "text-ink-muted"
+          } ${enviando ? "pointer-events-none opacity-50" : ""}`}
+        >
+          <Upload className="size-4 shrink-0" strokeWidth={1.8} aria-hidden />
+          <span className="truncate">{nomeArquivo ?? "Escolher arquivo…"}</span>
+          <input
+            ref={inputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,application/pdf"
+            disabled={enviando}
+            onChange={(e) => {
+              setErro(null);
+              setNomeArquivo(e.target.files?.[0]?.name ?? null);
+            }}
+            aria-label="Arquivo do anexo"
+            className="sr-only"
+          />
+        </label>
         <Button
           type="button"
           onClick={enviar}
           disabled={enviando}
           className="shrink-0"
         >
+          <Upload className="size-4" />
           {enviando ? "Enviando…" : "Enviar"}
         </Button>
       </div>

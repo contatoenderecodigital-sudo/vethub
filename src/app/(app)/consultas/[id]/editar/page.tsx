@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { getSessao } from "@/lib/auth";
-import { emojiEspecie, formatDataHora } from "@/lib/format";
+import { formatDataHora } from "@/lib/format";
 import type { Consulta } from "@/lib/types";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card } from "@/components/ui/card";
@@ -47,7 +47,7 @@ export default async function EditarConsultaPage({
       : consulta.pet.tutor;
     petInicial = {
       id: consulta.pet.id,
-      rotulo: `${emojiEspecie(consulta.pet.especie)} ${consulta.pet.nome}`,
+      rotulo: consulta.pet.nome,
       detalhe: tutor ? `Tutor: ${tutor.nome}` : undefined,
     };
   }

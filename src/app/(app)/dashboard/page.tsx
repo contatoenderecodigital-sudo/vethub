@@ -1,16 +1,22 @@
 import Link from "next/link";
-import { getSessao } from "@/lib/auth";
 import {
-  emojiEspecie,
-  formatHora,
-  hojeISO,
-  ROTULO_TIPO,
-} from "@/lib/format";
+  CalendarDays,
+  ChevronRight,
+  Clock,
+  FileText,
+  PawPrint,
+  Plus,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
+import { getSessao } from "@/lib/auth";
+import { formatHora, hojeISO, ROTULO_TIPO } from "@/lib/format";
 import type { Agendamento } from "@/lib/types";
 import { BadgeAgendamento } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardTitulo } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
+import { IconeEspecie } from "@/components/icone-especie";
 import { PageHeader } from "@/components/ui/page-header";
 
 export const metadata = { title: "Início" };
@@ -52,25 +58,49 @@ export default async function DashboardPage() {
 
   const primeiroNome = usuario.nome.split(" ")[0];
 
-  const tiles = [
-    { rotulo: "Agendamentos hoje", valor: agendaHoje.count ?? 0, href: "/agenda" },
-    { rotulo: "Aguardando atendimento", valor: aguardando.count ?? 0, href: "/agenda" },
-    { rotulo: "Tutores", valor: tutores.count ?? 0, href: "/tutores" },
-    { rotulo: "Pets", valor: pets.count ?? 0, href: "/pets" },
-    { rotulo: "Orçamentos abertos", valor: orcamentosAbertos.count ?? 0, href: "/orcamentos?status=aberto" },
+  const tiles: {
+    rotulo: string;
+    valor: number;
+    href: string;
+    icone: LucideIcon;
+  }[] = [
+    {
+      rotulo: "Agendamentos hoje",
+      valor: agendaHoje.count ?? 0,
+      href: "/agenda",
+      icone: CalendarDays,
+    },
+    {
+      rotulo: "Aguardando atendimento",
+      valor: aguardando.count ?? 0,
+      href: "/agenda",
+      icone: Clock,
+    },
+    { rotulo: "Tutores", valor: tutores.count ?? 0, href: "/tutores", icone: Users },
+    { rotulo: "Pets", valor: pets.count ?? 0, href: "/pets", icone: PawPrint },
+    {
+      rotulo: "Orçamentos abertos",
+      valor: orcamentosAbertos.count ?? 0,
+      href: "/orcamentos?status=aberto",
+      icone: FileText,
+    },
   ];
 
   return (
     <div>
       <PageHeader
-        titulo={`Olá, ${primeiroNome}! 👋`}
+        titulo={`Olá, ${primeiroNome}!`}
         subtitulo="Aqui está o dia da clínica."
         acao={
           <>
             <ButtonLink href="/agenda/novo" variante="secondary">
-              + Agendamento
+              <Plus className="size-4" />
+              Agendamento
             </ButtonLink>
-            <ButtonLink href="/tutores/novo">+ Tutor</ButtonLink>
+            <ButtonLink href="/tutores/novo">
+              <Plus className="size-4" />
+              Tutor
+            </ButtonLink>
           </>
         }
       />
@@ -81,8 +111,11 @@ export default async function DashboardPage() {
           <Link
             key={t.rotulo}
             href={t.href}
-            className="rounded-xl border border-edge bg-surface p-4 transition-colors hover:border-brand/40"
+            className="group rounded-xl border border-edge bg-surface p-4 transition-all hover:border-brand/40 hover:shadow-sm"
           >
+            <span className="mb-3 flex size-9 items-center justify-center rounded-lg bg-brand/10 text-brand-dark">
+              <t.icone className="size-[18px]" strokeWidth={1.8} />
+            </span>
             <p className="text-2xl font-bold text-ink">{t.valor}</p>
             <p className="mt-0.5 text-xs text-ink-muted">{t.rotulo}</p>
           </Link>
@@ -93,16 +126,26 @@ export default async function DashboardPage() {
       <Card>
         <div className="mb-3 flex items-center justify-between">
           <CardTitulo className="mb-0">Agenda de hoje</CardTitulo>
-          <Link href="/agenda" className="text-sm font-medium text-brand hover:underline">
-            Ver agenda completa →
+          <Link
+            href="/agenda"
+            className="inline-flex items-center gap-1 text-sm font-medium text-brand hover:underline"
+          >
+            Ver agenda completa
+            <ChevronRight className="size-4" />
           </Link>
         </div>
 
         {!agendaHoje.data || agendaHoje.data.length === 0 ? (
           <EmptyState
+            icone={<CalendarDays className="size-7" strokeWidth={1.8} />}
             titulo="Dia livre por enquanto"
             mensagem="Nenhum agendamento para hoje. Que tal aproveitar para colocar os cadastros em dia?"
-            acao={<ButtonLink href="/agenda/novo">+ Novo agendamento</ButtonLink>}
+            acao={
+              <ButtonLink href="/agenda/novo">
+                <Plus className="size-4" />
+                Novo agendamento
+              </ButtonLink>
+            }
           />
         ) : (
           <ul className="divide-y divide-edge">
@@ -112,10 +155,10 @@ export default async function DashboardPage() {
                   href="/agenda"
                   className="flex items-center gap-3 py-2.5 transition-colors hover:bg-brand-mint/10"
                 >
-                  <span className="w-12 shrink-0 text-sm font-bold text-brand-dark">
+                  <span className="w-12 shrink-0 text-sm font-bold text-brand-dark tabular-nums">
                     {formatHora(a.data_hora)}
                   </span>
-                  <span className="text-lg">{emojiEspecie(a.pet?.especie)}</span>
+                  <IconeEspecie especie={a.pet?.especie} tamanho="sm" />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-ink">
                       {a.pet?.nome ?? "—"}

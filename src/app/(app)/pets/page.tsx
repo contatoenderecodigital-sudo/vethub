@@ -1,11 +1,13 @@
 import Link from "next/link";
+import { ChevronRight, PawPrint, Plus, Search } from "lucide-react";
 import { getSessao } from "@/lib/auth";
-import { emojiEspecie } from "@/lib/format";
+import { ESPECIES } from "@/lib/types";
 import { PageHeader } from "@/components/ui/page-header";
-import { ButtonLink } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Pagination } from "@/components/ui/pagination";
-import { Input } from "@/components/ui/form";
+import { Input, Select } from "@/components/ui/form";
+import { IconeEspecie } from "@/components/icone-especie";
 
 const POR_PAGINA = 20;
 
@@ -22,9 +24,9 @@ interface PetLista {
 export default async function PetsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; pagina?: string }>;
+  searchParams: Promise<{ q?: string; especie?: string; pagina?: string }>;
 }) {
-  const { q, pagina: paginaParam } = await searchParams;
+  const { q, especie, pagina: paginaParam } = await searchParams;
   const pagina = Math.max(1, parseInt(paginaParam ?? "1", 10) || 1);
   const { supabase } = await getSessao();
 
@@ -37,6 +39,9 @@ export default async function PetsPage({
   if (q?.trim()) {
     query = query.ilike("nome", `%${q.trim()}%`);
   }
+  if (especie?.trim()) {
+    query = query.eq("especie", especie.trim());
+  }
 
   const { data, count } = await query.returns<PetLista[]>();
   const pets = data;
@@ -47,28 +52,62 @@ export default async function PetsPage({
       <PageHeader
         titulo="Pets"
         subtitulo={count != null ? `${count} cadastrados` : undefined}
-        acao={<ButtonLink href="/pets/novo">+ Novo pet</ButtonLink>}
+        acao={
+          <ButtonLink href="/pets/novo">
+            <Plus className="size-4" />
+            Novo pet
+          </ButtonLink>
+        }
       />
 
-      <form method="get" className="mb-4">
+      <form
+        method="get"
+        className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center"
+      >
         <Input
           type="search"
           name="q"
           defaultValue={q ?? ""}
           placeholder="Buscar pelo nome do pet…"
-          className="max-w-md"
+          className="sm:max-w-md"
         />
+        <Select
+          name="especie"
+          defaultValue={especie ?? ""}
+          aria-label="Filtrar por espécie"
+          className="sm:w-44"
+        >
+          <option value="">Todas as espécies</option>
+          {ESPECIES.map((e) => (
+            <option key={e} value={e}>
+              {e}
+            </option>
+          ))}
+        </Select>
+        <Button type="submit" variante="secondary">
+          <Search className="size-4" />
+          Filtrar
+        </Button>
       </form>
 
       {!pets || pets.length === 0 ? (
         <EmptyState
-          titulo={q ? "Nenhum pet encontrado" : "Nenhum pet ainda"}
+          icone={<PawPrint className="size-7" strokeWidth={1.8} />}
+          titulo={q || especie ? "Nenhum pet encontrado" : "Nenhum pet ainda"}
           mensagem={
-            q
-              ? "Tente buscar por outro nome."
+            q || especie
+              ? "Tente ajustar a busca ou o filtro de espécie."
               : "Cadastre o primeiro pet para começar a atender."
           }
-          acao={!q && <ButtonLink href="/pets/novo">+ Novo pet</ButtonLink>}
+          acao={
+            !q &&
+            !especie && (
+              <ButtonLink href="/pets/novo">
+                <Plus className="size-4" />
+                Novo pet
+              </ButtonLink>
+            )
+          }
         />
       ) : (
         <div className="overflow-hidden rounded-xl border border-edge bg-surface">
@@ -79,7 +118,7 @@ export default async function PetsPage({
                   href={`/pets/${p.id}`}
                   className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-brand-mint/10"
                 >
-                  <span className="text-2xl">{emojiEspecie(p.especie)}</span>
+                  <IconeEspecie especie={p.especie} tamanho="sm" />
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-medium text-ink">{p.nome}</p>
                     <p className="truncate text-sm text-ink-muted">
@@ -88,7 +127,7 @@ export default async function PetsPage({
                       {p.tutor?.nome ? ` · Tutor: ${p.tutor.nome}` : ""}
                     </p>
                   </div>
-                  <span className="text-ink-muted">›</span>
+                  <ChevronRight className="size-4 shrink-0 text-ink-muted" />
                 </Link>
               </li>
             ))}
@@ -100,7 +139,7 @@ export default async function PetsPage({
         pagina={pagina}
         totalPaginas={totalPaginas}
         baseUrl="/pets"
-        params={{ q }}
+        params={{ q, especie }}
       />
     </div>
   );

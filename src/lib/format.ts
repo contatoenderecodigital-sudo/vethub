@@ -54,26 +54,6 @@ export function idadeDoPet(nascimento: string | null | undefined): string {
   return resto > 0 ? `${anos} a ${resto} m` : `${anos} ${anos === 1 ? "ano" : "anos"}`;
 }
 
-export function emojiEspecie(especie: string | null | undefined): string {
-  switch ((especie ?? "").toLowerCase()) {
-    case "cachorro":
-      return "🐶";
-    case "gato":
-      return "🐱";
-    case "ave":
-      return "🦜";
-    case "réptil":
-    case "reptil":
-      return "🦎";
-    case "roedor":
-      return "🐹";
-    case "coelho":
-      return "🐰";
-    default:
-      return "🐾";
-  }
-}
-
 export const ROTULO_TIPO: Record<AgendamentoTipo, string> = {
   consulta: "Consulta",
   retorno: "Retorno",

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Plus, X } from "lucide-react";
 import { formatBRL } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/form";
@@ -146,9 +147,9 @@ export function ItensEditor({
               title="Remover item"
               disabled={linhas.length === 1}
               onClick={() => remover(linha.chave)}
-              className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-lg text-ink-muted transition-colors hover:bg-danger/10 hover:text-danger disabled:pointer-events-none disabled:opacity-40"
+              className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-ink-muted transition-colors hover:bg-danger/10 hover:text-danger disabled:pointer-events-none disabled:opacity-40"
             >
-              ×
+              <X className="size-4" />
             </button>
           </li>
         ))}
@@ -161,7 +162,8 @@ export function ItensEditor({
           tamanho="sm"
           onClick={() => setLinhas((atual) => [...atual, novaLinha()])}
         >
-          + Adicionar item
+          <Plus className="size-4" />
+          Adicionar item
         </Button>
         <p className="flex items-baseline gap-2">
           <span className="text-sm text-ink-muted">TOTAL</span>

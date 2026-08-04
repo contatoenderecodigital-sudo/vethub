@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 /**
  * Paginação por links (server-side). Preserva os demais parâmetros da URL.
@@ -26,13 +27,14 @@ export function Pagination({
   };
 
   const classe =
-    "inline-flex h-9 items-center rounded-lg border border-edge bg-surface px-3 text-sm font-medium text-ink hover:bg-zinc-50";
+    "inline-flex h-9 items-center gap-1 rounded-lg border border-edge bg-surface px-3 text-sm font-medium text-ink hover:bg-zinc-50";
 
   return (
     <nav className="mt-4 flex items-center justify-between gap-2" aria-label="Paginação">
       {pagina > 1 ? (
         <Link href={linkPara(pagina - 1)} className={classe}>
-          ← Anterior
+          <ChevronLeft className="size-4" />
+          Anterior
         </Link>
       ) : (
         <span />
@@ -42,7 +44,8 @@ export function Pagination({
       </span>
       {pagina < totalPaginas ? (
         <Link href={linkPara(pagina + 1)} className={classe}>
-          Próxima →
+          Próxima
+          <ChevronRight className="size-4" />
         </Link>
       ) : (
         <span />

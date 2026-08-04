@@ -1,11 +1,13 @@
 import Link from "next/link";
+import { ChevronRight, FileText, Plus } from "lucide-react";
 import { getSessao } from "@/lib/auth";
-import { emojiEspecie, formatBRL, formatDataHora } from "@/lib/format";
+import { formatBRL, formatDataHora } from "@/lib/format";
 import type { OrcamentoStatus } from "@/lib/types";
 import { PageHeader } from "@/components/ui/page-header";
 import { BadgeOrcamento } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
+import { IconeEspecie } from "@/components/icone-especie";
 import { Pagination } from "@/components/ui/pagination";
 
 const POR_PAGINA = 20;
@@ -66,7 +68,12 @@ export default async function OrcamentosPage({
       <PageHeader
         titulo="Orçamentos"
         subtitulo={count != null ? `${count} no total` : undefined}
-        acao={<ButtonLink href="/orcamentos/novo">+ Novo orçamento</ButtonLink>}
+        acao={
+          <ButtonLink href="/orcamentos/novo">
+            <Plus className="size-4" />
+            Novo orçamento
+          </ButtonLink>
+        }
       />
 
       <nav className="mb-4 flex flex-wrap gap-2" aria-label="Filtro por status">
@@ -76,10 +83,11 @@ export default async function OrcamentosPage({
             <Link
               key={aba.rotulo}
               href={aba.valor ? `/orcamentos?status=${aba.valor}` : "/orcamentos"}
-              className={`inline-flex h-8 items-center rounded-full px-3 text-sm font-medium transition-colors ${
+              aria-current={ativa ? "page" : undefined}
+              className={`inline-flex h-8 items-center rounded-full px-3.5 text-sm font-medium transition-colors ${
                 ativa
-                  ? "bg-brand text-white"
-                  : "border border-edge bg-surface text-ink-muted hover:bg-zinc-50 hover:text-ink"
+                  ? "bg-brand text-white shadow-sm"
+                  : "border border-edge bg-surface text-ink-muted hover:border-brand/40 hover:bg-brand-mint/10 hover:text-ink"
               }`}
             >
               {aba.rotulo}
@@ -100,7 +108,13 @@ export default async function OrcamentosPage({
               ? "Tente outro filtro ou crie um novo orçamento."
               : "Crie o primeiro orçamento para apresentar ao tutor."
           }
-          acao={<ButtonLink href="/orcamentos/novo">+ Novo orçamento</ButtonLink>}
+          icone={<FileText className="size-7" strokeWidth={1.8} />}
+          acao={
+            <ButtonLink href="/orcamentos/novo">
+              <Plus className="size-4" />
+              Novo orçamento
+            </ButtonLink>
+          }
         />
       ) : (
         <div className="overflow-hidden rounded-xl border border-edge bg-surface">
@@ -111,18 +125,20 @@ export default async function OrcamentosPage({
                   href={`/orcamentos/${o.id}`}
                   className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-brand-mint/10"
                 >
+                  <IconeEspecie especie={o.pet?.especie} tamanho="sm" />
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-medium text-ink">
-                      {emojiEspecie(o.pet?.especie)} {o.pet?.nome ?? "Pet removido"}
+                      {o.pet?.nome ?? "Pet removido"}
                     </p>
                     <p className="truncate text-sm text-ink-muted">
                       {nomeDoTutor(o.pet) ?? "—"} · {formatDataHora(o.created_at)}
                     </p>
                   </div>
                   <BadgeOrcamento status={o.status} />
-                  <span className="w-24 text-right font-medium text-ink tabular-nums">
+                  <span className="w-24 text-right font-semibold text-ink tabular-nums">
                     {formatBRL(o.valor_total)}
                   </span>
+                  <ChevronRight className="size-4 shrink-0 text-ink-muted" />
                 </Link>
               </li>
             ))}

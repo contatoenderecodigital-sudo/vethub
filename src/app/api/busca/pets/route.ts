@@ -1,6 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { emojiEspecie } from "@/lib/format";
 
 /** Busca de pets para o combobox. RLS já limita à clínica do usuário. */
 export async function GET(request: NextRequest) {
@@ -23,10 +22,13 @@ export async function GET(request: NextRequest) {
   return NextResponse.json(
     (data ?? []).map((p) => {
       const tutor = Array.isArray(p.tutor) ? p.tutor[0] : p.tutor;
+      const donoDoPet = tutor ? (tutor as { nome: string }).nome : null;
       return {
         id: p.id,
-        rotulo: `${emojiEspecie(p.especie)} ${p.nome}`,
-        detalhe: tutor ? `Tutor: ${(tutor as { nome: string }).nome}` : undefined,
+        rotulo: p.nome,
+        detalhe: [p.especie, donoDoPet ? `Tutor: ${donoDoPet}` : null]
+          .filter(Boolean)
+          .join(" · "),
       };
     })
   );

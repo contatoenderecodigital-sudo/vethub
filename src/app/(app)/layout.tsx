@@ -1,9 +1,23 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { LogOut } from "lucide-react";
 import { getSessao } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { Wordmark } from "@/components/wordmark";
 import { NavInferior, NavLateral } from "@/components/nav-links";
+
+const ROTULO_PAPEL: Record<string, string> = {
+  admin: "Administrador",
+  veterinario: "Veterinário",
+  recepcao: "Recepção",
+};
+
+function iniciais(nome: string) {
+  const partes = nome.trim().split(/\s+/);
+  const primeira = partes[0]?.[0] ?? "";
+  const ultima = partes.length > 1 ? partes[partes.length - 1][0] : "";
+  return (primeira + ultima).toUpperCase();
+}
 
 export default async function AppLayout({
   children,
@@ -28,9 +42,9 @@ export default async function AppLayout({
   return (
     <div className="flex min-h-dvh flex-col">
       {/* Cabeçalho com o gradiente da marca */}
-      <header className="bg-brand-gradient sticky top-0 z-40">
-        <div className="flex h-14 items-center justify-between gap-3 px-4">
-          <div className="flex items-center gap-3">
+      <header className="bg-brand-gradient sticky top-0 z-40 shadow-sm">
+        <div className="flex h-14 items-center justify-between gap-3 px-4 sm:px-5">
+          <div className="flex min-w-0 items-center gap-3">
             <Link href="/dashboard" aria-label="Ir para o início">
               <Wordmark sobre="escuro" className="text-xl" />
             </Link>
@@ -40,16 +54,23 @@ export default async function AppLayout({
               </span>
             )}
           </div>
+
           <div className="flex items-center gap-3">
-            <span className="hidden text-sm text-white/90 sm:inline">
-              {usuario.nome}
+            {/* Usuário (mobile — no desktop fica na lateral) */}
+            <span
+              className="flex size-8 items-center justify-center rounded-full bg-white/20 text-xs font-bold text-white md:hidden"
+              title={usuario.nome}
+            >
+              {iniciais(usuario.nome)}
             </span>
-            <form action={sair}>
+            <form action={sair} className="md:hidden">
               <button
                 type="submit"
-                className="rounded-lg bg-white/15 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-white/25 cursor-pointer"
+                aria-label="Sair"
+                title="Sair"
+                className="flex size-8 cursor-pointer items-center justify-center rounded-lg bg-white/15 text-white transition-colors hover:bg-white/25"
               >
-                Sair
+                <LogOut className="size-4" />
               </button>
             </form>
           </div>
@@ -58,8 +79,35 @@ export default async function AppLayout({
 
       <div className="flex flex-1">
         {/* Navegação lateral (desktop) */}
-        <aside className="sticky top-14 hidden h-[calc(100dvh-3.5rem)] w-56 shrink-0 border-r border-edge bg-surface md:block">
+        <aside className="sticky top-14 hidden h-[calc(100dvh-3.5rem)] w-60 shrink-0 flex-col justify-between overflow-y-auto border-r border-edge bg-surface md:flex">
           <NavLateral ehAdmin={usuario.papel === "admin"} />
+
+          {/* Bloco do usuário */}
+          <div className="border-t border-edge p-3">
+            <div className="flex items-center gap-3 rounded-lg px-2 py-1.5">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand/10 text-sm font-bold text-brand-dark">
+                {iniciais(usuario.nome)}
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium text-ink">
+                  {usuario.nome}
+                </p>
+                <p className="truncate text-xs text-ink-muted">
+                  {ROTULO_PAPEL[usuario.papel]}
+                </p>
+              </div>
+              <form action={sair}>
+                <button
+                  type="submit"
+                  aria-label="Sair"
+                  title="Sair"
+                  className="flex size-8 cursor-pointer items-center justify-center rounded-lg text-ink-muted transition-colors hover:bg-zinc-100 hover:text-danger"
+                >
+                  <LogOut className="size-4" />
+                </button>
+              </form>
+            </div>
+          </div>
         </aside>
 
         {/* Conteúdo */}

@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { Check, Plus, Trash2 } from "lucide-react";
 import { getSessao } from "@/lib/auth";
 import { PAPEIS, type Usuario } from "@/lib/types";
 import { PageHeader } from "@/components/ui/page-header";
@@ -38,7 +39,12 @@ export default async function UsuariosPage({
       <PageHeader
         titulo="Equipe"
         subtitulo="Usuários da clínica e seus papéis"
-        acao={<ButtonLink href="/configuracoes/usuarios/novo">+ Novo usuário</ButtonLink>}
+        acao={
+          <ButtonLink href="/configuracoes/usuarios/novo">
+            <Plus className="size-4" />
+            Novo usuário
+          </ButtonLink>
+        }
       />
 
       {erro && (
@@ -87,6 +93,7 @@ export default async function UsuariosPage({
                         ))}
                       </Select>
                       <SubmitButton variante="secondary" tamanho="sm">
+                        <Check className="size-4" />
                         Salvar
                       </SubmitButton>
                     </form>
@@ -97,6 +104,7 @@ export default async function UsuariosPage({
                         mensagem={`Remover ${m.nome} da clínica? O acesso será revogado.`}
                         className="text-danger"
                       >
+                        <Trash2 className="size-4" />
                         Remover
                       </ConfirmButton>
                     </form>

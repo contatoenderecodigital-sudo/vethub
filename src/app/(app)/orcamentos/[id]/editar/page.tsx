@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
+import { Save } from "lucide-react";
 import { getSessao } from "@/lib/auth";
-import { emojiEspecie } from "@/lib/format";
 import type { OrcamentoStatus } from "@/lib/types";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card } from "@/components/ui/card";
@@ -65,9 +65,7 @@ export default async function EditarOrcamentoPage({
     <div className="mx-auto max-w-3xl">
       <PageHeader
         titulo="Editar itens do orçamento"
-        subtitulo={
-          pet ? `${emojiEspecie(pet.especie)} ${pet.nome}` : undefined
-        }
+        subtitulo={pet ? pet.nome : undefined}
       />
       <Card>
         <form action={salvar} className="space-y-4">
@@ -82,7 +80,10 @@ export default async function EditarOrcamentoPage({
           />
 
           <div className="flex gap-2 pt-2">
-            <SubmitButton>Salvar itens</SubmitButton>
+            <SubmitButton>
+            <Save className="size-4" />
+            Salvar itens
+          </SubmitButton>
             <ButtonLink href={`/orcamentos/${id}`} variante="secondary">
               Cancelar
             </ButtonLink>

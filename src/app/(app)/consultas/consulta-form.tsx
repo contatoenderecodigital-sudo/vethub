@@ -1,3 +1,4 @@
+import { Check } from "lucide-react";
 import { Campo, Select, Textarea } from "@/components/ui/form";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { ButtonLink } from "@/components/ui/button";
@@ -126,7 +127,10 @@ export function ConsultaForm({
       </Campo>
 
       <div className="flex gap-2 pt-2">
-        <SubmitButton>Salvar</SubmitButton>
+        <SubmitButton>
+          <Check className="size-4" />
+          Salvar
+        </SubmitButton>
         <ButtonLink href={cancelarHref} variante="secondary">
           Cancelar
         </ButtonLink>

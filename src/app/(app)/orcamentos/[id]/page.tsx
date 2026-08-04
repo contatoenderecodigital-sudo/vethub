@@ -1,12 +1,21 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import {
+  CircleCheck,
+  CircleX,
+  Pencil,
+  RotateCcw,
+  Stethoscope,
+  Trash2,
+} from "lucide-react";
 import { getSessao } from "@/lib/auth";
-import { emojiEspecie, formatBRL, formatDataHora } from "@/lib/format";
+import { formatBRL, formatDataHora } from "@/lib/format";
 import type { OrcamentoStatus } from "@/lib/types";
 import { BadgeOrcamento } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { IconeEspecie } from "@/components/icone-especie";
 import { atualizarStatus, excluirOrcamento } from "../actions";
 
 export const metadata = { title: "Orçamento" };
@@ -71,51 +80,60 @@ export default async function OrcamentoPage({
   return (
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-ink sm:text-2xl">Orçamento</h1>
-            <BadgeOrcamento status={orcamento.status} />
-          </div>
-          <p className="mt-0.5 text-sm text-ink-muted">
-            {pet ? (
-              <Link
-                href={`/pets/${pet.id}`}
-                className="font-medium text-brand hover:underline"
-              >
-                {emojiEspecie(pet.especie)} {pet.nome}
-              </Link>
-            ) : (
-              "Pet removido"
-            )}
-            {tutor && <> · Tutor: {tutor.nome}</>}
-            {" · "}
-            {formatDataHora(orcamento.created_at)}
-            {orcamento.consulta_id && (
-              <>
-                {" · "}
+        <div className="flex items-start gap-3">
+          <IconeEspecie especie={pet?.especie} />
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-bold text-ink sm:text-2xl">Orçamento</h1>
+              <BadgeOrcamento status={orcamento.status} />
+            </div>
+            <p className="mt-0.5 text-sm text-ink-muted">
+              {pet ? (
                 <Link
-                  href={`/consultas/${orcamento.consulta_id}`}
-                  className="text-brand hover:underline"
+                  href={`/pets/${pet.id}`}
+                  className="font-medium text-brand hover:underline"
                 >
-                  Ver consulta
+                  {pet.nome}
                 </Link>
-              </>
-            )}
-          </p>
+              ) : (
+                "Pet removido"
+              )}
+              {tutor && <> · Tutor: {tutor.nome}</>}
+              {" · "}
+              {formatDataHora(orcamento.created_at)}
+              {orcamento.consulta_id && (
+                <>
+                  {" · "}
+                  <Link
+                    href={`/consultas/${orcamento.consulta_id}`}
+                    className="inline-flex items-center gap-1 align-bottom text-brand hover:underline"
+                  >
+                    <Stethoscope className="size-3.5" />
+                    Ver consulta
+                  </Link>
+                </>
+              )}
+            </p>
+          </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           {orcamento.status === "aberto" ? (
             <>
               <form action={aprovar}>
-                <SubmitButton carregando="Aprovando…">Aprovar</SubmitButton>
+                <SubmitButton carregando="Aprovando…">
+                  <CircleCheck className="size-4" />
+                  Aprovar
+                </SubmitButton>
               </form>
               <form action={recusar}>
                 <SubmitButton variante="secondary" carregando="Recusando…">
+                  <CircleX className="size-4" />
                   Recusar
                 </SubmitButton>
               </form>
               <ButtonLink href={`/orcamentos/${id}/editar`} variante="secondary">
+                <Pencil className="size-4" />
                 Editar itens
               </ButtonLink>
               <form action={excluir}>
@@ -123,6 +141,7 @@ export default async function OrcamentoPage({
                   variante="danger"
                   mensagem="Excluir este orçamento apaga também os itens dele. Tem certeza?"
                 >
+                  <Trash2 className="size-4" />
                   Excluir
                 </ConfirmButton>
               </form>
@@ -130,6 +149,7 @@ export default async function OrcamentoPage({
           ) : (
             <form action={reabrir}>
               <SubmitButton variante="secondary" carregando="Reabrindo…">
+                <RotateCcw className="size-4" />
                 Reabrir
               </SubmitButton>
             </form>
@@ -146,7 +166,7 @@ export default async function OrcamentoPage({
       <div className="overflow-x-auto rounded-xl border border-edge bg-surface">
         <table className="w-full min-w-[32rem] text-sm">
           <thead>
-            <tr className="border-b border-edge text-left text-xs text-ink-muted">
+            <tr className="border-b border-edge text-left text-xs uppercase tracking-wider text-ink-muted">
               <th className="px-4 py-3 font-medium">Descrição</th>
               <th className="w-20 px-4 py-3 text-right font-medium">Qtd</th>
               <th className="w-32 px-4 py-3 text-right font-medium">Valor unit.</th>
@@ -170,8 +190,8 @@ export default async function OrcamentoPage({
             ))}
           </tbody>
           <tfoot>
-            <tr className="border-t border-edge bg-brand-mint/10">
-              <td colSpan={3} className="px-4 py-3 text-right font-semibold text-ink">
+            <tr className="border-t-2 border-edge bg-brand-mint/10">
+              <td colSpan={3} className="px-4 py-3 text-right font-bold text-ink">
                 TOTAL
               </td>
               <td className="px-4 py-3 text-right text-lg font-bold text-ink tabular-nums">

@@ -1,11 +1,18 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getSessao } from "@/lib/auth";
 import {
-  emojiEspecie,
-  formatTelefone,
-  idadeDoPet,
-} from "@/lib/format";
+  ChevronRight,
+  IdCard,
+  Mail,
+  MapPin,
+  MessageCircle,
+  PawPrint,
+  Pencil,
+  Plus,
+  Trash2,
+} from "lucide-react";
+import { getSessao } from "@/lib/auth";
+import { formatTelefone, idadeDoPet } from "@/lib/format";
 import type { Pet, Tutor } from "@/lib/types";
 import { PageHeader } from "@/components/ui/page-header";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +20,7 @@ import { ButtonLink } from "@/components/ui/button";
 import { Card, CardTitulo } from "@/components/ui/card";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { EmptyState } from "@/components/ui/empty-state";
+import { IconeEspecie } from "@/components/icone-especie";
 import { excluirTutor } from "../actions";
 
 export const metadata = { title: "Tutor" };
@@ -55,6 +63,7 @@ export default async function TutorPage({
         acao={
           <>
             <ButtonLink href={`/tutores/${id}/editar`} variante="secondary">
+              <Pencil className="size-4" />
               Editar
             </ButtonLink>
             <form action={excluirComId}>
@@ -62,6 +71,7 @@ export default async function TutorPage({
                 variante="danger"
                 mensagem="Excluir este tutor apaga também os pets e o histórico dele. Tem certeza?"
               >
+                <Trash2 className="size-4" />
                 Excluir
               </ConfirmButton>
             </form>
@@ -78,10 +88,13 @@ export default async function TutorPage({
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <CardTitulo>Contato</CardTitulo>
-          <dl className="space-y-2 text-sm">
-            <div className="flex justify-between gap-4">
-              <dt className="text-ink-muted">WhatsApp</dt>
-              <dd className="font-medium text-ink">
+          <dl className="space-y-3 text-sm">
+            <div className="flex items-center justify-between gap-4">
+              <dt className="flex items-center gap-2 text-ink-muted">
+                <MessageCircle className="size-4" />
+                WhatsApp
+              </dt>
+              <dd className="font-medium">
                 <a
                   href={`https://wa.me/55${zap}`}
                   target="_blank"
@@ -92,21 +105,30 @@ export default async function TutorPage({
                 </a>
               </dd>
             </div>
-            <div className="flex justify-between gap-4">
-              <dt className="text-ink-muted">E-mail</dt>
-              <dd className="font-medium text-ink">{tutor.email ?? "—"}</dd>
+            <div className="flex items-center justify-between gap-4">
+              <dt className="flex items-center gap-2 text-ink-muted">
+                <Mail className="size-4" />
+                E-mail
+              </dt>
+              <dd className="truncate font-medium text-ink">{tutor.email ?? "—"}</dd>
             </div>
-            <div className="flex justify-between gap-4">
-              <dt className="text-ink-muted">CPF</dt>
+            <div className="flex items-center justify-between gap-4">
+              <dt className="flex items-center gap-2 text-ink-muted">
+                <IdCard className="size-4" />
+                CPF
+              </dt>
               <dd className="font-medium text-ink">{tutor.cpf ?? "—"}</dd>
             </div>
-            <div className="flex justify-between gap-4">
-              <dt className="text-ink-muted">Endereço</dt>
+            <div className="flex items-center justify-between gap-4">
+              <dt className="flex items-center gap-2 text-ink-muted">
+                <MapPin className="size-4" />
+                Endereço
+              </dt>
               <dd className="text-right font-medium text-ink">
                 {tutor.endereco ?? "—"}
               </dd>
             </div>
-            <div className="flex justify-between gap-4">
+            <div className="flex items-center justify-between gap-4 border-t border-edge pt-3">
               <dt className="text-ink-muted">LGPD</dt>
               <dd>
                 {tutor.consentimento_lgpd ? (
@@ -127,12 +149,14 @@ export default async function TutorPage({
               variante="secondary"
               tamanho="sm"
             >
-              + Novo pet
+              <Plus className="size-4" />
+              Novo pet
             </ButtonLink>
           </div>
 
           {!pets || pets.length === 0 ? (
             <EmptyState
+              icone={<PawPrint className="size-7" strokeWidth={1.8} />}
               titulo="Nenhum pet cadastrado"
               mensagem="Cadastre o primeiro pet deste tutor."
             />
@@ -144,7 +168,7 @@ export default async function TutorPage({
                     href={`/pets/${p.id}`}
                     className="flex items-center gap-3 py-2.5 transition-colors hover:bg-brand-mint/10"
                   >
-                    <span className="text-xl">{emojiEspecie(p.especie)}</span>
+                    <IconeEspecie especie={p.especie} tamanho="sm" />
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-medium text-ink">{p.nome}</p>
                       <p className="text-xs text-ink-muted">
@@ -153,7 +177,7 @@ export default async function TutorPage({
                         {idadeDoPet(p.data_nascimento)}
                       </p>
                     </div>
-                    <span className="text-ink-muted">›</span>
+                    <ChevronRight className="size-4 shrink-0 text-ink-muted" />
                   </Link>
                 </li>
               ))}

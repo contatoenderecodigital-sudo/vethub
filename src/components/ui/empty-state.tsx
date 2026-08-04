@@ -1,27 +1,22 @@
+import { PawPrint } from "lucide-react";
 import type { ReactNode } from "react";
 
-/**
- * Estado vazio com o Bento, a capivara veterinária do VetHub.
- * (Emoji como placeholder até a ilustração oficial ficar pronta.)
- */
+/** Estado vazio padrão do VetHub. */
 export function EmptyState({
   titulo,
   mensagem,
   acao,
+  icone,
 }: {
   titulo: string;
   mensagem?: string;
   acao?: ReactNode;
+  icone?: ReactNode;
 }) {
   return (
     <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-edge bg-surface px-6 py-12 text-center">
-      <div
-        className="mb-3 flex size-16 items-center justify-center rounded-full bg-brand-mint/30 text-4xl"
-        role="img"
-        aria-label="Bento, a capivara veterinária"
-        title="Bento, a capivara veterinária"
-      >
-        🦫
+      <div className="mb-3 flex size-14 items-center justify-center rounded-full bg-brand-mint/30 text-brand-dark">
+        {icone ?? <PawPrint className="size-7" strokeWidth={1.8} />}
       </div>
       <h3 className="text-base font-semibold text-ink">{titulo}</h3>
       {mensagem && (

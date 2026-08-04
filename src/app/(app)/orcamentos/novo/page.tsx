@@ -1,5 +1,5 @@
+import { Check } from "lucide-react";
 import { getSessao } from "@/lib/auth";
-import { emojiEspecie } from "@/lib/format";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card } from "@/components/ui/card";
 import { Campo } from "@/components/ui/form";
@@ -38,7 +38,7 @@ export default async function NovoOrcamentoPage({
       const tutor = Array.isArray(data.tutor) ? data.tutor[0] : data.tutor;
       valorInicial = {
         id: data.id,
-        rotulo: `${emojiEspecie(data.especie)} ${data.nome}`,
+        rotulo: data.nome,
         detalhe: tutor ? `Tutor: ${tutor.nome}` : undefined,
       };
     }
@@ -77,7 +77,10 @@ export default async function NovoOrcamentoPage({
           </div>
 
           <div className="flex gap-2 pt-2">
-            <SubmitButton>Criar orçamento</SubmitButton>
+            <SubmitButton>
+              <Check className="size-4" />
+              Criar orçamento
+            </SubmitButton>
             <ButtonLink href="/orcamentos" variante="secondary">
               Cancelar
             </ButtonLink>

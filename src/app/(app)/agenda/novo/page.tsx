@@ -1,5 +1,6 @@
+import { CalendarPlus } from "lucide-react";
 import { getSessao } from "@/lib/auth";
-import { emojiEspecie, hojeISO } from "@/lib/format";
+import { hojeISO } from "@/lib/format";
 import { TIPOS_AGENDAMENTO, type Pet, type Usuario } from "@/lib/types";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card } from "@/components/ui/card";
@@ -35,7 +36,7 @@ export default async function NovoAgendamentoPage({
       .eq("id", pet)
       .single<Pick<Pet, "id" | "nome" | "especie">>();
     if (p) {
-      petInicial = { id: p.id, rotulo: `${emojiEspecie(p.especie)} ${p.nome}` };
+      petInicial = { id: p.id, rotulo: p.nome, detalhe: p.especie };
     }
   }
 
@@ -105,7 +106,10 @@ export default async function NovoAgendamentoPage({
           </Campo>
 
           <div className="flex gap-2 pt-2">
-            <SubmitButton carregando="Agendando…">Agendar</SubmitButton>
+            <SubmitButton carregando="Agendando…">
+              <CalendarPlus className="size-4" />
+              Agendar
+            </SubmitButton>
             <ButtonLink href="/agenda" variante="secondary">
               Cancelar
             </ButtonLink>

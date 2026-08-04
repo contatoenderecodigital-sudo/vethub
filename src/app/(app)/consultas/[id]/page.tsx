@@ -1,13 +1,33 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import {
+  ClipboardList,
+  ExternalLink,
+  FileText,
+  FlaskConical,
+  Image as ImageIcon,
+  MessageSquare,
+  Paperclip,
+  Pencil,
+  Phone,
+  Pill,
+  Plus,
+  SearchCheck,
+  Stethoscope,
+  StickyNote,
+  Trash2,
+  User,
+  type LucideIcon,
+} from "lucide-react";
 import { getSessao } from "@/lib/auth";
-import { emojiEspecie, formatDataHora, formatTelefone } from "@/lib/format";
+import { formatDataHora, formatTelefone } from "@/lib/format";
 import type { Anexo, AnexoTipo } from "@/lib/types";
 import { PageHeader } from "@/components/ui/page-header";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardTitulo } from "@/components/ui/card";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { EmptyState } from "@/components/ui/empty-state";
+import { IconeEspecie } from "@/components/icone-especie";
 import { AnexoUpload } from "../anexo-upload";
 import { excluirAnexo, excluirConsulta } from "../actions";
 
@@ -42,11 +62,26 @@ const ROTULO_TIPO_ANEXO: Record<AnexoTipo, string> = {
   exame: "Exame",
 };
 
-/** Seção do atendimento: subtítulo pequeno + texto preservando quebras. */
-function Secao({ titulo, texto }: { titulo: string; texto: string | null }) {
+const ICONE_TIPO_ANEXO: Record<AnexoTipo, LucideIcon> = {
+  foto: ImageIcon,
+  pdf: FileText,
+  exame: FlaskConical,
+};
+
+/** Seção do atendimento: subtítulo pequeno com ícone + texto preservando quebras. */
+function Secao({
+  titulo,
+  icone: Icone,
+  texto,
+}: {
+  titulo: string;
+  icone: LucideIcon;
+  texto: string | null;
+}) {
   return (
     <div>
-      <h3 className="text-xs font-medium uppercase tracking-wide text-ink-muted">
+      <h3 className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-ink-muted">
+        <Icone className="size-4 shrink-0" strokeWidth={1.8} aria-hidden />
         {titulo}
       </h3>
       <p className="mt-1 whitespace-pre-wrap text-sm text-ink">
@@ -109,6 +144,7 @@ export default async function ConsultaPage({
           podeEditar && (
             <>
               <ButtonLink href={`/consultas/${id}/editar`} variante="secondary">
+                <Pencil className="size-4" />
                 Editar
               </ButtonLink>
               <form action={excluirComIds}>
@@ -116,6 +152,7 @@ export default async function ConsultaPage({
                   variante="danger"
                   mensagem="Excluir esta consulta apaga também os anexos dela. Tem certeza?"
                 >
+                  <Trash2 className="size-4" />
                   Excluir
                 </ConfirmButton>
               </form>
@@ -123,7 +160,8 @@ export default async function ConsultaPage({
                 href={`/orcamentos/novo?pet=${consulta.pet_id}&consulta=${id}`}
                 variante="secondary"
               >
-                + Orçamento
+                <Plus className="size-4" />
+                Orçamento
               </ButtonLink>
             </>
           )
@@ -139,28 +177,28 @@ export default async function ConsultaPage({
       <div className="grid gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-1 self-start">
           <CardTitulo>Paciente</CardTitulo>
-          <dl className="space-y-2 text-sm">
-            <div className="flex justify-between gap-4">
-              <dt className="text-ink-muted">Pet</dt>
-              <dd className="font-medium">
-                <Link
-                  href={`/pets/${pet.id}`}
-                  className="text-brand hover:underline"
-                >
-                  {emojiEspecie(pet.especie)} {pet.nome}
-                </Link>
-              </dd>
-            </div>
-            <div className="flex justify-between gap-4">
-              <dt className="text-ink-muted">Espécie / raça</dt>
-              <dd className="text-right font-medium text-ink">
+          <div className="flex items-center gap-3">
+            <IconeEspecie especie={pet.especie} tamanho="md" />
+            <div className="min-w-0">
+              <Link
+                href={`/pets/${pet.id}`}
+                className="block truncate text-sm font-semibold text-brand hover:underline"
+              >
+                {pet.nome}
+              </Link>
+              <p className="truncate text-xs text-ink-muted">
                 {pet.especie}
                 {pet.raca ? ` · ${pet.raca}` : ""}
-              </dd>
+              </p>
             </div>
-            <div className="flex justify-between gap-4">
-              <dt className="text-ink-muted">Tutor</dt>
-              <dd className="text-right font-medium">
+          </div>
+          <dl className="mt-4 space-y-2.5 border-t border-edge pt-3 text-sm">
+            <div className="flex items-center gap-2">
+              <dt className="flex items-center text-ink-muted">
+                <User className="size-4" strokeWidth={1.8} aria-hidden />
+                <span className="sr-only">Tutor</span>
+              </dt>
+              <dd className="min-w-0 flex-1 truncate font-medium">
                 {pet.tutor ? (
                   <Link
                     href={`/tutores/${pet.tutor.id}`}
@@ -173,9 +211,12 @@ export default async function ConsultaPage({
                 )}
               </dd>
             </div>
-            <div className="flex justify-between gap-4">
-              <dt className="text-ink-muted">Telefone</dt>
-              <dd className="font-medium text-ink">
+            <div className="flex items-center gap-2">
+              <dt className="flex items-center text-ink-muted">
+                <Phone className="size-4" strokeWidth={1.8} aria-hidden />
+                <span className="sr-only">Telefone</span>
+              </dt>
+              <dd className="min-w-0 flex-1 truncate font-medium text-ink">
                 {formatTelefone(pet.tutor?.telefone)}
               </dd>
             </div>
@@ -185,12 +226,24 @@ export default async function ConsultaPage({
         <Card className="lg:col-span-2">
           <CardTitulo>Atendimento</CardTitulo>
           <div className="space-y-4">
-            <Secao titulo="Queixa" texto={consulta.queixa} />
-            <Secao titulo="Anamnese" texto={consulta.anamnese} />
-            <Secao titulo="Exame físico" texto={consulta.exame_fisico} />
-            <Secao titulo="Diagnóstico" texto={consulta.diagnostico} />
-            <Secao titulo="Conduta" texto={consulta.conduta} />
-            <Secao titulo="Observações" texto={consulta.observacoes} />
+            <Secao titulo="Queixa" icone={MessageSquare} texto={consulta.queixa} />
+            <Secao titulo="Anamnese" icone={ClipboardList} texto={consulta.anamnese} />
+            <Secao
+              titulo="Exame físico"
+              icone={Stethoscope}
+              texto={consulta.exame_fisico}
+            />
+            <Secao
+              titulo="Diagnóstico"
+              icone={SearchCheck}
+              texto={consulta.diagnostico}
+            />
+            <Secao titulo="Conduta" icone={Pill} texto={consulta.conduta} />
+            <Secao
+              titulo="Observações"
+              icone={StickyNote}
+              texto={consulta.observacoes}
+            />
           </div>
         </Card>
 
@@ -199,70 +252,77 @@ export default async function ConsultaPage({
 
           {anexosComUrl.length === 0 ? (
             <EmptyState
+              icone={<Paperclip className="size-7" strokeWidth={1.8} />}
               titulo="Nenhum anexo"
               mensagem="Envie fotos, PDFs ou exames desta consulta."
             />
           ) : (
             <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {anexosComUrl.map((a) => (
-                <li
-                  key={a.id}
-                  className="overflow-hidden rounded-lg border border-edge"
-                >
-                  {a.tipo === "foto" && a.urlAssinada ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={a.urlAssinada}
-                      alt={a.nome_arquivo ?? "Foto do anexo"}
-                      className="h-32 w-full bg-zinc-100 object-cover"
-                    />
-                  ) : (
-                    <div
-                      className="flex h-32 items-center justify-center bg-zinc-50 text-4xl"
-                      role="img"
-                      aria-label="Documento"
-                    >
-                      📄
-                    </div>
-                  )}
-                  <div className="flex items-center justify-between gap-2 p-2">
-                    <div className="min-w-0">
-                      <p
-                        className="truncate text-xs font-medium text-ink"
-                        title={a.nome_arquivo ?? undefined}
+              {anexosComUrl.map((a) => {
+                const IconeTipo = ICONE_TIPO_ANEXO[a.tipo];
+                return (
+                  <li
+                    key={a.id}
+                    className="overflow-hidden rounded-xl border border-edge bg-surface transition-all hover:border-brand/40 hover:shadow-sm"
+                  >
+                    {a.tipo === "foto" && a.urlAssinada ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={a.urlAssinada}
+                        alt={a.nome_arquivo ?? "Foto do anexo"}
+                        className="h-32 w-full bg-zinc-100 object-cover"
+                      />
+                    ) : (
+                      <div
+                        className="flex h-32 items-center justify-center bg-zinc-50 text-ink-muted"
+                        aria-hidden
                       >
-                        {a.nome_arquivo ?? "Anexo"}
-                      </p>
-                      <p className="text-[11px] text-ink-muted">
-                        {ROTULO_TIPO_ANEXO[a.tipo]}
-                      </p>
-                    </div>
-                    <div className="flex shrink-0 items-center gap-1">
-                      {a.urlAssinada && (
-                        <a
-                          href={a.urlAssinada}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs font-medium text-brand hover:underline"
+                        <IconeTipo className="size-8" strokeWidth={1.5} />
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between gap-2 p-2.5">
+                      <div className="min-w-0">
+                        <p
+                          className="truncate text-xs font-medium text-ink"
+                          title={a.nome_arquivo ?? undefined}
                         >
-                          Abrir
-                        </a>
-                      )}
-                      {podeEditar && (
-                        <form action={excluirAnexo.bind(null, a.id, id, a.url)}>
-                          <ConfirmButton
-                            variante="ghost"
-                            tamanho="sm"
-                            mensagem="Excluir este anexo?"
+                          {a.nome_arquivo ?? "Anexo"}
+                        </p>
+                        <p className="mt-0.5 flex items-center gap-1 text-[11px] text-ink-muted">
+                          <IconeTipo className="size-3" aria-hidden />
+                          {ROTULO_TIPO_ANEXO[a.tipo]}
+                        </p>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-1">
+                        {a.urlAssinada && (
+                          <a
+                            href={a.urlAssinada}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-xs font-medium text-brand hover:underline"
                           >
-                            Excluir
-                          </ConfirmButton>
-                        </form>
-                      )}
+                            Abrir
+                            <ExternalLink className="size-3.5" aria-hidden />
+                          </a>
+                        )}
+                        {podeEditar && (
+                          <form action={excluirAnexo.bind(null, a.id, id, a.url)}>
+                            <ConfirmButton
+                              variante="ghost"
+                              tamanho="sm"
+                              mensagem="Excluir este anexo?"
+                              className="px-2"
+                              aria-label="Excluir anexo"
+                            >
+                              <Trash2 className="size-4" />
+                            </ConfirmButton>
+                          </form>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </li>
-              ))}
+                  </li>
+                );
+              })}
             </ul>
           )}
 

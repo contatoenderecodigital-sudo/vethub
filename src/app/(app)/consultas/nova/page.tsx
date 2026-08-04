@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { getSessao } from "@/lib/auth";
-import { emojiEspecie } from "@/lib/format";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card } from "@/components/ui/card";
 import type { OpcaoBusca } from "@/components/busca-combobox";
@@ -37,7 +36,7 @@ export default async function NovaConsultaPage({
       const tutor = Array.isArray(data.tutor) ? data.tutor[0] : data.tutor;
       petInicial = {
         id: data.id,
-        rotulo: `${emojiEspecie(data.especie)} ${data.nome}`,
+        rotulo: data.nome,
         detalhe: tutor ? `Tutor: ${tutor.nome}` : undefined,
       };
     }

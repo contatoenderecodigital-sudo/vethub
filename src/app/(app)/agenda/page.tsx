@@ -1,11 +1,18 @@
-import { getSessao } from "@/lib/auth";
 import {
-  emojiEspecie,
-  formatHora,
-  formatTelefone,
-  hojeISO,
-  ROTULO_TIPO,
-} from "@/lib/format";
+  CalendarDays,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  LogIn,
+  LogOut,
+  Plus,
+  SlidersHorizontal,
+  Stethoscope,
+  User,
+  X,
+} from "lucide-react";
+import { getSessao } from "@/lib/auth";
+import { formatHora, formatTelefone, hojeISO, ROTULO_TIPO } from "@/lib/format";
 import type {
   AgendamentoStatus,
   AgendamentoTipo,
@@ -17,6 +24,7 @@ import { Button, ButtonLink } from "@/components/ui/button";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Select } from "@/components/ui/form";
+import { IconeEspecie } from "@/components/icone-especie";
 import { atualizarStatus } from "./actions";
 
 export const metadata = { title: "Agenda" };
@@ -99,7 +107,8 @@ export default async function AgendaPage({
         subtitulo={dataExtenso}
         acao={
           <ButtonLink href={`/agenda/novo?data=${data}`}>
-            + Novo agendamento
+            <Plus className="size-4" />
+            Novo agendamento
           </ButtonLink>
         }
       />
@@ -117,7 +126,8 @@ export default async function AgendaPage({
             variante="secondary"
             tamanho="sm"
           >
-            ← Anterior
+            <ChevronLeft className="size-4" />
+            <span className="max-sm:sr-only">Anterior</span>
           </ButtonLink>
           <ButtonLink href={linkDia(hojeISO(), vet)} variante="secondary" tamanho="sm">
             Hoje
@@ -127,7 +137,8 @@ export default async function AgendaPage({
             variante="secondary"
             tamanho="sm"
           >
-            Próximo →
+            <span className="max-sm:sr-only">Próximo</span>
+            <ChevronRight className="size-4" />
           </ButtonLink>
         </div>
 
@@ -147,6 +158,7 @@ export default async function AgendaPage({
             ))}
           </Select>
           <Button type="submit" variante="secondary" tamanho="sm">
+            <SlidersHorizontal className="size-4" />
             Filtrar
           </Button>
         </form>
@@ -154,11 +166,13 @@ export default async function AgendaPage({
 
       {!agendamentos || agendamentos.length === 0 ? (
         <EmptyState
+          icone={<CalendarDays className="size-7" strokeWidth={1.8} />}
           titulo="Dia livre"
           mensagem="Nenhum agendamento para este dia. Que tal aproveitar para colocar a agenda em dia?"
           acao={
             <ButtonLink href={`/agenda/novo?data=${data}`}>
-              + Novo agendamento
+              <Plus className="size-4" />
+              Novo agendamento
             </ButtonLink>
           }
         />
@@ -168,35 +182,46 @@ export default async function AgendaPage({
             {agendamentos.map((a) => (
               <li
                 key={a.id}
-                className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3"
+                className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 transition-colors hover:bg-brand-mint/10"
               >
-                <span className="w-14 shrink-0 text-lg font-bold tabular-nums text-ink">
+                <span className="w-14 shrink-0 text-lg font-bold tabular-nums text-brand-dark">
                   {formatHora(a.data_hora)}
                 </span>
 
+                <IconeEspecie especie={a.pet?.especie} tamanho="sm" />
+
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium text-ink">
-                    {emojiEspecie(a.pet?.especie)} {a.pet?.nome ?? "Pet"}
+                  <p className="truncate font-semibold text-ink">
+                    {a.pet?.nome ?? "Pet"}
                   </p>
-                  <p className="truncate text-sm text-ink-muted">
-                    {a.pet?.tutor
-                      ? `${a.pet.tutor.nome} · ${formatTelefone(a.pet.tutor.telefone)}`
-                      : "—"}
+                  <p className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-ink-muted">
+                    <span className="inline-flex min-w-0 items-center gap-1">
+                      <User className="size-3.5 shrink-0" strokeWidth={1.8} aria-hidden />
+                      <span className="truncate">
+                        {a.pet?.tutor
+                          ? `${a.pet.tutor.nome} · ${formatTelefone(a.pet.tutor.telefone)}`
+                          : "—"}
+                      </span>
+                    </span>
+                    <span className="inline-flex items-center gap-1">
+                      <Stethoscope className="size-3.5 shrink-0" strokeWidth={1.8} aria-hidden />
+                      {a.veterinario?.nome ?? "Sem veterinário"}
+                    </span>
                   </p>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2">
                   <Badge>{ROTULO_TIPO[a.tipo]}</Badge>
-                  <span className="text-sm text-ink-muted">
-                    {a.veterinario?.nome ?? "Sem veterinário"}
-                  </span>
                   <BadgeAgendamento status={a.status} />
                 </div>
 
                 {a.status === "agendado" && (
                   <div className="flex items-center gap-2">
                     <form action={atualizarStatus.bind(null, a.id, "check_in", data)}>
-                      <Button tamanho="sm">Check-in</Button>
+                      <Button tamanho="sm">
+                        <LogIn className="size-4" />
+                        Check-in
+                      </Button>
                     </form>
                     <form action={atualizarStatus.bind(null, a.id, "cancelado", data)}>
                       <ConfirmButton
@@ -204,6 +229,7 @@ export default async function AgendaPage({
                         tamanho="sm"
                         mensagem="Cancelar este agendamento?"
                       >
+                        <X className="size-4" />
                         Cancelar
                       </ConfirmButton>
                     </form>
@@ -216,10 +242,12 @@ export default async function AgendaPage({
                       href={`/consultas/nova?agendamento=${a.id}&pet=${a.pet_id}`}
                       tamanho="sm"
                     >
+                      <Stethoscope className="size-4" />
                       Iniciar atendimento
                     </ButtonLink>
                     <form action={atualizarStatus.bind(null, a.id, "atendido", data)}>
                       <Button variante="secondary" tamanho="sm">
+                        <Check className="size-4" />
                         Marcar atendido
                       </Button>
                     </form>
@@ -228,7 +256,10 @@ export default async function AgendaPage({
 
                 {a.status === "atendido" && (
                   <form action={atualizarStatus.bind(null, a.id, "check_out", data)}>
-                    <Button tamanho="sm">Check-out</Button>
+                    <Button tamanho="sm">
+                      <LogOut className="size-4" />
+                      Check-out
+                    </Button>
                   </form>
                 )}
               </li>

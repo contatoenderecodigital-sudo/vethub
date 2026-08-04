@@ -78,12 +78,12 @@ export default async function AppLayout({
       </header>
 
       <div className="flex flex-1">
-        {/* Navegação lateral (desktop) */}
-        <aside className="sticky top-14 hidden h-[calc(100dvh-3.5rem)] w-60 shrink-0 flex-col justify-between overflow-y-auto border-r border-white/60 bg-white/55 backdrop-blur-2xl md:flex 2xl:w-64">
+        {/* Navegação lateral (desktop) — painel de vidro flutuante */}
+        <aside className="glass sticky top-[4.25rem] ml-3 mt-3 hidden h-[calc(100dvh-4.5rem)] w-60 shrink-0 flex-col justify-between self-start overflow-y-auto rounded-2xl md:flex 2xl:w-64">
           <NavLateral ehAdmin={usuario.papel === "admin"} />
 
           {/* Bloco do usuário */}
-          <div className="border-t border-edge p-3">
+          <div className="border-t border-zinc-200/60 p-3">
             <div className="flex items-center gap-3 rounded-lg px-2 py-1.5">
               <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand/10 text-sm font-bold text-brand-dark">
                 {iniciais(usuario.nome)}

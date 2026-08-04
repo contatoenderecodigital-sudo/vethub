@@ -150,7 +150,7 @@ const ITENS_MOBILE: Item[] = [
 export function NavInferior() {
   const pathname = usePathname();
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-30 flex border-t border-white/60 bg-white/70 pb-[env(safe-area-inset-bottom)] backdrop-blur-2xl md:hidden">
+    <nav className="glass-forte fixed inset-x-3 bottom-3 z-30 flex rounded-2xl pb-[env(safe-area-inset-bottom)] md:hidden">
       {ITENS_MOBILE.map((item) => {
         const ativo = estaAtivo(pathname, item.href);
         return (

@@ -17,12 +17,21 @@ export type AnexoTipo = "foto" | "pdf" | "exame";
 
 export type Sexo = "macho" | "femea";
 
-export interface Clinica {
+export interface Endereco {
+  cep: string | null;
+  logradouro: string | null;
+  numero: string | null;
+  complemento: string | null;
+  bairro: string | null;
+  cidade: string | null;
+  uf: string | null;
+}
+
+export interface Clinica extends Endereco {
   id: string;
   nome: string;
   cnpj: string | null;
   telefone: string | null;
-  endereco: string | null;
   plano: string;
   config: Record<string, unknown>;
 }
@@ -35,14 +44,13 @@ export interface Usuario {
   papel: Papel;
 }
 
-export interface Tutor {
+export interface Tutor extends Endereco {
   id: string;
   clinica_id: string;
   nome: string;
   cpf: string | null;
   telefone: string;
   email: string | null;
-  endereco: string | null;
   consentimento_lgpd: boolean;
   created_at: string;
 }

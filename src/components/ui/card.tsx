@@ -8,11 +8,7 @@ export function Card({
   className?: string;
 }) {
   return (
-    <div
-      className={`rounded-xl border border-edge bg-surface p-4 sm:p-6 ${className}`}
-    >
-      {children}
-    </div>
+    <div className={`glass rounded-2xl p-4 sm:p-6 ${className}`}>{children}</div>
   );
 }
 

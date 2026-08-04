@@ -37,6 +37,12 @@ export function mascaraTelefone(v: string): string {
   return r;
 }
 
+/** 00000-000 (máx. 8 dígitos) */
+export function mascaraCEP(v: string): string {
+  const d = soDigitos(v).slice(0, 8);
+  return d.length > 5 ? `${d.slice(0, 5)}-${d.slice(5)}` : d;
+}
+
 /** 00.000.000/0000-00 (máx. 14 dígitos) */
 export function mascaraCNPJ(v: string): string {
   const d = soDigitos(v).slice(0, 14);
@@ -89,6 +95,64 @@ export function validarCNPJ(cnpj: string): boolean {
 const RE_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 export const emailValido = (v: string) => RE_EMAIL.test(v);
+
+// ------------------------------------------------------------------
+// Datas — o input nativo deixa digitar ano absurdo (ex.: 20100).
+// Validação central: formato YYYY-MM-DD, data real de calendário e
+// intervalo sensato. Comparações sempre depois do regex (comparação
+// de texto com ano de 5 dígitos engana).
+// ------------------------------------------------------------------
+
+const RE_DATA = /^\d{4}-\d{2}-\d{2}$/;
+
+/** Data real de calendário no formato YYYY-MM-DD (rejeita 2026-02-31). */
+export function dataCalendarioValida(v: string): boolean {
+  if (!RE_DATA.test(v)) return false;
+  const [ano, mes, dia] = v.split("-").map(Number);
+  const d = new Date(Date.UTC(ano, mes - 1, dia));
+  return (
+    d.getUTCFullYear() === ano &&
+    d.getUTCMonth() === mes - 1 &&
+    d.getUTCDate() === dia
+  );
+}
+
+/** Hoje (America/Sao_Paulo) em YYYY-MM-DD — para limites de inputs. */
+export function hojeISOValidacao(): string {
+  return new Date().toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" });
+}
+
+/** Nascimento (pet/pessoa): opcional; se preenchido, data real entre 1980 e hoje. */
+export const schemaDataNascimentoOpcional = z
+  .string()
+  .refine((v) => v === "" || dataCalendarioValida(v), "Data inválida.")
+  .refine(
+    (v) => v === "" || (dataCalendarioValida(v) && v >= "1980-01-01"),
+    "Data antiga demais."
+  )
+  .refine(
+    (v) => v === "" || (dataCalendarioValida(v) && v <= hojeISOValidacao()),
+    "A data não pode estar no futuro."
+  );
+
+/** Data de agendamento/filtros: obrigatória, real, entre 2020 e daqui a 5 anos. */
+export function schemaDataAgendamento() {
+  const limite = `${new Date().getFullYear() + 5}-12-31`;
+  return z
+    .string()
+    .min(1, "Informe a data.")
+    .refine(dataCalendarioValida, "Data inválida.")
+    .refine((v) => !dataCalendarioValida(v) || v >= "2020-01-01", "Data inválida.")
+    .refine(
+      (v) => !dataCalendarioValida(v) || v <= limite,
+      "Data longe demais no futuro."
+    );
+}
+
+/** Sanitiza um parâmetro de data vindo da URL: inválido → fallback. */
+export function dataParamOuHoje(v: string | undefined): string {
+  return v && dataCalendarioValida(v) ? v : hojeISOValidacao();
+}
 
 // ------------------------------------------------------------------
 // Telefone no banco: só dígitos, com DDI 55 (pronto para WhatsApp)
@@ -154,6 +218,81 @@ export const schemaSenhaForte = z
   .refine((v) => /[0-9]/.test(v), "A senha precisa conter números.");
 
 // ------------------------------------------------------------------
+// Endereço estruturado (CEP, rua, número…) — compartilhado por
+// tutor e clínica. Todos os campos são opcionais, mas CEP/UF
+// preenchidos precisam ser válidos.
+// ------------------------------------------------------------------
+
+export const schemaCEPOpcional = z
+  .string()
+  .refine(
+    (v) => soDigitos(v).length === 0 || soDigitos(v).length === 8,
+    "CEP incompleto."
+  );
+
+export const UFS = [
+  "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT",
+  "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO",
+  "RR", "SC", "SP", "SE", "TO",
+] as const;
+
+export const camposEndereco = {
+  cep: schemaCEPOpcional,
+  logradouro: z.string().trim(),
+  numero: z.string().trim(),
+  complemento: z.string().trim(),
+  bairro: z.string().trim(),
+  cidade: z.string().trim(),
+  uf: z
+    .string()
+    .refine((v) => v === "" || (UFS as readonly string[]).includes(v), "UF inválida."),
+};
+
+export interface EnderecoValores {
+  cep: string;
+  logradouro: string;
+  numero: string;
+  complemento: string;
+  bairro: string;
+  cidade: string;
+  uf: string;
+}
+
+/** Campos de endereço prontos para o banco ('' → null, CEP só dígitos). */
+export function enderecoParaBanco(valores: EnderecoValores) {
+  return {
+    cep: soDigitos(valores.cep) || null,
+    logradouro: valores.logradouro.trim() || null,
+    numero: valores.numero.trim() || null,
+    complemento: valores.complemento.trim() || null,
+    bairro: valores.bairro.trim() || null,
+    cidade: valores.cidade.trim() || null,
+    uf: valores.uf || null,
+  };
+}
+
+/** defaultValues de endereço a partir de um registro do banco. */
+export function enderecoDoBanco(registro: {
+  cep?: string | null;
+  logradouro?: string | null;
+  numero?: string | null;
+  complemento?: string | null;
+  bairro?: string | null;
+  cidade?: string | null;
+  uf?: string | null;
+}): EnderecoValores {
+  return {
+    cep: mascaraCEP(registro.cep ?? ""),
+    logradouro: registro.logradouro ?? "",
+    numero: registro.numero ?? "",
+    complemento: registro.complemento ?? "",
+    bairro: registro.bairro ?? "",
+    cidade: registro.cidade ?? "",
+    uf: registro.uf ?? "",
+  };
+}
+
+// ------------------------------------------------------------------
 // Schemas por formulário
 // ------------------------------------------------------------------
 
@@ -162,7 +301,7 @@ export const tutorSchema = z.object({
   telefone: schemaTelefoneObrigatorio,
   cpf: schemaCPFOpcional,
   email: schemaEmailOpcional,
-  endereco: z.string().trim(),
+  ...camposEndereco,
   consentimento_lgpd: z.boolean(),
 });
 export type TutorFormValores = z.infer<typeof tutorSchema>;
@@ -174,7 +313,7 @@ export function tutorParaBanco(valores: TutorFormValores) {
     telefone: telefoneParaBanco(valores.telefone),
     cpf: soDigitos(valores.cpf) || null,
     email: valores.email.trim().toLowerCase() || null,
-    endereco: valores.endereco.trim() || null,
+    ...enderecoParaBanco(valores),
     consentimento_lgpd: valores.consentimento_lgpd,
   };
 }

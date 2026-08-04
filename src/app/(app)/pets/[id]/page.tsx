@@ -81,11 +81,11 @@ export default async function PetPage({
   return (
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 items-center gap-3">
           <IconeEspecie especie={pet.especie} tamanho="lg" />
-          <div>
-            <h1 className="text-xl font-bold text-ink sm:text-2xl">{pet.nome}</h1>
-            <p className="mt-0.5 text-sm text-ink-muted">
+          <div className="min-w-0">
+            <h1 className="truncate text-xl font-bold text-ink sm:text-2xl">{pet.nome}</h1>
+            <p className="mt-0.5 truncate text-sm text-ink-muted">
               {pet.especie}
               {pet.raca ? ` · ${pet.raca}` : ""}
             </p>
@@ -215,7 +215,7 @@ export default async function PetPage({
               mensagem="Este pet ainda não tem consultas registradas."
             />
           ) : (
-            <ul className="divide-y divide-edge">
+            <ul className="divide-y divide-zinc-200/60">
               {consultas.map((c) => (
                 <li key={c.id}>
                   <Link
@@ -247,7 +247,7 @@ export default async function PetPage({
               mensagem="Este pet ainda não tem agendamentos."
             />
           ) : (
-            <ul className="divide-y divide-edge">
+            <ul className="divide-y divide-zinc-200/60">
               {agendamentos.map((a) => (
                 <li
                   key={a.id}

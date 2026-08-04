@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, Save } from "lucide-react";
 import type { Clinica } from "@/lib/types";
 import { Campo, Input } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { mascaraCNPJ, mascaraTelefone } from "@/lib/validacao";
+import { EnderecoCampos } from "@/components/endereco-campos";
+import { enderecoDoBanco, mascaraCNPJ, mascaraTelefone } from "@/lib/validacao";
 import { clinicaSchema, type ClinicaFormValores } from "./schema";
 
 /**
@@ -29,12 +30,7 @@ export function ClinicaForm({
 }) {
   const [enviando, setEnviando] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors, isValid },
-  } = useForm<ClinicaFormValores>({
+  const form = useForm<ClinicaFormValores>({
     resolver: zodResolver(clinicaSchema),
     mode: "onChange",
     defaultValues: {
@@ -42,9 +38,16 @@ export function ClinicaForm({
       cnpj: mascaraCNPJ(clinica.cnpj ?? ""),
       // Telefone da clínica fica no banco só com dígitos, sem DDI.
       telefone: mascaraTelefone(clinica.telefone ?? ""),
-      endereco: clinica.endereco ?? "",
+      ...enderecoDoBanco(clinica),
     },
   });
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors, isValid },
+  } = form;
 
   async function aoEnviar(valores: ClinicaFormValores) {
     setEnviando(true);
@@ -58,6 +61,7 @@ export function ClinicaForm({
   }
 
   return (
+    <FormProvider {...form}>
     <form onSubmit={handleSubmit(aoEnviar)} className="space-y-4" noValidate>
       {erro && (
         <p className="rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger">{erro}</p>
@@ -110,9 +114,9 @@ export function ClinicaForm({
         </Campo>
       </div>
 
-      <Campo rotulo="Endereço" htmlFor="endereco" erro={errors.endereco?.message}>
-        <Input id="endereco" {...register("endereco")} />
-      </Campo>
+      <div className="border-t border-zinc-200/60 pt-4">
+        <EnderecoCampos<ClinicaFormValores> />
+      </div>
 
       <div className="pt-2">
         <Button type="submit" disabled={!isValid || enviando}>
@@ -121,5 +125,6 @@ export function ClinicaForm({
         </Button>
       </div>
     </form>
+    </FormProvider>
   );
 }

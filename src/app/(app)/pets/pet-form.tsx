@@ -7,6 +7,7 @@ import { Campo, Input, Select, Textarea } from "@/components/ui/form";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { BuscaCombobox, type OpcaoBusca } from "@/components/busca-combobox";
 import { ESPECIES, type Pet } from "@/lib/types";
+import { hojeISOValidacao } from "@/lib/validacao";
 import { petSchema, sanitizarPeso, type PetFormValores } from "./schema";
 
 /**
@@ -136,6 +137,8 @@ export function PetForm({
           <Input
             id="data_nascimento"
             type="date"
+            min="1980-01-01"
+            max={hojeISOValidacao()}
             aria-invalid={!!errors.data_nascimento}
             {...register("data_nascimento")}
           />
@@ -164,7 +167,7 @@ export function PetForm({
         />
       </Campo>
 
-      <label className="flex items-start gap-2 rounded-lg border border-edge bg-zinc-50 p-3 text-sm text-ink-muted">
+      <label className="flex items-start gap-2 rounded-lg border border-white/60 bg-white/50 p-3 text-sm text-ink-muted">
         <input
           type="checkbox"
           className="mt-0.5 size-4 accent-[#059669]"

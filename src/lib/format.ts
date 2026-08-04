@@ -81,3 +81,22 @@ export const ROTULO_STATUS_ORCAMENTO: Record<OrcamentoStatus, string> = {
 export function hojeISO(): string {
   return new Date().toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" });
 }
+
+/** Monta o endereço em uma linha a partir dos campos estruturados. */
+export function formatEndereco(e: {
+  cep?: string | null;
+  logradouro?: string | null;
+  numero?: string | null;
+  complemento?: string | null;
+  bairro?: string | null;
+  cidade?: string | null;
+  uf?: string | null;
+}): string {
+  const ruaNumero = [e.logradouro, e.numero].filter(Boolean).join(", ");
+  const comComplemento = [ruaNumero, e.complemento].filter(Boolean).join(" – ");
+  const cidadeUf = [e.cidade, e.uf].filter(Boolean).join("/");
+  const cep =
+    e.cep && e.cep.length === 8 ? `CEP ${e.cep.slice(0, 5)}-${e.cep.slice(5)}` : null;
+  const partes = [comComplemento, e.bairro, cidadeUf, cep].filter(Boolean);
+  return partes.length > 0 ? partes.join(" · ") : "—";
+}

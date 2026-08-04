@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getSessao } from "@/lib/auth";
-import { soDigitos } from "@/lib/validacao";
+import { enderecoParaBanco, soDigitos } from "@/lib/validacao";
 import { clinicaSchema } from "./schema";
 
 export async function atualizarClinica(formData: FormData) {
@@ -15,7 +15,13 @@ export async function atualizarClinica(formData: FormData) {
     nome: String(formData.get("nome") ?? ""),
     cnpj: String(formData.get("cnpj") ?? ""),
     telefone: String(formData.get("telefone") ?? ""),
-    endereco: String(formData.get("endereco") ?? ""),
+    cep: String(formData.get("cep") ?? ""),
+    logradouro: String(formData.get("logradouro") ?? ""),
+    numero: String(formData.get("numero") ?? ""),
+    complemento: String(formData.get("complemento") ?? ""),
+    bairro: String(formData.get("bairro") ?? ""),
+    cidade: String(formData.get("cidade") ?? ""),
+    uf: String(formData.get("uf") ?? ""),
   });
   if (!resultado.success) {
     redirect("/configuracoes/clinica?erro=Verifique os campos destacados.");
@@ -26,7 +32,7 @@ export async function atualizarClinica(formData: FormData) {
     cnpj: soDigitos(resultado.data.cnpj) || null,
     // Telefone da clínica: só dígitos, SEM DDI (não é alvo de WhatsApp).
     telefone: soDigitos(resultado.data.telefone) || null,
-    endereco: resultado.data.endereco || null,
+    ...enderecoParaBanco(resultado.data),
   };
 
   const { error } = await supabase

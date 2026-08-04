@@ -1,5 +1,5 @@
 import { getSessao } from "@/lib/auth";
-import { hojeISO } from "@/lib/format";
+import { dataParamOuHoje } from "@/lib/validacao";
 import type { Pet, Usuario } from "@/lib/types";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card } from "@/components/ui/card";
@@ -45,7 +45,7 @@ export default async function NovoAgendamentoPage({
           action={criarAgendamento}
           veterinarios={veterinarios ?? []}
           petInicial={petInicial}
-          dataInicial={data ?? hojeISO()}
+          dataInicial={dataParamOuHoje(data)}
           erro={erro}
         />
       </Card>

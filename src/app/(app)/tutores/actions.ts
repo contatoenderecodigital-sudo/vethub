@@ -15,7 +15,13 @@ function validarForm(formData: FormData) {
     telefone: String(formData.get("telefone") ?? ""),
     cpf: String(formData.get("cpf") ?? ""),
     email: String(formData.get("email") ?? ""),
-    endereco: String(formData.get("endereco") ?? ""),
+    cep: String(formData.get("cep") ?? ""),
+    logradouro: String(formData.get("logradouro") ?? ""),
+    numero: String(formData.get("numero") ?? ""),
+    complemento: String(formData.get("complemento") ?? ""),
+    bairro: String(formData.get("bairro") ?? ""),
+    cidade: String(formData.get("cidade") ?? ""),
+    uf: String(formData.get("uf") ?? ""),
     consentimento_lgpd: formData.get("consentimento_lgpd") === "on",
   });
   if (!resultado.success) return null;

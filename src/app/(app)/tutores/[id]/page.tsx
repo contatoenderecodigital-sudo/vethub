@@ -12,7 +12,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { getSessao } from "@/lib/auth";
-import { formatTelefone, idadeDoPet } from "@/lib/format";
+import { formatEndereco, formatTelefone, idadeDoPet } from "@/lib/format";
 import type { Pet, Tutor } from "@/lib/types";
 import { PageHeader } from "@/components/ui/page-header";
 import { Badge } from "@/components/ui/badge";
@@ -112,7 +112,7 @@ export default async function TutorPage({
                 <Mail className="size-4" />
                 E-mail
               </dt>
-              <dd className="truncate font-medium text-ink">{tutor.email ?? "—"}</dd>
+              <dd className="min-w-0 truncate font-medium text-ink">{tutor.email ?? "—"}</dd>
             </div>
             <div className="flex items-center justify-between gap-4">
               <dt className="flex items-center gap-2 text-ink-muted">
@@ -127,10 +127,10 @@ export default async function TutorPage({
                 Endereço
               </dt>
               <dd className="text-right font-medium text-ink">
-                {tutor.endereco ?? "—"}
+                {formatEndereco(tutor)}
               </dd>
             </div>
-            <div className="flex items-center justify-between gap-4 border-t border-edge pt-3">
+            <div className="flex items-center justify-between gap-4 border-t border-zinc-200/60 pt-3">
               <dt className="text-ink-muted">LGPD</dt>
               <dd>
                 {tutor.consentimento_lgpd ? (
@@ -149,7 +149,6 @@ export default async function TutorPage({
             <ButtonLink
               href={`/pets/novo?tutor=${id}`}
               variante="secondary"
-              tamanho="sm"
             >
               <Plus className="size-4" />
               Novo pet
@@ -163,7 +162,7 @@ export default async function TutorPage({
               mensagem="Cadastre o primeiro pet deste tutor."
             />
           ) : (
-            <ul className="divide-y divide-edge">
+            <ul className="divide-y divide-zinc-200/60">
               {pets.map((p) => (
                 <li key={p.id}>
                   <Link

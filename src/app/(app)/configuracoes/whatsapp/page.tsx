@@ -117,7 +117,7 @@ export default async function WhatsappPage() {
             </p>
           )}
 
-          <div className="mt-6 border-t border-edge pt-4">
+          <div className="mt-6 border-t border-zinc-200/60 pt-4">
             <form action={desconectarWhatsapp}>
               <ConfirmButton
                 variante="secondary"

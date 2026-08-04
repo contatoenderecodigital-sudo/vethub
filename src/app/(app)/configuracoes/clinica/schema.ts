@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { schemaCNPJOpcional, schemaTelefoneOpcional } from "@/lib/validacao";
+import {
+  camposEndereco,
+  schemaCNPJOpcional,
+  schemaTelefoneOpcional,
+} from "@/lib/validacao";
 
 /**
  * Schema dos dados da clínica. Usado pelo form (client) e revalidado
@@ -11,7 +15,7 @@ export const clinicaSchema = z.object({
   nome: z.string().trim().min(2, "Informe o nome da clínica."),
   cnpj: schemaCNPJOpcional,
   telefone: schemaTelefoneOpcional,
-  endereco: z.string().trim(),
+  ...camposEndereco,
 });
 
 export type ClinicaFormValores = z.infer<typeof clinicaSchema>;

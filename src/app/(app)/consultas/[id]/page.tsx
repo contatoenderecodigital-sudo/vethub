@@ -192,7 +192,7 @@ export default async function ConsultaPage({
               </p>
             </div>
           </div>
-          <dl className="mt-4 space-y-2.5 border-t border-edge pt-3 text-sm">
+          <dl className="mt-4 space-y-2.5 border-t border-zinc-200/60 pt-3 text-sm">
             <div className="flex items-center gap-2">
               <dt className="flex items-center text-ink-muted">
                 <User className="size-4" strokeWidth={1.8} aria-hidden />
@@ -251,30 +251,33 @@ export default async function ConsultaPage({
           <CardTitulo>Anexos</CardTitulo>
 
           {anexosComUrl.length === 0 ? (
-            <EmptyState
-              icone={<Paperclip className="size-7" strokeWidth={1.8} />}
-              titulo="Nenhum anexo"
-              mensagem="Envie fotos, PDFs ou exames desta consulta."
-            />
+            // Sem anexos: quem pode editar já vê direto a zona de envio
+            !podeEditar && (
+              <EmptyState
+                icone={<Paperclip className="size-7" strokeWidth={1.8} />}
+                titulo="Nenhum anexo"
+                mensagem="Fotos e exames desta consulta aparecem aqui."
+              />
+            )
           ) : (
-            <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-6">
               {anexosComUrl.map((a) => {
                 const IconeTipo = ICONE_TIPO_ANEXO[a.tipo];
                 return (
                   <li
                     key={a.id}
-                    className="overflow-hidden rounded-xl border border-edge bg-surface transition-all hover:border-brand/40 hover:shadow-sm"
+                    className="glass overflow-hidden rounded-2xl transition-transform duration-200 hover:-translate-y-0.5"
                   >
                     {a.tipo === "foto" && a.urlAssinada ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={a.urlAssinada}
                         alt={a.nome_arquivo ?? "Foto do anexo"}
-                        className="h-32 w-full bg-zinc-100 object-cover"
+                        className="h-32 w-full bg-white/40 object-cover"
                       />
                     ) : (
                       <div
-                        className="flex h-32 items-center justify-center bg-zinc-50 text-ink-muted"
+                        className="flex h-32 items-center justify-center bg-white/40 text-ink-muted"
                         aria-hidden
                       >
                         <IconeTipo className="size-8" strokeWidth={1.5} />
@@ -327,7 +330,11 @@ export default async function ConsultaPage({
           )}
 
           {podeEditar && (
-            <AnexoUpload consultaId={id} clinicaId={usuario.clinica_id} />
+            <AnexoUpload
+              consultaId={id}
+              clinicaId={usuario.clinica_id}
+              compacta={anexosComUrl.length > 0}
+            />
           )}
         </Card>
       </div>

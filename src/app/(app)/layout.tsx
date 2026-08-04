@@ -41,8 +41,8 @@ export default async function AppLayout({
 
   return (
     <div className="flex min-h-dvh flex-col">
-      {/* Cabeçalho com o gradiente da marca */}
-      <header className="bg-brand-gradient sticky top-0 z-40 shadow-sm">
+      {/* Cabeçalho com o gradiente da marca em vidro fosco */}
+      <header className="glass-marca sticky top-0 z-40 shadow-sm">
         <div className="flex h-14 items-center justify-between gap-3 px-4 sm:px-5">
           <div className="flex min-w-0 items-center gap-3">
             <Link href="/dashboard" aria-label="Ir para o início">
@@ -79,7 +79,7 @@ export default async function AppLayout({
 
       <div className="flex flex-1">
         {/* Navegação lateral (desktop) */}
-        <aside className="sticky top-14 hidden h-[calc(100dvh-3.5rem)] w-60 shrink-0 flex-col justify-between overflow-y-auto border-r border-edge bg-surface md:flex">
+        <aside className="sticky top-14 hidden h-[calc(100dvh-3.5rem)] w-60 shrink-0 flex-col justify-between overflow-y-auto border-r border-white/60 bg-white/55 backdrop-blur-2xl md:flex 2xl:w-64">
           <NavLateral ehAdmin={usuario.papel === "admin"} />
 
           {/* Bloco do usuário */}
@@ -110,9 +110,11 @@ export default async function AppLayout({
           </div>
         </aside>
 
-        {/* Conteúdo */}
-        <main className="min-w-0 flex-1 px-4 py-6 pb-24 sm:px-6 md:pb-8">
-          <div className="mx-auto max-w-5xl">{children}</div>
+        {/* Conteúdo — largura acompanha a tela: notebook, monitor grande, TV */}
+        <main className="min-w-0 flex-1 px-4 py-6 pb-24 sm:px-6 md:pb-8 2xl:px-10">
+          <div className="mx-auto max-w-5xl xl:max-w-6xl 2xl:max-w-[88rem]">
+            {children}
+          </div>
         </main>
       </div>
 

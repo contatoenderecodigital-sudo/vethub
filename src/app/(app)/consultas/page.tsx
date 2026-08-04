@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ChevronRight, Plus, Search, Stethoscope } from "lucide-react";
 import { getSessao } from "@/lib/auth";
 import { formatDataHora } from "@/lib/format";
+import { dataCalendarioValida } from "@/lib/validacao";
 import { PageHeader } from "@/components/ui/page-header";
 import { ButtonLink } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -31,8 +32,11 @@ export default async function ConsultasPage({
 }: {
   searchParams: Promise<{ q?: string; de?: string; ate?: string; pagina?: string }>;
 }) {
-  const { q, de, ate, pagina: paginaParam } = await searchParams;
+  const { q, de: deParam, ate: ateParam, pagina: paginaParam } = await searchParams;
   const pagina = Math.max(1, parseInt(paginaParam ?? "1", 10) || 1);
+  // Datas vindas da URL só entram na query se forem datas reais
+  const de = deParam && dataCalendarioValida(deParam) ? deParam : undefined;
+  const ate = ateParam && dataCalendarioValida(ateParam) ? ateParam : undefined;
   const { supabase, usuario } = await getSessao();
 
   let query = supabase
@@ -82,15 +86,29 @@ export default async function ConsultasPage({
         </div>
         <label className="text-xs text-ink-muted">
           De
-          <Input type="date" name="de" defaultValue={de ?? ""} className="mt-1 w-36" />
+          <Input
+            type="date"
+            name="de"
+            min="2000-01-01"
+            max="2099-12-31"
+            defaultValue={de ?? ""}
+            className="mt-1 w-36"
+          />
         </label>
         <label className="text-xs text-ink-muted">
           Até
-          <Input type="date" name="ate" defaultValue={ate ?? ""} className="mt-1 w-36" />
+          <Input
+            type="date"
+            name="ate"
+            min="2000-01-01"
+            max="2099-12-31"
+            defaultValue={ate ?? ""}
+            className="mt-1 w-36"
+          />
         </label>
         <button
           type="submit"
-          className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-lg border border-edge bg-surface px-4 text-sm font-medium text-ink transition-colors hover:bg-zinc-50"
+          className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-lg border border-white/70 bg-white/60 px-4 text-sm font-medium text-ink backdrop-blur-md transition-colors hover:bg-white/90"
         >
           Filtrar
         </button>
@@ -118,8 +136,8 @@ export default async function ConsultasPage({
           }
         />
       ) : (
-        <div className="overflow-hidden rounded-xl border border-edge bg-surface">
-          <ul className="divide-y divide-edge">
+        <div className="glass overflow-hidden rounded-2xl">
+          <ul className="divide-y divide-zinc-200/60">
             {consultas.map((c) => (
               <li key={c.id}>
                 <Link

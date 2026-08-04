@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { getSessao } from "@/lib/auth";
 import { formatHora, formatTelefone, hojeISO, ROTULO_TIPO } from "@/lib/format";
+import { dataParamOuHoje } from "@/lib/validacao";
 import type {
   AgendamentoStatus,
   AgendamentoTipo,
@@ -66,7 +67,8 @@ export default async function AgendaPage({
   searchParams: Promise<{ data?: string; vet?: string; erro?: string }>;
 }) {
   const { data: dataParam, vet, erro } = await searchParams;
-  const data = dataParam?.trim() || hojeISO();
+  // Param de data inválido na URL → cai para hoje (nunca quebra a página)
+  const data = dataParamOuHoje(dataParam?.trim());
   const { supabase } = await getSessao();
 
   // Data por extenso — T12:00:00 evita bug de fuso na virada do dia.
@@ -125,30 +127,37 @@ export default async function AgendaPage({
             href={linkDia(deslocarDia(data, -1), vet)}
             variante="secondary"
             tamanho="sm"
+            className="max-sm:min-h-10 max-sm:min-w-10"
           >
             <ChevronLeft className="size-4" />
             <span className="max-sm:sr-only">Anterior</span>
           </ButtonLink>
-          <ButtonLink href={linkDia(hojeISO(), vet)} variante="secondary" tamanho="sm">
+          <ButtonLink
+            href={linkDia(hojeISO(), vet)}
+            variante="secondary"
+            tamanho="sm"
+            className="max-sm:min-h-10"
+          >
             Hoje
           </ButtonLink>
           <ButtonLink
             href={linkDia(deslocarDia(data, 1), vet)}
             variante="secondary"
             tamanho="sm"
+            className="max-sm:min-h-10 max-sm:min-w-10"
           >
             <span className="max-sm:sr-only">Próximo</span>
             <ChevronRight className="size-4" />
           </ButtonLink>
         </div>
 
-        <form method="get" className="flex items-center gap-2">
+        <form method="get" className="flex min-w-0 flex-wrap items-center gap-2">
           <input type="hidden" name="data" value={data} />
           <Select
             name="vet"
             defaultValue={vet ?? ""}
             aria-label="Filtrar por veterinário"
-            className="h-8 w-auto max-w-56 text-sm"
+            className="h-8 w-auto min-w-0 max-w-56 text-sm max-sm:min-h-10"
           >
             <option value="">Todos os veterinários</option>
             {(veterinarios ?? []).map((v) => (
@@ -157,7 +166,12 @@ export default async function AgendaPage({
               </option>
             ))}
           </Select>
-          <Button type="submit" variante="secondary" tamanho="sm">
+          <Button
+            type="submit"
+            variante="secondary"
+            tamanho="sm"
+            className="max-sm:min-h-10"
+          >
             <SlidersHorizontal className="size-4" />
             Filtrar
           </Button>
@@ -177,8 +191,8 @@ export default async function AgendaPage({
           }
         />
       ) : (
-        <div className="overflow-hidden rounded-xl border border-edge bg-surface">
-          <ul className="divide-y divide-edge">
+        <div className="glass overflow-hidden rounded-2xl">
+          <ul className="divide-y divide-zinc-200/60">
             {agendamentos.map((a) => (
               <li
                 key={a.id}
@@ -216,9 +230,9 @@ export default async function AgendaPage({
                 </div>
 
                 {a.status === "agendado" && (
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <form action={atualizarStatus.bind(null, a.id, "check_in", data)}>
-                      <Button tamanho="sm">
+                      <Button tamanho="sm" className="max-sm:min-h-10">
                         <LogIn className="size-4" />
                         Check-in
                       </Button>
@@ -228,6 +242,7 @@ export default async function AgendaPage({
                         variante="ghost"
                         tamanho="sm"
                         mensagem="Cancelar este agendamento?"
+                        className="max-sm:min-h-10"
                       >
                         <X className="size-4" />
                         Cancelar
@@ -237,16 +252,17 @@ export default async function AgendaPage({
                 )}
 
                 {a.status === "check_in" && (
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <ButtonLink
                       href={`/consultas/nova?agendamento=${a.id}&pet=${a.pet_id}`}
                       tamanho="sm"
+                      className="max-sm:min-h-10"
                     >
                       <Stethoscope className="size-4" />
                       Iniciar atendimento
                     </ButtonLink>
                     <form action={atualizarStatus.bind(null, a.id, "atendido", data)}>
-                      <Button variante="secondary" tamanho="sm">
+                      <Button variante="secondary" tamanho="sm" className="max-sm:min-h-10">
                         <Check className="size-4" />
                         Marcar atendido
                       </Button>
@@ -256,7 +272,7 @@ export default async function AgendaPage({
 
                 {a.status === "atendido" && (
                   <form action={atualizarStatus.bind(null, a.id, "check_out", data)}>
-                    <Button tamanho="sm">
+                    <Button tamanho="sm" className="max-sm:min-h-10">
                       <LogOut className="size-4" />
                       Check-out
                     </Button>

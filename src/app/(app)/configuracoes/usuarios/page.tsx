@@ -53,8 +53,8 @@ export default async function UsuariosPage({
         </p>
       )}
 
-      <div className="overflow-hidden rounded-xl border border-edge bg-surface">
-        <ul className="divide-y divide-edge">
+      <div className="glass overflow-hidden rounded-2xl">
+        <ul className="divide-y divide-zinc-200/60">
           {(membros ?? []).map((m) => {
             const alterarComId = alterarPapel.bind(null, m.id);
             const removerComId = removerUsuario.bind(null, m.id);
@@ -79,12 +79,12 @@ export default async function UsuariosPage({
                 {ehVoce ? (
                   <Badge tom="neutro">{ROTULO_PAPEL[m.papel]}</Badge>
                 ) : (
-                  <div className="flex items-center gap-2">
-                    <form action={alterarComId} className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <form action={alterarComId} className="flex flex-wrap items-center gap-2">
                       <Select
                         name="papel"
                         defaultValue={m.papel}
-                        className="h-9 w-40 text-sm"
+                        className="h-10 w-36 text-sm"
                       >
                         {PAPEIS.map((p) => (
                           <option key={p.valor} value={p.valor}>
@@ -92,7 +92,7 @@ export default async function UsuariosPage({
                           </option>
                         ))}
                       </Select>
-                      <SubmitButton variante="secondary" tamanho="sm">
+                      <SubmitButton variante="secondary">
                         <Check className="size-4" />
                         Salvar
                       </SubmitButton>
@@ -100,7 +100,6 @@ export default async function UsuariosPage({
                     <form action={removerComId}>
                       <ConfirmButton
                         variante="ghost"
-                        tamanho="sm"
                         mensagem={`Remover ${m.nome} da clínica? O acesso será revogado.`}
                         className="text-danger"
                       >

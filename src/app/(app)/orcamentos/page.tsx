@@ -87,7 +87,7 @@ export default async function OrcamentosPage({
               className={`inline-flex h-8 items-center rounded-full px-3.5 text-sm font-medium transition-colors ${
                 ativa
                   ? "bg-brand text-white shadow-sm"
-                  : "border border-edge bg-surface text-ink-muted hover:border-brand/40 hover:bg-brand-mint/10 hover:text-ink"
+                  : "border border-white/70 bg-white/50 backdrop-blur-md text-ink-muted hover:bg-white/80 hover:text-ink"
               }`}
             >
               {aba.rotulo}
@@ -117,8 +117,8 @@ export default async function OrcamentosPage({
           }
         />
       ) : (
-        <div className="overflow-hidden rounded-xl border border-edge bg-surface">
-          <ul className="divide-y divide-edge">
+        <div className="glass overflow-hidden rounded-2xl">
+          <ul className="divide-y divide-zinc-200/60">
             {orcamentos.map((o) => (
               <li key={o.id}>
                 <Link

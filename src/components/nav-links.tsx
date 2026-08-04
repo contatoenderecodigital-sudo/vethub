@@ -98,8 +98,8 @@ export function NavLateral({ ehAdmin }: { ehAdmin: boolean }) {
                   href={item.href}
                   className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                     ativo
-                      ? "bg-brand/10 text-brand-dark"
-                      : "text-ink-muted hover:bg-zinc-100 hover:text-ink"
+                      ? "bg-brand/15 text-brand-dark shadow-sm shadow-brand/10"
+                      : "text-ink-muted hover:bg-white/70 hover:text-ink"
                   }`}
                 >
                   <item.icone
@@ -150,7 +150,7 @@ const ITENS_MOBILE: Item[] = [
 export function NavInferior() {
   const pathname = usePathname();
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-30 flex border-t border-edge bg-surface pb-[env(safe-area-inset-bottom)] md:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-30 flex border-t border-white/60 bg-white/70 pb-[env(safe-area-inset-bottom)] backdrop-blur-2xl md:hidden">
       {ITENS_MOBILE.map((item) => {
         const ativo = estaAtivo(pathname, item.href);
         return (

@@ -6,9 +6,10 @@ type Tamanho = "sm" | "md" | "lg";
 
 // Botões usam verde chapado (#059669) — gradiente é só para a marca.
 const VARIANTES: Record<Variante, string> = {
-  primary: "bg-brand text-white hover:bg-brand-dark",
-  secondary: "border border-edge bg-surface text-ink hover:bg-zinc-50",
-  ghost: "text-ink-muted hover:bg-zinc-100 hover:text-ink",
+  primary: "bg-brand text-white shadow-sm shadow-brand/25 hover:bg-brand-dark",
+  secondary:
+    "border border-white/70 bg-white/60 text-ink backdrop-blur-md hover:bg-white/90",
+  ghost: "text-ink-muted hover:bg-white/60 hover:text-ink",
   danger: "bg-danger text-white hover:bg-red-700",
 };
 

@@ -101,6 +101,8 @@ export function AgendamentoForm({
           <Input
             id="data"
             type="date"
+            min="2020-01-01"
+            max={`${new Date().getFullYear() + 5}-12-31`}
             aria-invalid={!!errors.data}
             {...register("data")}
           />

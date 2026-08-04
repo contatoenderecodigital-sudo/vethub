@@ -125,13 +125,14 @@ export function ItensEditor({
     <div className="space-y-3">
       <input type="hidden" name="itens" value={itensJson} />
 
-      {/* Cabeçalho das colunas (só em telas maiores) */}
-      <div className="hidden items-center gap-2 text-xs font-medium text-ink-muted sm:flex">
-        <span className="flex-1">Descrição</span>
-        <span className="w-20">Qtd</span>
-        <span className="w-28">Valor unit. (R$)</span>
-        <span className="w-24 text-right">Subtotal</span>
-        <span className="w-8" />
+      {/* Cabeçalho das colunas (só em telas maiores) — MESMA grade das linhas,
+          para os títulos ficarem exatamente em cima dos campos */}
+      <div className="hidden text-xs font-medium text-ink-muted sm:grid sm:grid-cols-[minmax(0,1fr)_5.5rem_8rem_6.5rem_2rem] sm:gap-2">
+        <span>Descrição</span>
+        <span>Qtd</span>
+        <span>Valor unit. (R$)</span>
+        <span className="text-right">Subtotal</span>
+        <span />
       </div>
 
       <ul className="space-y-3 sm:space-y-2">
@@ -164,7 +165,10 @@ export function ItensEditor({
               key={linha.chave}
               className="rounded-lg border border-edge p-2 sm:rounded-none sm:border-0 sm:p-0"
             >
-              <div className="flex flex-wrap items-center gap-2 sm:flex-nowrap">
+              {/* Uma grade só: no desktop os campos caem exatamente sob o
+                  cabeçalho; no mobile a descrição ocupa a linha inteira e
+                  qtd/valor/subtotal ficam na linha de baixo com rótulos. */}
+              <div className="space-y-2 sm:grid sm:grid-cols-[minmax(0,1fr)_5.5rem_8rem_6.5rem_2rem] sm:items-center sm:gap-2 sm:space-y-0">
                 <Input
                   aria-label="Descrição do item"
                   placeholder="Descrição (ex.: Consulta, Vacina V10…)"
@@ -175,60 +179,69 @@ export function ItensEditor({
                     atualizar(linha.chave, "descricao", e.target.value)
                   }
                   onBlur={() => marcarTocado(linha.chave, "descricao")}
-                  className="min-w-0 flex-[1_1_100%] sm:flex-1"
                 />
-                <Input
-                  aria-label="Quantidade"
-                  inputMode="decimal"
-                  required
-                  pattern={PATTERN_QUANTIDADE}
-                  maxLength={QTD_MAX_CHARS}
-                  title="Use apenas números, com vírgula ou ponto para decimais."
-                  aria-invalid={!!erroQuantidade}
-                  value={linha.quantidade}
-                  onChange={(e) =>
-                    atualizar(
-                      linha.chave,
-                      "quantidade",
-                      sanitizarNumero(e.target.value, QTD_MAX_CHARS)
-                    )
-                  }
-                  onBlur={() => marcarTocado(linha.chave, "quantidade")}
-                  className="w-20"
-                />
-                <Input
-                  aria-label="Valor unitário em reais"
-                  inputMode="decimal"
-                  placeholder="0,00"
-                  required
-                  pattern={PATTERN_VALOR}
-                  maxLength={VALOR_MAX_CHARS}
-                  title="Use apenas números, com vírgula para os centavos (ex.: 89,90)."
-                  aria-invalid={!!erroValor}
-                  value={linha.valor_unitario}
-                  onChange={(e) =>
-                    atualizar(
-                      linha.chave,
-                      "valor_unitario",
-                      sanitizarNumero(e.target.value, VALOR_MAX_CHARS)
-                    )
-                  }
-                  onBlur={() => marcarTocado(linha.chave, "valor_unitario")}
-                  className="w-28"
-                />
-                <span className="min-w-24 flex-1 text-right text-sm font-medium text-ink tabular-nums sm:w-24 sm:flex-none">
-                  {formatBRL(subtotalDe(linha))}
-                </span>
-                <button
-                  type="button"
-                  aria-label="Remover item"
-                  title="Remover item"
-                  disabled={linhas.length === 1}
-                  onClick={() => remover(linha.chave)}
-                  className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-ink-muted transition-colors hover:bg-danger/10 hover:text-danger disabled:pointer-events-none disabled:opacity-40"
-                >
-                  <X className="size-4" />
-                </button>
+                <div className="grid grid-cols-[4.5rem_1fr_auto_auto] items-end gap-2 sm:contents">
+                  <label className="block sm:contents">
+                    <span className="mb-1 block text-[11px] font-medium text-ink-muted sm:hidden">
+                      Qtd
+                    </span>
+                    <Input
+                      aria-label="Quantidade"
+                      inputMode="decimal"
+                      required
+                      pattern={PATTERN_QUANTIDADE}
+                      maxLength={QTD_MAX_CHARS}
+                      title="Use apenas números, com vírgula ou ponto para decimais."
+                      aria-invalid={!!erroQuantidade}
+                      value={linha.quantidade}
+                      onChange={(e) =>
+                        atualizar(
+                          linha.chave,
+                          "quantidade",
+                          sanitizarNumero(e.target.value, QTD_MAX_CHARS)
+                        )
+                      }
+                      onBlur={() => marcarTocado(linha.chave, "quantidade")}
+                    />
+                  </label>
+                  <label className="block sm:contents">
+                    <span className="mb-1 block text-[11px] font-medium text-ink-muted sm:hidden">
+                      Valor unit. (R$)
+                    </span>
+                    <Input
+                      aria-label="Valor unitário em reais"
+                      inputMode="decimal"
+                      placeholder="0,00"
+                      required
+                      pattern={PATTERN_VALOR}
+                      maxLength={VALOR_MAX_CHARS}
+                      title="Use apenas números, com vírgula para os centavos (ex.: 89,90)."
+                      aria-invalid={!!erroValor}
+                      value={linha.valor_unitario}
+                      onChange={(e) =>
+                        atualizar(
+                          linha.chave,
+                          "valor_unitario",
+                          sanitizarNumero(e.target.value, VALOR_MAX_CHARS)
+                        )
+                      }
+                      onBlur={() => marcarTocado(linha.chave, "valor_unitario")}
+                    />
+                  </label>
+                  <span className="pb-2.5 text-right text-sm font-medium text-ink tabular-nums sm:pb-0">
+                    {formatBRL(subtotalDe(linha))}
+                  </span>
+                  <button
+                    type="button"
+                    aria-label="Remover item"
+                    title="Remover item"
+                    disabled={linhas.length === 1}
+                    onClick={() => remover(linha.chave)}
+                    className="mb-1 flex size-8 shrink-0 cursor-pointer items-center justify-center justify-self-end rounded-md text-ink-muted transition-colors hover:bg-danger/10 hover:text-danger disabled:pointer-events-none disabled:opacity-40 sm:mb-0"
+                  >
+                    <X className="size-4" />
+                  </button>
+                </div>
               </div>
               {erroLinha && (
                 <p className="mt-1 text-xs font-medium text-danger" role="alert">

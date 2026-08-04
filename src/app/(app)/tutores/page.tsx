@@ -87,8 +87,8 @@ export default async function TutoresPage({
           }
         />
       ) : (
-        <div className="overflow-hidden rounded-xl border border-edge bg-surface">
-          <ul className="divide-y divide-edge">
+        <div className="glass overflow-hidden rounded-2xl">
+          <ul className="divide-y divide-zinc-200/60">
             {tutores.map((t) => (
               <li key={t.id}>
                 <Link
@@ -100,7 +100,7 @@ export default async function TutoresPage({
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-medium text-ink">{t.nome}</p>
-                    <p className="truncate text-sm text-ink-muted">
+                    <p className="truncate text-sm text-ink-muted 2xl:text-base">
                       {formatTelefone(t.telefone)}
                       {t.email ? ` · ${t.email}` : ""}
                     </p>

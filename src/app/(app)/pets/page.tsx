@@ -110,8 +110,8 @@ export default async function PetsPage({
           }
         />
       ) : (
-        <div className="overflow-hidden rounded-xl border border-edge bg-surface">
-          <ul className="divide-y divide-edge">
+        <div className="glass overflow-hidden rounded-2xl">
+          <ul className="divide-y divide-zinc-200/60">
             {pets.map((p) => (
               <li key={p.id}>
                 <Link
@@ -121,7 +121,7 @@ export default async function PetsPage({
                   <IconeEspecie especie={p.especie} tamanho="sm" />
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-medium text-ink">{p.nome}</p>
-                    <p className="truncate text-sm text-ink-muted">
+                    <p className="truncate text-sm text-ink-muted 2xl:text-base">
                       {p.especie}
                       {p.raca ? ` · ${p.raca}` : ""}
                       {p.tutor?.nome ? ` · Tutor: ${p.tutor.nome}` : ""}

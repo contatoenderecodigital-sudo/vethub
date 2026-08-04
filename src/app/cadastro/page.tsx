@@ -61,7 +61,7 @@ export default function CadastroPage() {
     <main className="bg-brand-gradient flex min-h-dvh flex-col items-center justify-center px-4 py-10">
       <Wordmark sobre="escuro" className="mb-8 text-4xl" />
 
-      <div className="w-full max-w-sm rounded-2xl bg-surface p-6 shadow-xl sm:p-8">
+      <div className="glass-forte w-full max-w-sm rounded-3xl p-6 sm:p-8">
         <h1 className="text-lg font-semibold text-ink">Cadastre sua clínica</h1>
         <p className="mb-6 mt-1 text-sm text-ink-muted">
           Crie a conta de administrador e comece a usar em minutos.

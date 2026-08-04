@@ -111,7 +111,7 @@ export default async function DashboardPage() {
           <Link
             key={t.rotulo}
             href={t.href}
-            className="group rounded-xl border border-edge bg-surface p-4 transition-all hover:border-brand/40 hover:shadow-sm"
+            className="glass group rounded-2xl p-4 transition-all hover:shadow-lg hover:shadow-brand/10"
           >
             <span className="mb-3 flex size-9 items-center justify-center rounded-lg bg-brand/10 text-brand-dark">
               <t.icone className="size-[18px]" strokeWidth={1.8} />
@@ -148,7 +148,7 @@ export default async function DashboardPage() {
             }
           />
         ) : (
-          <ul className="divide-y divide-edge">
+          <ul className="divide-y divide-zinc-200/60">
             {(agendaHoje.data as unknown as Agendamento[]).map((a) => (
               <li key={a.id}>
                 <Link

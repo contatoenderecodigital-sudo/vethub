@@ -1,6 +1,5 @@
 import { z } from "zod";
-import { hojeISO } from "@/lib/format";
-import { schemaNome } from "@/lib/validacao";
+import { schemaDataNascimentoOpcional, schemaNome } from "@/lib/validacao";
 
 /**
  * Validação do formulário de pet — compartilhada entre o client
@@ -32,9 +31,7 @@ export const petSchema = z.object({
   especie: z.string().min(1, "Selecione a espécie."),
   raca: z.string(),
   sexo: z.enum(["", "macho", "femea"]),
-  data_nascimento: z
-    .string()
-    .refine((v) => v === "" || v <= hojeISO(), "Data no futuro?"),
+  data_nascimento: schemaDataNascimentoOpcional,
   peso: z.string().refine(pesoValido, "Peso inválido."),
   castrado: z.boolean(),
   observacoes: z.string(),

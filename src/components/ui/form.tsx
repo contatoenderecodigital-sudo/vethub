@@ -1,9 +1,9 @@
 import type { ComponentProps, ReactNode } from "react";
 
 const CAMPO_BASE =
-  "w-full rounded-lg border border-edge bg-surface px-3 text-sm text-ink " +
-  "placeholder:text-zinc-400 focus:border-brand focus:outline-2 " +
-  "focus:outline-brand/30 disabled:bg-zinc-50 disabled:text-ink-muted";
+  "w-full rounded-lg border border-zinc-200/80 bg-white/70 px-3 text-sm text-ink " +
+  "placeholder:text-zinc-400 transition-colors focus:border-brand focus:bg-white " +
+  "focus:outline-2 focus:outline-brand/30 disabled:bg-zinc-100/60 disabled:text-ink-muted";
 
 export function Input({ className = "", ...props }: ComponentProps<"input">) {
   return <input className={`${CAMPO_BASE} h-10 ${className}`} {...props} />;

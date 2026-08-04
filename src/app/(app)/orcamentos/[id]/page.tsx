@@ -163,17 +163,17 @@ export default async function OrcamentoPage({
         </p>
       )}
 
-      <div className="overflow-x-auto rounded-xl border border-edge bg-surface">
+      <div className="glass overflow-x-auto rounded-2xl">
         <table className="w-full min-w-[32rem] text-sm">
           <thead>
-            <tr className="border-b border-edge text-left text-xs uppercase tracking-wider text-ink-muted">
+            <tr className="border-b border-zinc-200/60 text-left text-xs uppercase tracking-wider text-ink-muted">
               <th className="px-4 py-3 font-medium">Descrição</th>
               <th className="w-20 px-4 py-3 text-right font-medium">Qtd</th>
               <th className="w-32 px-4 py-3 text-right font-medium">Valor unit.</th>
               <th className="w-32 px-4 py-3 text-right font-medium">Subtotal</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-edge">
+          <tbody className="divide-y divide-zinc-200/60">
             {(itens ?? []).map((item) => (
               <tr key={item.id}>
                 <td className="px-4 py-3 text-ink">{item.descricao}</td>
@@ -190,7 +190,7 @@ export default async function OrcamentoPage({
             ))}
           </tbody>
           <tfoot>
-            <tr className="border-t-2 border-edge bg-brand-mint/10">
+            <tr className="border-t-2 border-zinc-200/60 bg-brand-mint/10">
               <td colSpan={3} className="px-4 py-3 text-right font-bold text-ink">
                 TOTAL
               </td>

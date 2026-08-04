@@ -15,7 +15,7 @@ export default function PublicoLayout({
 
   return (
     <div className="flex min-h-dvh flex-col">
-      <header className="bg-brand-gradient">
+      <header className="glass-marca sticky top-0 z-40">
         <div className="mx-auto flex w-full max-w-3xl items-center justify-between px-4 py-4 sm:px-6">
           <Link href="/" aria-label="Página inicial do VetHub">
             <Wordmark sobre="escuro" className="text-2xl" />
@@ -30,10 +30,10 @@ export default function PublicoLayout({
       </header>
 
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-8 sm:px-6 sm:py-10">
-        {children}
+        <div className="glass rounded-2xl p-6 sm:p-10">{children}</div>
       </main>
 
-      <footer className="border-t border-edge bg-surface">
+      <footer className="border-t border-white/60">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-3 px-4 py-6 text-sm text-ink-muted sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <p>© {ano} VetHub. Todos os direitos reservados.</p>
           <nav className="flex flex-wrap gap-x-4 gap-y-1">

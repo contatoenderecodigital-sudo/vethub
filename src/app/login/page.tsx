@@ -3,26 +3,46 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { createClient } from "@/lib/supabase/client";
 import { Wordmark } from "@/components/wordmark";
 import { Button } from "@/components/ui/button";
 import { Campo, Input } from "@/components/ui/form";
+import { schemaEmailObrigatorio } from "@/lib/validacao";
+
+// Validação leve: só formato de e-mail e senha não vazia — quem decide
+// se as credenciais valem é o Supabase Auth.
+const loginSchema = z.object({
+  email: schemaEmailObrigatorio,
+  senha: z.string().min(1, "Informe a senha."),
+});
+
+type LoginValores = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
   const [erro, setErro] = useState<string | null>(null);
   const [carregando, setCarregando] = useState(false);
 
-  async function entrar(e: React.FormEvent) {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm<LoginValores>({
+    resolver: zodResolver(loginSchema),
+    mode: "onChange",
+    defaultValues: { email: "", senha: "" },
+  });
+
+  async function entrar(valores: LoginValores) {
     setErro(null);
     setCarregando(true);
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password: senha,
+      email: valores.email,
+      password: valores.senha,
     });
     if (error) {
       setErro("E-mail ou senha inválidos.");
@@ -43,35 +63,33 @@ export default function LoginPage() {
           Acesse a central da sua clínica.
         </p>
 
-        <form onSubmit={entrar} className="space-y-4">
-          <Campo rotulo="E-mail" htmlFor="email" obrigatorio>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
-              required
-            />
-          </Campo>
-          <Campo rotulo="Senha" htmlFor="senha" obrigatorio>
-            <Input
-              id="senha"
-              type="password"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-              autoComplete="current-password"
-              required
-            />
-          </Campo>
-
+        <form onSubmit={handleSubmit(entrar)} className="space-y-4" noValidate>
           {erro && (
             <p className="rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger">
               {erro}
             </p>
           )}
 
-          <Button type="submit" className="w-full" disabled={carregando}>
+          <Campo rotulo="E-mail" htmlFor="email" obrigatorio erro={errors.email?.message}>
+            <Input
+              id="email"
+              type="email"
+              autoComplete="email"
+              aria-invalid={!!errors.email}
+              {...register("email")}
+            />
+          </Campo>
+          <Campo rotulo="Senha" htmlFor="senha" obrigatorio erro={errors.senha?.message}>
+            <Input
+              id="senha"
+              type="password"
+              autoComplete="current-password"
+              aria-invalid={!!errors.senha}
+              {...register("senha")}
+            />
+          </Campo>
+
+          <Button type="submit" className="w-full" disabled={!isValid || carregando}>
             {carregando ? "Entrando…" : "Entrar"}
           </Button>
         </form>

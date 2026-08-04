@@ -4,19 +4,48 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getSessao } from "@/lib/auth";
 import type { AnexoTipo } from "@/lib/types";
+import { consultaSchema, type ConsultaFormValores } from "./consulta-schema";
 
-/** Campos clínicos do prontuário ('' → null). */
-function camposClinicos(formData: FormData) {
-  const texto = (campo: string) =>
-    String(formData.get(campo) ?? "").trim() || null;
+/** Valores validados prontos para o banco ('' → null). */
+function consultaParaBanco(valores: ConsultaFormValores) {
+  const texto = (v: string) => v.trim() || null;
   return {
+    pet_id: valores.pet_id,
+    veterinario_id: valores.veterinario_id.trim() || null,
+    queixa: texto(valores.queixa),
+    anamnese: texto(valores.anamnese),
+    exame_fisico: texto(valores.exame_fisico),
+    diagnostico: texto(valores.diagnostico),
+    conduta: texto(valores.conduta),
+    observacoes: texto(valores.observacoes),
+  };
+}
+
+/**
+ * Revalida o form de consulta no servidor com o MESMO schema zod do front.
+ * Retorna { dados } prontos para o banco ou { erro } com a primeira mensagem.
+ */
+function validarForm(
+  formData: FormData
+): { dados: ReturnType<typeof consultaParaBanco> } | { erro: string } {
+  const texto = (campo: string) => String(formData.get(campo) ?? "");
+  const resultado = consultaSchema.safeParse({
+    pet_id: texto("pet_id").trim(),
+    veterinario_id: texto("veterinario_id"),
     queixa: texto("queixa"),
     anamnese: texto("anamnese"),
     exame_fisico: texto("exame_fisico"),
     diagnostico: texto("diagnostico"),
     conduta: texto("conduta"),
     observacoes: texto("observacoes"),
-  };
+  });
+  if (!resultado.success) {
+    return {
+      erro:
+        resultado.error.issues[0]?.message ?? "Verifique os campos destacados.",
+    };
+  }
+  return { dados: consultaParaBanco(resultado.data) };
 }
 
 function urlNovaComErro(
@@ -33,24 +62,23 @@ function urlNovaComErro(
 export async function criarConsulta(formData: FormData) {
   const { supabase, usuario } = await getSessao();
 
-  const pet_id = String(formData.get("pet_id") ?? "").trim();
-  const veterinario_id =
-    String(formData.get("veterinario_id") ?? "").trim() || null;
   const agendamento_id =
     String(formData.get("agendamento_id") ?? "").trim() || null;
 
-  if (!pet_id) {
-    redirect(urlNovaComErro("Selecione o pet.", null, agendamento_id));
+  const validado = validarForm(formData);
+  if ("erro" in validado) {
+    const pet_id = String(formData.get("pet_id") ?? "").trim() || null;
+    redirect(urlNovaComErro(validado.erro, pet_id, agendamento_id));
   }
+  const { pet_id, ...campos } = validado.dados;
 
   const { data, error } = await supabase
     .from("consulta")
     .insert({
       clinica_id: usuario.clinica_id,
       pet_id,
-      veterinario_id,
       agendamento_id,
-      ...camposClinicos(formData),
+      ...campos,
     })
     .select("id")
     .single();
@@ -75,13 +103,15 @@ export async function criarConsulta(formData: FormData) {
 export async function atualizarConsulta(id: string, formData: FormData) {
   const { supabase } = await getSessao();
 
-  const veterinario_id =
-    String(formData.get("veterinario_id") ?? "").trim() || null;
+  const validado = validarForm(formData);
+  if ("erro" in validado) {
+    redirect(`/consultas/${id}/editar?erro=${validado.erro}`);
+  }
+  // O pet da consulta não muda na edição — só os demais campos.
+  const campos = { ...validado.dados };
+  delete (campos as Partial<typeof campos>).pet_id;
 
-  const { error } = await supabase
-    .from("consulta")
-    .update({ veterinario_id, ...camposClinicos(formData) })
-    .eq("id", id);
+  const { error } = await supabase.from("consulta").update(campos).eq("id", id);
 
   if (error) redirect(`/consultas/${id}/editar?erro=Não foi possível salvar.`);
 

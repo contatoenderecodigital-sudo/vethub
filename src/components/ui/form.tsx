@@ -22,16 +22,18 @@ interface CampoProps {
   htmlFor?: string;
   obrigatorio?: boolean;
   dica?: string;
+  erro?: string;
   children: ReactNode;
   className?: string;
 }
 
-/** Wrapper de campo: rótulo + controle + dica. */
+/** Wrapper de campo: rótulo + controle + dica + mensagem de erro. */
 export function Campo({
   rotulo,
   htmlFor,
   obrigatorio,
   dica,
+  erro,
   children,
   className = "",
 }: CampoProps) {
@@ -42,7 +44,13 @@ export function Campo({
         {obrigatorio && <span className="text-danger"> *</span>}
       </label>
       {children}
-      {dica && <p className="text-xs text-ink-muted">{dica}</p>}
+      {erro ? (
+        <p className="text-xs font-medium text-danger" role="alert">
+          {erro}
+        </p>
+      ) : (
+        dica && <p className="text-xs text-ink-muted">{dica}</p>
+      )}
     </div>
   );
 }

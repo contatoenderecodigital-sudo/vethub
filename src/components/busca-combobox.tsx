@@ -18,12 +18,15 @@ export function BuscaCombobox({
   placeholder = "Digite para buscar…",
   valorInicial,
   obrigatorio = false,
+  aoSelecionar,
 }: {
   name: string;
   endpoint: string;
   placeholder?: string;
   valorInicial?: OpcaoBusca;
   obrigatorio?: boolean;
+  /** Notifica formulários controlados (react-hook-form) sobre a seleção. */
+  aoSelecionar?: (opcao: OpcaoBusca | null) => void;
 }) {
   const [texto, setTexto] = useState(valorInicial?.rotulo ?? "");
   const [selecionado, setSelecionado] = useState<OpcaoBusca | null>(
@@ -80,6 +83,7 @@ export function BuscaCombobox({
         autoComplete="off"
         onChange={(e) => {
           setTexto(e.target.value);
+          if (selecionado) aoSelecionar?.(null);
           setSelecionado(null);
         }}
         onFocus={() => opcoes.length > 0 && setAberto(true)}
@@ -98,6 +102,7 @@ export function BuscaCombobox({
                   setSelecionado(o);
                   setTexto(o.rotulo);
                   setAberto(false);
+                  aoSelecionar?.(o);
                 }}
                 className="flex w-full flex-col items-start px-3 py-2 text-left text-sm hover:bg-brand-mint/20"
               >

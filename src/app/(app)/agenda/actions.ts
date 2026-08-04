@@ -4,23 +4,28 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getSessao } from "@/lib/auth";
 import type { AgendamentoStatus } from "@/lib/types";
+import { agendamentoParaBanco, agendamentoSchema } from "./schema";
 
 export async function criarAgendamento(formData: FormData) {
   const { supabase, usuario } = await getSessao();
 
-  const pet_id = String(formData.get("pet_id") ?? "").trim();
-  const veterinario_id =
-    String(formData.get("veterinario_id") ?? "").trim() || null;
-  const data = String(formData.get("data") ?? "").trim();
-  const hora = String(formData.get("hora") ?? "").trim();
-  const tipo = String(formData.get("tipo") ?? "").trim();
-  const observacoes = String(formData.get("observacoes") ?? "").trim() || null;
+  // Revalida no servidor com o MESMO schema zod do front.
+  const resultado = agendamentoSchema.safeParse({
+    pet_id: String(formData.get("pet_id") ?? "").trim(),
+    veterinario_id: String(formData.get("veterinario_id") ?? "").trim(),
+    data: String(formData.get("data") ?? "").trim(),
+    hora: String(formData.get("hora") ?? "").trim(),
+    tipo: String(formData.get("tipo") ?? "").trim(),
+    observacoes: String(formData.get("observacoes") ?? ""),
+  });
 
-  if (!pet_id || !data || !hora || !tipo) {
-    redirect(
-      `/agenda/novo?data=${data}&erro=Preencha pet, data, hora e tipo.`
-    );
+  if (!resultado.success) {
+    const dataParam = String(formData.get("data") ?? "").trim();
+    redirect(`/agenda/novo?data=${dataParam}&erro=Verifique os campos.`);
   }
+
+  const { pet_id, veterinario_id, data, hora, tipo, observacoes } =
+    agendamentoParaBanco(resultado.data);
 
   // A clínica opera em America/Sao_Paulo (UTC-3, sem horário de verão),
   // então o offset é fixo: montamos o timestamp com "-03:00" para que o

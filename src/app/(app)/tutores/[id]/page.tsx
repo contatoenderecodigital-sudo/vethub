@@ -53,7 +53,9 @@ export default async function TutorPage({
     .returns<Pet[]>();
 
   const excluirComId = excluirTutor.bind(null, id);
-  const zap = tutor.telefone.replace(/\D/g, "");
+  // telefone novo já vem com DDI 55; cadastros antigos ganham o prefixo aqui
+  const digitos = tutor.telefone.replace(/\D/g, "");
+  const zap = digitos.startsWith("55") && digitos.length >= 12 ? digitos : `55${digitos}`;
 
   return (
     <div>
@@ -96,7 +98,7 @@ export default async function TutorPage({
               </dt>
               <dd className="font-medium">
                 <a
-                  href={`https://wa.me/55${zap}`}
+                  href={`https://wa.me/${zap}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-brand hover:underline"

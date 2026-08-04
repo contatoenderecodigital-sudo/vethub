@@ -1,34 +1,31 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { cadastroSchema } from "@/app/cadastro/schema";
 
 /**
  * Cadastro de clínica nova + usuário admin.
  * Roda no servidor com service_role porque precisa criar o usuário no auth
  * e a clínica antes de existir qualquer sessão (RLS bloquearia).
+ * O corpo é revalidado com o MESMO schema zod do front.
  */
 export async function POST(request: NextRequest) {
-  let corpo: { clinica?: string; nome?: string; email?: string; senha?: string };
+  let corpo: unknown;
   try {
     corpo = await request.json();
   } catch {
     return NextResponse.json({ erro: "Requisição inválida." }, { status: 400 });
   }
 
-  const clinica = corpo.clinica?.trim();
-  const nome = corpo.nome?.trim();
-  const email = corpo.email?.trim().toLowerCase();
-  const senha = corpo.senha ?? "";
-
-  if (!clinica || !nome || !email) {
-    return NextResponse.json({ erro: "Preencha todos os campos." }, { status: 400 });
-  }
-  // Senha forte obrigatória (mesma regra do front)
-  if (senha.length < 8 || !/[a-zA-Z]/.test(senha) || !/[0-9]/.test(senha)) {
+  const resultado = cadastroSchema.safeParse(corpo);
+  if (!resultado.success) {
     return NextResponse.json(
-      { erro: "A senha precisa ter no mínimo 8 caracteres, com letras e números." },
+      { erro: resultado.error.issues[0]?.message ?? "Preencha todos os campos." },
       { status: 400 }
     );
   }
+
+  const { clinica, nome, senha } = resultado.data;
+  const email = resultado.data.email.toLowerCase();
 
   const admin = createAdminClient();
 

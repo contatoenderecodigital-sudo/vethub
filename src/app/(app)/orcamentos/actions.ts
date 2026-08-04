@@ -2,24 +2,33 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { z } from "zod";
 import { getSessao } from "@/lib/auth";
 import type { OrcamentoStatus } from "@/lib/types";
-
-interface ItemEntrada {
-  descricao: string;
-  quantidade: number;
-  valor_unitario: number;
-}
 
 const ERRO_ITENS =
   "Inclua ao menos 1 item com descrição, quantidade maior que zero e valor válido.";
 
 const STATUS_VALIDOS: OrcamentoStatus[] = ["aberto", "aprovado", "recusado"];
 
+// Schemas locais do módulo — o servidor SEMPRE revalida, nunca confia no front.
+const petIdSchema = z.string().min(1);
+
+const itemOrcamentoSchema = z.object({
+  descricao: z.string().min(1),
+  quantidade: z.number().gt(0).max(9999),
+  valor_unitario: z.number().min(0).max(999999),
+});
+
+const itensOrcamentoSchema = z.array(itemOrcamentoSchema).min(1);
+
+type ItemEntrada = z.infer<typeof itemOrcamentoSchema>;
+
 /**
  * Lê e valida os itens serializados em JSON no input hidden name="itens".
- * Linhas totalmente vazias (sem descrição) são descartadas; as demais precisam
- * de quantidade > 0 e valor_unitario >= 0. Retorna null se nada for válido.
+ * Linhas totalmente vazias (sem descrição) são descartadas ANTES do parse;
+ * as demais passam pelo schema zod (quantidade > 0 e <= 9999,
+ * valor_unitario >= 0 e <= 999999). Retorna null se nada for válido.
  */
 function itensDoForm(formData: FormData): ItemEntrada[] | null {
   let brutos: unknown;
@@ -30,19 +39,21 @@ function itensDoForm(formData: FormData): ItemEntrada[] | null {
   }
   if (!Array.isArray(brutos)) return null;
 
-  const itens: ItemEntrada[] = [];
-  for (const bruto of brutos) {
-    if (typeof bruto !== "object" || bruto === null) return null;
-    const linha = bruto as Record<string, unknown>;
-    const descricao = String(linha.descricao ?? "").trim();
-    if (!descricao) continue; // linha vazia — ignora
-    const quantidade = Number(linha.quantidade);
-    const valor_unitario = Number(linha.valor_unitario);
-    if (!Number.isFinite(quantidade) || quantidade <= 0) return null;
-    if (!Number.isFinite(valor_unitario) || valor_unitario < 0) return null;
-    itens.push({ descricao, quantidade, valor_unitario });
-  }
-  return itens.length > 0 ? itens : null;
+  const candidatos = brutos
+    .map((bruto) => {
+      const linha = (
+        typeof bruto === "object" && bruto !== null ? bruto : {}
+      ) as Record<string, unknown>;
+      return {
+        descricao: String(linha.descricao ?? "").trim(),
+        quantidade: Number(linha.quantidade),
+        valor_unitario: Number(linha.valor_unitario),
+      };
+    })
+    .filter((candidato) => candidato.descricao !== ""); // linha vazia — ignora
+
+  const resultado = itensOrcamentoSchema.safeParse(candidatos);
+  return resultado.success ? resultado.data : null;
 }
 
 export async function criarOrcamento(formData: FormData) {
@@ -61,7 +72,9 @@ export async function criarOrcamento(formData: FormData) {
     return `/orcamentos/novo?${sp.toString()}`;
   };
 
-  if (!pet_id) redirect(urlErro("Selecione um pet."));
+  if (!petIdSchema.safeParse(pet_id).success) {
+    redirect(urlErro("Selecione um pet."));
+  }
   if (!itens) redirect(urlErro(ERRO_ITENS));
 
   // valor_total é recalculado por trigger a partir dos itens — nunca escrever aqui.

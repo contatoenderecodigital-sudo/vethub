@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { getSessao } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Papel } from "@/lib/types";
+import { novoUsuarioSchema } from "./schema";
 
 const PAPEIS_VALIDOS: Papel[] = ["admin", "veterinario", "recepcao"];
 
@@ -18,19 +19,19 @@ async function exigirAdmin() {
 export async function criarUsuario(formData: FormData) {
   const { usuario } = await exigirAdmin();
 
-  const nome = String(formData.get("nome") ?? "").trim();
-  const email = String(formData.get("email") ?? "").trim().toLowerCase();
-  const senha = String(formData.get("senha") ?? "");
-  const papel = String(formData.get("papel") ?? "") as Papel;
+  // Revalida no servidor com o MESMO schema zod do form (nunca confiar só no front).
+  const resultado = novoUsuarioSchema.safeParse({
+    nome: String(formData.get("nome") ?? ""),
+    email: String(formData.get("email") ?? ""),
+    senha: String(formData.get("senha") ?? ""),
+    papel: String(formData.get("papel") ?? ""),
+  });
+  if (!resultado.success) {
+    redirect("/configuracoes/usuarios/novo?erro=Verifique os campos destacados.");
+  }
 
-  if (!nome || !email || !PAPEIS_VALIDOS.includes(papel)) {
-    redirect("/configuracoes/usuarios/novo?erro=Preencha todos os campos.");
-  }
-  if (senha.length < 8 || !/[a-zA-Z]/.test(senha) || !/[0-9]/.test(senha)) {
-    redirect(
-      "/configuracoes/usuarios/novo?erro=A senha precisa ter 8+ caracteres, com letras e números."
-    );
-  }
+  const { nome, senha, papel } = resultado.data;
+  const email = resultado.data.email.toLowerCase();
 
   // Criar usuário no auth exige service_role — o chamador já foi validado como admin.
   const admin = createAdminClient();

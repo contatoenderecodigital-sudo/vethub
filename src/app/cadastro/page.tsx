@@ -3,35 +3,37 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { createClient } from "@/lib/supabase/client";
 import { Wordmark } from "@/components/wordmark";
 import { Button } from "@/components/ui/button";
 import { Campo, Input } from "@/components/ui/form";
+import { cadastroSchema, type CadastroValores } from "./schema";
 
 export default function CadastroPage() {
   const router = useRouter();
-  const [clinica, setClinica] = useState("");
-  const [nome, setNome] = useState("");
-  const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
   const [erro, setErro] = useState<string | null>(null);
   const [carregando, setCarregando] = useState(false);
 
-  async function cadastrar(e: React.FormEvent) {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm<CadastroValores>({
+    resolver: zodResolver(cadastroSchema),
+    mode: "onChange",
+    defaultValues: { clinica: "", nome: "", email: "", senha: "" },
+  });
+
+  async function cadastrar(valores: CadastroValores) {
     setErro(null);
-
-    // Senha forte obrigatória
-    if (senha.length < 8 || !/[a-zA-Z]/.test(senha) || !/[0-9]/.test(senha)) {
-      setErro("A senha precisa ter no mínimo 8 caracteres, com letras e números.");
-      return;
-    }
-
     setCarregando(true);
+
     const res = await fetch("/api/cadastro", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ clinica, nome, email, senha }),
+      body: JSON.stringify(valores),
     });
 
     if (!res.ok) {
@@ -44,8 +46,8 @@ export default function CadastroPage() {
     // conta criada — entra direto
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password: senha,
+      email: valores.email,
+      password: valores.senha,
     });
     if (error) {
       router.push("/login");
@@ -65,33 +67,41 @@ export default function CadastroPage() {
           Crie a conta de administrador e comece a usar em minutos.
         </p>
 
-        <form onSubmit={cadastrar} className="space-y-4">
-          <Campo rotulo="Nome da clínica" htmlFor="clinica" obrigatorio>
+        <form onSubmit={handleSubmit(cadastrar)} className="space-y-4" noValidate>
+          {erro && (
+            <p className="rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger">
+              {erro}
+            </p>
+          )}
+
+          <Campo
+            rotulo="Nome da clínica"
+            htmlFor="clinica"
+            obrigatorio
+            erro={errors.clinica?.message}
+          >
             <Input
               id="clinica"
-              value={clinica}
-              onChange={(e) => setClinica(e.target.value)}
               placeholder="Ex.: Clínica Vida Animal"
-              required
+              aria-invalid={!!errors.clinica}
+              {...register("clinica")}
             />
           </Campo>
-          <Campo rotulo="Seu nome" htmlFor="nome" obrigatorio>
+          <Campo rotulo="Seu nome" htmlFor="nome" obrigatorio erro={errors.nome?.message}>
             <Input
               id="nome"
-              value={nome}
-              onChange={(e) => setNome(e.target.value)}
               autoComplete="name"
-              required
+              aria-invalid={!!errors.nome}
+              {...register("nome")}
             />
           </Campo>
-          <Campo rotulo="E-mail" htmlFor="email" obrigatorio>
+          <Campo rotulo="E-mail" htmlFor="email" obrigatorio erro={errors.email?.message}>
             <Input
               id="email"
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
-              required
+              aria-invalid={!!errors.email}
+              {...register("email")}
             />
           </Campo>
           <Campo
@@ -99,25 +109,18 @@ export default function CadastroPage() {
             htmlFor="senha"
             obrigatorio
             dica="Mínimo de 8 caracteres, com letras e números."
+            erro={errors.senha?.message}
           >
             <Input
               id="senha"
               type="password"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
               autoComplete="new-password"
-              minLength={8}
-              required
+              aria-invalid={!!errors.senha}
+              {...register("senha")}
             />
           </Campo>
 
-          {erro && (
-            <p className="rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger">
-              {erro}
-            </p>
-          )}
-
-          <Button type="submit" className="w-full" disabled={carregando}>
+          <Button type="submit" className="w-full" disabled={!isValid || carregando}>
             {carregando ? "Criando conta…" : "Criar conta"}
           </Button>
         </form>

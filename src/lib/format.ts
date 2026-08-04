@@ -33,7 +33,9 @@ export function formatHora(iso: string | null | undefined): string {
 
 export function formatTelefone(tel: string | null | undefined): string {
   if (!tel) return "—";
-  const d = tel.replace(/\D/g, "");
+  let d = tel.replace(/\D/g, "");
+  // números guardados com DDI 55 (padrão do banco, pronto p/ WhatsApp)
+  if ((d.length === 12 || d.length === 13) && d.startsWith("55")) d = d.slice(2);
   if (d.length === 11) return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
   if (d.length === 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
   return tel;

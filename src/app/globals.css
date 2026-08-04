@@ -9,14 +9,15 @@
  */
 
 @theme {
-  /* Família verde */
-  --color-brand-dark: #047857;
-  --color-brand: #059669;
-  --color-brand-light: #34d399;
-  --color-brand-mint: #6ee7b7;
+  /* Paleta da marca — os valores vêm das variáveis de tema abaixo, para
+     a clínica poder trocar a cor do sistema sem mexer em componente. */
+  --color-brand-dark: var(--tema-escuro);
+  --color-brand: var(--tema-medio);
+  --color-brand-light: var(--tema-claro);
+  --color-brand-mint: var(--tema-menta);
 
   /* Neutros — tema vidro sobre o degradê da marca: texto BRANCO */
-  --color-page: #047857;
+  --color-page: var(--tema-escuro);
   --color-surface: rgb(255 255 255 / 0.14);
   --color-ink: #ffffff;
   --color-ink-muted: rgb(255 255 255 / 0.72);
@@ -30,6 +31,78 @@
 
   /* Tipografia */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ------------------------------------------------------------------
+ * TEMAS DE COR
+ * A identidade da marca (wordmark, site, material de venda) é sempre
+ * verde. Isto aqui é a pele do sistema: cada clínica escolhe a cor que
+ * combina com ela. Trocar o atributo data-tema no <html> troca tudo —
+ * degradê de fundo, botões, ícones e realces — sem tocar em componente.
+ * ------------------------------------------------------------------ */
+:root,
+[data-tema="esmeralda"] {
+  --tema-escuro: #047857;
+  --tema-medio: #059669;
+  --tema-claro: #34d399;
+  --tema-menta: #6ee7b7;
+  --tema-profundo: #064e3b;
+}
+
+[data-tema="oceano"] {
+  --tema-escuro: #075985;
+  --tema-medio: #0284c7;
+  --tema-claro: #38bdf8;
+  --tema-menta: #7dd3fc;
+  --tema-profundo: #0c4a6e;
+}
+
+[data-tema="turquesa"] {
+  --tema-escuro: #115e59;
+  --tema-medio: #0d9488;
+  --tema-claro: #2dd4bf;
+  --tema-menta: #5eead4;
+  --tema-profundo: #134e4a;
+}
+
+[data-tema="violeta"] {
+  --tema-escuro: #5b21b6;
+  --tema-medio: #7c3aed;
+  --tema-claro: #a78bfa;
+  --tema-menta: #c4b5fd;
+  --tema-profundo: #4c1d95;
+}
+
+[data-tema="indigo"] {
+  --tema-escuro: #3730a3;
+  --tema-medio: #4f46e5;
+  --tema-claro: #818cf8;
+  --tema-menta: #a5b4fc;
+  --tema-profundo: #312e81;
+}
+
+[data-tema="coral"] {
+  --tema-escuro: #9f1239;
+  --tema-medio: #e11d48;
+  --tema-claro: #fb7185;
+  --tema-menta: #fda4af;
+  --tema-profundo: #881337;
+}
+
+[data-tema="ambar"] {
+  --tema-escuro: #b45309;
+  --tema-medio: #ea580c;
+  --tema-claro: #fb923c;
+  --tema-menta: #fdba74;
+  --tema-profundo: #7c2d12;
+}
+
+[data-tema="grafite"] {
+  --tema-escuro: #1e293b;
+  --tema-medio: #475569;
+  --tema-claro: #94a3b8;
+  --tema-menta: #cbd5e1;
+  --tema-profundo: #0f172a;
 }
 
 body {
@@ -46,13 +119,14 @@ body::before {
   position: fixed;
   inset: 0;
   z-index: -1;
+  transition: background 400ms ease;
   background:
     /* formas nítidas: é o que o vidro desfoca — sem elas o glass parece fake */
-    radial-gradient(circle 24rem at 82% 8%, rgb(110 231 183 / 0.55) 0 55%, transparent 62%),
-    radial-gradient(circle 30rem at 8% 88%, rgb(6 78 59 / 0.5) 0 58%, transparent 66%),
+    radial-gradient(circle 24rem at 82% 8%, color-mix(in srgb, var(--tema-menta) 55%, transparent) 0 55%, transparent 62%),
+    radial-gradient(circle 30rem at 8% 88%, color-mix(in srgb, var(--tema-profundo) 50%, transparent) 0 58%, transparent 66%),
     radial-gradient(circle 14rem at 45% 30%, rgb(255 255 255 / 0.22) 0 50%, transparent 60%),
-    radial-gradient(circle 18rem at 100% 65%, rgb(4 120 87 / 0.6) 0 55%, transparent 64%),
-    linear-gradient(135deg, #047857 0%, #059669 48%, #34d399 100%);
+    radial-gradient(circle 18rem at 100% 65%, color-mix(in srgb, var(--tema-escuro) 60%, transparent) 0 55%, transparent 64%),
+    linear-gradient(135deg, var(--tema-escuro) 0%, var(--tema-medio) 48%, var(--tema-claro) 100%);
 }
 
 /* Barra de rolagem discreta (Windows mostra a barra grossa por padrão) */
@@ -98,9 +172,9 @@ select option {
 .glass-marca {
   background-image: linear-gradient(
     135deg,
-    rgb(4 120 87 / 0.82),
-    rgb(5 150 105 / 0.78) 55%,
-    rgb(52 211 153 / 0.74)
+    color-mix(in srgb, var(--tema-escuro) 82%, transparent),
+    color-mix(in srgb, var(--tema-medio) 78%, transparent) 55%,
+    color-mix(in srgb, var(--tema-claro) 74%, transparent)
   );
   -webkit-backdrop-filter: blur(20px) saturate(1.6);
   backdrop-filter: blur(20px) saturate(1.6);

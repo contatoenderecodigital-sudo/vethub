@@ -20,9 +20,18 @@ export const viewport: Viewport = {
   themeColor: "#047857",
 };
 
+/**
+ * Aplica o tema salvo antes da primeira pintura — sem isso a tela
+ * aparece verde por um instante e depois muda de cor.
+ */
+const APLICAR_TEMA = `try{var t=localStorage.getItem("vethub:tema");if(t)document.documentElement.dataset.tema=t}catch(e){}`;
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="pt-BR" className={`${inter.variable} h-full antialiased`}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: APLICAR_TEMA }} />
+      </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

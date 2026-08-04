@@ -5,6 +5,7 @@ import { getSessao } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { Wordmark } from "@/components/wordmark";
 import { NavInferior, NavLateral } from "@/components/nav-links";
+import { SeletorTema } from "@/components/seletor-tema";
 
 const ROTULO_PAPEL: Record<string, string> = {
   admin: "Administrador",
@@ -56,7 +57,9 @@ export default async function AppLayout({
             )}
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <SeletorTema />
+
             {/* Usuário (mobile — no desktop fica na lateral) */}
             <span
               className="flex size-8 items-center justify-center rounded-full bg-white/20 text-xs font-bold text-white md:hidden"

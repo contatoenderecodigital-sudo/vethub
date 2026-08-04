@@ -93,7 +93,7 @@ export function BuscaCombobox({
         <span className="absolute right-3 top-2.5 text-xs text-ink-muted">…</span>
       )}
       {aberto && opcoes.length > 0 && (
-        <ul className="glass-forte absolute z-20 mt-1 max-h-64 w-full overflow-auto rounded-xl py-1">
+        <ul className="glass-menu absolute z-20 mt-1 max-h-64 w-full overflow-auto rounded-xl py-1">
           {opcoes.map((o) => (
             <li key={o.id}>
               <button
@@ -116,7 +116,7 @@ export function BuscaCombobox({
         </ul>
       )}
       {aberto && !buscando && opcoes.length === 0 && texto.trim() && !selecionado && (
-        <div className="glass-forte absolute z-20 mt-1 w-full rounded-xl px-3 py-2 text-sm text-ink-muted">
+        <div className="glass-menu absolute z-20 mt-1 w-full rounded-xl px-3 py-2 text-sm text-white/70">
           Nada encontrado.
         </div>
       )}

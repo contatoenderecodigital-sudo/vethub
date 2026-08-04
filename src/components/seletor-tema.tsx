@@ -77,12 +77,12 @@ export function SeletorTema() {
       {aberto && (
         <div
           role="menu"
-          className="glass-forte absolute right-0 z-50 mt-2 w-52 rounded-2xl p-2"
+          className="glass-menu absolute right-0 z-50 mt-2 w-60 rounded-2xl p-3"
         >
-          <p className="px-2 pb-1.5 pt-1 text-[11px] font-semibold uppercase tracking-wider text-ink-muted">
+          <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-white/60">
             Cor do sistema
           </p>
-          <div className="grid grid-cols-4 gap-1.5">
+          <div className="grid grid-cols-4 gap-2">
             {TEMAS.map((tema) => (
               <button
                 key={tema.id}
@@ -91,17 +91,27 @@ export function SeletorTema() {
                 aria-checked={atual === tema.id}
                 onClick={() => escolher(tema.id)}
                 title={tema.nome}
-                className="flex cursor-pointer flex-col items-center gap-1 rounded-lg p-1.5 transition-colors hover:bg-white/20"
+                className="flex cursor-pointer flex-col items-center gap-1.5 rounded-xl p-1.5 transition-colors hover:bg-white/15"
               >
                 <span
-                  className="flex size-7 items-center justify-center rounded-full ring-2 ring-white/40"
+                  className={`flex size-8 items-center justify-center rounded-full transition-all ${
+                    atual === tema.id
+                      ? "ring-2 ring-white ring-offset-2 ring-offset-transparent"
+                      : "ring-1 ring-white/25"
+                  }`}
                   style={{ backgroundColor: tema.cor }}
                 >
                   {atual === tema.id && (
                     <Check className="size-4 text-white" strokeWidth={3} />
                   )}
                 </span>
-                <span className="text-[10px] text-ink-muted">{tema.nome}</span>
+                <span
+                  className={`text-[10px] leading-tight ${
+                    atual === tema.id ? "font-semibold text-white" : "text-white/65"
+                  }`}
+                >
+                  {tema.nome}
+                </span>
               </button>
             ))}
           </div>

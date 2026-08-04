@@ -582,7 +582,7 @@ export function PdvTerminal({ vendedor }: { vendedor: string }) {
           aria-label="Pagamento da venda"
           className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-0 backdrop-blur-sm sm:items-center sm:p-4"
         >
-          <div className="glass-forte max-h-[92dvh] w-full max-w-lg overflow-y-auto rounded-t-2xl p-4 sm:rounded-2xl sm:p-6">
+          <div className="glass-menu max-h-[92dvh] w-full max-w-lg overflow-y-auto rounded-t-2xl p-4 sm:rounded-2xl sm:p-6">
             <div className="mb-4 flex items-start justify-between gap-3">
               <div>
                 <h2 className="text-lg font-bold text-ink">Pagamento</h2>

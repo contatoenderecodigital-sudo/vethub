@@ -162,6 +162,19 @@ body::before {
     inset 0 1px 0 rgb(255 255 255 / 0.45);
 }
 
+/* Menus flutuantes (dropdowns, autocomplete): precisam ser OPACOS, senão
+   o conteúdo da página atravessa e o menu fica ilegível. Painel escuro
+   na cor do tema, com sombra forte para descolar da página. */
+.glass-menu {
+  background: color-mix(in srgb, var(--tema-profundo) 94%, transparent);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  backdrop-filter: blur(24px) saturate(1.4);
+  border: 1px solid rgb(255 255 255 / 0.22);
+  box-shadow:
+    0 20px 50px rgb(0 0 0 / 0.4),
+    inset 0 1px 0 rgb(255 255 255 / 0.14);
+}
+
 /* Options de <select> abrem no menu nativo (fundo branco do sistema) —
    texto precisa voltar a ser escuro ali dentro. */
 select option {

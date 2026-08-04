@@ -58,7 +58,7 @@ export const RELATORIOS: DefinicaoRelatorio[] = [
     href: "/relatorios/vacinas",
     nome: "Vacinas a vencer",
     descricao:
-      "Lista de ação comercial: reforços vencidos e a vencer, com telefone para chamar o tutor.",
+      "Lista de reativação de cliente: reforços vencidos e a vencer, com telefone e WhatsApp do tutor.",
     icone: Syringe,
     area: "Atendimento",
   },

@@ -106,7 +106,7 @@ const GRUPOS: Grupo[] = [
       { href: "/pdv", rotulo: "PDV e vendas", icone: ShoppingCart },
       { href: "/financeiro/receber", rotulo: "Contas a receber", icone: Wallet },
       { href: "/financeiro/pagar", rotulo: "Contas a pagar", icone: Wallet },
-      { href: "/financeiro/comissoes", rotulo: "Comissões", icone: Percent, breve: true },
+      { href: "/financeiro/comissoes", rotulo: "Comissões", icone: Percent },
       { href: "/planos", rotulo: "Planos", icone: ClipboardList },
       { href: "/planos/assinaturas", rotulo: "Assinaturas", icone: Repeat },
     ],
@@ -122,6 +122,7 @@ const GRUPOS: Grupo[] = [
       { href: "/relatorios/estoque", rotulo: "Estoque", icone: Boxes },
       { href: "/relatorios/financeiro", rotulo: "Financeiro", icone: Wallet },
       { href: "/relatorios/clientes", rotulo: "Clientes", icone: Users },
+      { href: "/relatorios/vacinas", rotulo: "Vacinas a vencer", icone: Syringe },
     ],
   },
   {

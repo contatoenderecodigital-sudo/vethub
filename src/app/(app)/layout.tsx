@@ -41,8 +41,9 @@ export default async function AppLayout({
 
   return (
     <div className="flex min-h-dvh flex-col">
-      {/* Cabeçalho com o gradiente da marca em vidro fosco */}
-      <header className="glass-marca sticky top-0 z-40 shadow-sm">
+      {/* Cabeçalho: vidro transparente sobre o degradê da marca — o
+          conteúdo passa desfocado por baixo ao rolar */}
+      <header className="sticky top-0 z-40 border-b border-white/20 bg-white/10 backdrop-blur-xl">
         <div className="flex h-14 items-center justify-between gap-3 px-4 sm:px-5">
           <div className="flex min-w-0 items-center gap-3">
             <Link href="/dashboard" aria-label="Ir para o início">

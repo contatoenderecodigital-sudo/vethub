@@ -117,7 +117,7 @@ export default async function PetPage({
       </div>
 
       {erro && (
-        <p className="mb-4 rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger">
+        <p className="mb-4 rounded-lg border border-danger/25 bg-white/80 px-3 py-2 text-sm font-medium text-danger backdrop-blur-md">
           {erro}
         </p>
       )}

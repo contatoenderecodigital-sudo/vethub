@@ -38,19 +38,19 @@ body {
   font-family: var(--font-sans);
 }
 
-/* Fundo do app: mesh gradient VIVO na família verde — é a cor atrás do
-   vidro que faz o glassmorphism existir. Sem ela, vidro vira branco chapado. */
+/* Fundo do app: O DEGRADÊ DA MARCA (#047857 → #34D399, diagonal) em tela
+   cheia — "área grande", como manda a identidade — com brilhos brancos
+   suaves para dar profundidade ao vidro fosco por cima. */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(52rem 36rem at 90% -12%, rgb(52 211 153 / 0.5), transparent 62%),
-    radial-gradient(46rem 32rem at -14% 22%, rgb(5 150 105 / 0.38), transparent 60%),
-    radial-gradient(40rem 30rem at 55% 118%, rgb(110 231 183 / 0.48), transparent 64%),
-    radial-gradient(28rem 20rem at 34% 42%, rgb(16 185 129 / 0.16), transparent 58%),
-    linear-gradient(160deg, #e7faf2 0%, #f4fbf8 45%, #eef9f4 100%);
+    radial-gradient(42rem 30rem at 85% -10%, rgb(255 255 255 / 0.3), transparent 62%),
+    radial-gradient(38rem 28rem at 5% 110%, rgb(255 255 255 / 0.24), transparent 62%),
+    radial-gradient(30rem 22rem at 105% 60%, rgb(110 231 183 / 0.5), transparent 60%),
+    linear-gradient(135deg, #047857 0%, #059669 48%, #34d399 100%);
 }
 
 /* Barra de rolagem discreta (Windows mostra a barra grossa por padrão) */

@@ -27,7 +27,7 @@ export function Pagination({
   };
 
   const classe =
-    "inline-flex h-9 items-center gap-1 rounded-lg border border-edge bg-surface px-3 text-sm font-medium text-ink hover:bg-zinc-50";
+    "inline-flex h-9 items-center gap-1 rounded-lg border border-white/60 bg-white/60 px-3 text-sm font-medium text-ink backdrop-blur-md hover:bg-white/85";
 
   return (
     <nav className="mt-4 flex items-center justify-between gap-2" aria-label="Paginação">
@@ -39,7 +39,7 @@ export function Pagination({
       ) : (
         <span />
       )}
-      <span className="text-sm text-ink-muted">
+      <span className="text-sm text-white/85 drop-shadow-sm">
         Página {pagina} de {totalPaginas}
       </span>
       {pagina < totalPaginas ? (

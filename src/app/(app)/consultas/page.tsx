@@ -84,7 +84,7 @@ export default async function ConsultasPage({
             className="pl-9"
           />
         </div>
-        <label className="text-xs text-ink-muted">
+        <label className="text-xs font-medium text-white/90 drop-shadow-sm">
           De
           <Input
             type="date"
@@ -95,7 +95,7 @@ export default async function ConsultasPage({
             className="mt-1 w-36"
           />
         </label>
-        <label className="text-xs text-ink-muted">
+        <label className="text-xs font-medium text-white/90 drop-shadow-sm">
           Até
           <Input
             type="date"

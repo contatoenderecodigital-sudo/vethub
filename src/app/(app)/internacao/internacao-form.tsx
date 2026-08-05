@@ -67,13 +67,19 @@ export function InternacaoForm({
       <input type="hidden" {...register("pet_id")} />
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Campo rotulo="Pet" obrigatorio erro={errors.pet_id?.message}>
+        <Campo
+          rotulo="Pet"
+          htmlFor={edicao ? undefined : "pet_id"}
+          obrigatorio
+          erro={errors.pet_id?.message}
+        >
           {edicao ? (
             <p className="flex h-10 items-center rounded-lg border border-white/20 bg-white/10 px-3 text-sm text-ink-muted">
               {petInicial?.rotulo ?? "—"}
             </p>
           ) : (
             <BuscaCombobox
+              id="pet_id"
               name="pet"
               endpoint="/api/busca/pets"
               placeholder="Buscar pet pelo nome…"

@@ -40,9 +40,12 @@ export function Campo({
 }: CampoProps) {
   return (
     <div className={`space-y-1.5 ${className}`}>
+      {/* O asterisco vem colado na última palavra por um espaço inquebrável:
+          em coluna estreita ele acompanha o rótulo em vez de cair sozinho
+          numa linha nova. */}
       <label htmlFor={htmlFor} className="block text-sm font-medium text-ink">
         {rotulo}
-        {obrigatorio && <span className="text-red-100"> *</span>}
+        {obrigatorio && <span className="text-red-100">&nbsp;*</span>}
       </label>
       {children}
       {erro ? (

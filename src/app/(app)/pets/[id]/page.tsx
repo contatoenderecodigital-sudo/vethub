@@ -231,7 +231,7 @@ export default async function PetPage({
                 {pet.tutor ? (
                   <Link
                     href={`/tutores/${pet.tutor_id}`}
-                    className="text-brand-mint hover:underline"
+                    className="link-vidro"
                   >
                     {pet.tutor.nome}
                   </Link>

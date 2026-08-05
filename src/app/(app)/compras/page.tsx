@@ -195,45 +195,56 @@ export default async function ComprasPage({
         })}
       </nav>
 
-      <form method="get" className="mb-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+      {/* Barra de filtros: flex com quebra de linha e largura mínima por bloco.
+          Assim os campos empilham quando a tela aperta em vez de um invadir o
+          espaço do outro (as duas datas contam como um bloco só). */}
+      <form method="get" className="mb-4 flex flex-wrap items-center gap-2">
         {status !== "todas" && <input type="hidden" name="status" value={status} />}
-        <Input
-          type="search"
-          name="q"
-          defaultValue={filtros.q ?? ""}
-          placeholder="Buscar por nota ou fornecedor…"
-          aria-label="Buscar compra"
-        />
-        <Select
-          name="fornecedor"
-          defaultValue={fornecedorId ?? ""}
-          aria-label="Filtrar por fornecedor"
-        >
-          <option value="">Todos os fornecedores</option>
-          {(fornecedores ?? []).map((f) => (
-            <option key={f.id} value={f.id}>
-              {f.nome}
-            </option>
-          ))}
-        </Select>
-        <div className="flex items-center gap-2">
+        <div className="min-w-56 flex-1">
           <Input
-            type="date"
-            name="de"
-            defaultValue={de ?? ""}
-            aria-label="Compras a partir de"
-            title="Compras a partir de"
-          />
-          <span className="text-sm text-ink-muted">até</span>
-          <Input
-            type="date"
-            name="ate"
-            defaultValue={ate ?? ""}
-            aria-label="Compras até"
-            title="Compras até"
+            type="search"
+            name="q"
+            defaultValue={filtros.q ?? ""}
+            placeholder="Buscar por nota ou fornecedor…"
+            aria-label="Buscar compra"
           />
         </div>
-        <div className="flex gap-2">
+        <div className="min-w-48 flex-1">
+          <Select
+            name="fornecedor"
+            defaultValue={fornecedorId ?? ""}
+            aria-label="Filtrar por fornecedor"
+          >
+            <option value="">Todos os fornecedores</option>
+            {(fornecedores ?? []).map((f) => (
+              <option key={f.id} value={f.id}>
+                {f.nome}
+              </option>
+            ))}
+          </Select>
+        </div>
+        <div className="flex min-w-64 flex-1 flex-wrap items-center gap-2">
+          <div className="min-w-32 flex-1">
+            <Input
+              type="date"
+              name="de"
+              defaultValue={de ?? ""}
+              aria-label="Compras a partir de"
+              title="Compras a partir de"
+            />
+          </div>
+          <span className="text-sm text-ink-muted">até</span>
+          <div className="min-w-32 flex-1">
+            <Input
+              type="date"
+              name="ate"
+              defaultValue={ate ?? ""}
+              aria-label="Compras até"
+              title="Compras até"
+            />
+          </div>
+        </div>
+        <div className="flex shrink-0 gap-2">
           <Button type="submit" variante="secondary">
             <Search className="size-4" />
             Filtrar
@@ -306,7 +317,7 @@ export default async function ComprasPage({
                       {fornecedor ? (
                         <Link
                           href={`/fornecedores/${fornecedor.id}`}
-                          className="text-brand-mint hover:underline"
+                          className="link-vidro"
                         >
                           {fornecedor.nome}
                         </Link>

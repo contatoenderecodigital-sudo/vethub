@@ -133,7 +133,7 @@ export default async function ReceitaPage({
               {pet ? (
                 <Link
                   href={`/pets/${pet.id}`}
-                  className="block truncate text-sm font-semibold text-brand-mint hover:underline"
+                  className="block truncate text-sm font-semibold link-vidro"
                 >
                   {pet.nome}
                 </Link>
@@ -166,7 +166,7 @@ export default async function ReceitaPage({
                 {pet?.tutor ? (
                   <Link
                     href={`/tutores/${pet.tutor.id}`}
-                    className="text-brand-mint hover:underline"
+                    className="link-vidro"
                   >
                     {pet.tutor.nome}
                   </Link>
@@ -196,7 +196,7 @@ export default async function ReceitaPage({
               <div className="pt-1">
                 <Link
                   href={`/consultas/${receita.consulta_id}`}
-                  className="inline-flex items-center gap-1.5 text-sm text-brand-mint hover:underline"
+                  className="inline-flex items-center gap-1.5 text-sm link-vidro"
                 >
                   <Stethoscope className="size-3.5" aria-hidden />
                   Ver consulta de origem

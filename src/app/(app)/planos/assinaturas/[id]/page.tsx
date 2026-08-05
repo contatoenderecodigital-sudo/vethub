@@ -221,7 +221,7 @@ export default async function AssinaturaPage({
               {tutor ? (
                 <Link
                   href={`/tutores/${tutor.id}`}
-                  className="text-brand-mint hover:underline"
+                  className="link-vidro"
                 >
                   {tutor.nome}
                 </Link>
@@ -236,7 +236,7 @@ export default async function AssinaturaPage({
               {pet ? (
                 <Link
                   href={`/pets/${pet.id}`}
-                  className="text-brand-mint hover:underline"
+                  className="link-vidro"
                 >
                   {pet.nome}
                 </Link>
@@ -251,7 +251,7 @@ export default async function AssinaturaPage({
               {plano ? (
                 <Link
                   href={`/planos/${plano.id}`}
-                  className="text-brand-mint hover:underline"
+                  className="link-vidro"
                 >
                   {plano.nome}
                 </Link>

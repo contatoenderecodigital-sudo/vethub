@@ -5,9 +5,19 @@
  * mesmas funções — nunca confiar no que veio do front.
  */
 
-/** Máscara de moeda: só dígitos → centavos → "1.234,56". */
+/**
+ * Remove qualquer sinal negativo digitado ou colado — inclusive o "−" (U+2212)
+ * do teclado numérico e os travessões que vêm de planilha. Dinheiro e
+ * quantidade no VetHub nunca são negativos: a máscara não deixa o sinal entrar
+ * e o zod do servidor barra o que passar por fora do formulário.
+ */
+export function semSinal(texto: string): string {
+  return texto.replace(/[-−–—]/g, "");
+}
+
+/** Máscara de moeda: só dígitos → centavos → "1.234,56". Nunca aceita sinal. */
 export function mascaraMoeda(v: string): string {
-  const digitos = v.replace(/\D/g, "").slice(0, 9); // até 9.999.999,99
+  const digitos = semSinal(v).replace(/\D/g, "").slice(0, 9); // até 9.999.999,99
   if (!digitos) return "";
   const centavos = (Number(digitos) / 100).toFixed(2);
   const [inteiro, decimal] = centavos.split(".");
@@ -34,9 +44,12 @@ export function paraNumero(texto: string): number | null {
   return Number.isFinite(n) ? n : NaN;
 }
 
-/** Mantém só dígitos, vírgula e ponto (aplicada no onChange das quantidades). */
+/**
+ * Mantém só dígitos, vírgula e ponto (aplicada no onChange das quantidades).
+ * O sinal de menos cai junto — quantidade negativa não existe por aqui.
+ */
 export function sanitizarNumero(texto: string, maxChars = 10): string {
-  return texto.replace(/[^\d.,]/g, "").slice(0, maxChars);
+  return semSinal(texto).replace(/[^\d.,]/g, "").slice(0, maxChars);
 }
 
 /** Só dígitos, para minutos e outros inteiros. */

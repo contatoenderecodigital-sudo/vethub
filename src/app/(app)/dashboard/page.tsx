@@ -176,7 +176,7 @@ export default async function DashboardPage() {
           </CardTitulo>
           <Link
             href="/financeiro"
-            className="inline-flex items-center gap-1 text-sm font-medium text-brand-mint hover:underline"
+            className="inline-flex items-center gap-1 text-sm font-medium link-vidro"
           >
             Ver painel financeiro
             <ChevronRight className="size-4" />
@@ -228,7 +228,7 @@ export default async function DashboardPage() {
           <CardTitulo className="mb-0">Agenda de hoje</CardTitulo>
           <Link
             href="/agenda"
-            className="inline-flex items-center gap-1 text-sm font-medium text-brand-mint hover:underline"
+            className="inline-flex items-center gap-1 text-sm font-medium link-vidro"
           >
             Ver agenda completa
             <ChevronRight className="size-4" />

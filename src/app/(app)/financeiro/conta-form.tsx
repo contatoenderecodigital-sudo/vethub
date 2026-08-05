@@ -153,8 +153,13 @@ export function ContaForm({
       </div>
 
       {tipo === "receber" ? (
-        <Campo rotulo="Tutor" dica="Quem deve este valor para a clínica (opcional).">
+        <Campo
+          rotulo="Tutor"
+          htmlFor="conta-tutor"
+          dica="Quem deve este valor para a clínica (opcional)."
+        >
           <BuscaCombobox
+            id="conta-tutor"
             name="tutor_id"
             endpoint="/api/busca/tutores"
             placeholder="Busque o tutor por nome, telefone ou CPF…"

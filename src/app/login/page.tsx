@@ -96,7 +96,7 @@ export default function LoginPage() {
 
         <p className="mt-6 text-center text-sm text-ink-muted">
           Ainda não tem conta?{" "}
-          <Link href="/cadastro" className="font-medium text-brand-mint hover:underline">
+          <Link href="/cadastro" className="font-medium link-vidro">
             Cadastre sua clínica
           </Link>
         </p>

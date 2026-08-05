@@ -182,7 +182,7 @@ export default function PoliticaDePrivacidadePage() {
           href="https://www.facebook.com/privacy/policy"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-brand-mint hover:underline"
+          className="link-vidro"
         >
           Política de Privacidade da Meta
         </a>{" "}
@@ -191,7 +191,7 @@ export default function PoliticaDePrivacidadePage() {
           href="https://business.whatsapp.com/policy"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-brand-mint hover:underline"
+          className="link-vidro"
         >
           Políticas do WhatsApp Business
         </a>
@@ -285,7 +285,7 @@ export default function PoliticaDePrivacidadePage() {
         solicitar a exclusão como titular, basta enviar um pedido por
         e-mail; o prazo de atendimento é de até 30 dias. As instruções
         detalhadas estão na página{" "}
-        <Link href="/exclusao-de-dados" className="text-brand-mint hover:underline">
+        <Link href="/exclusao-de-dados" className="link-vidro">
           Exclusão de Dados
         </Link>
         .
@@ -325,7 +325,7 @@ export default function PoliticaDePrivacidadePage() {
         pessoais (DPO), escreva para{" "}
         <a
           href={`mailto:${EMAIL_CONTATO}`}
-          className="text-brand-mint hover:underline"
+          className="link-vidro"
         >
           {EMAIL_CONTATO}
         </a>

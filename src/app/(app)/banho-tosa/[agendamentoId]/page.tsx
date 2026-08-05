@@ -194,7 +194,7 @@ export default async function ExecucaoBanhoTosaPage({
                 {pet ? (
                   <Link
                     href={`/pets/${pet.id}`}
-                    className="truncate text-lg font-semibold text-brand-mint hover:underline"
+                    className="truncate text-lg font-semibold link-vidro"
                   >
                     {pet.nome}
                   </Link>
@@ -218,7 +218,7 @@ export default async function ExecucaoBanhoTosaPage({
                   {tutor ? (
                     <Link
                       href={`/tutores/${tutor.id}`}
-                      className="text-brand-mint hover:underline"
+                      className="link-vidro"
                     >
                       {tutor.nome}
                     </Link>

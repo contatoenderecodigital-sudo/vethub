@@ -19,6 +19,16 @@ function numeroNoIntervalo(min: number, max: number) {
   };
 }
 
+/**
+ * Valor negativo tem mensagem própria: a máscara descarta o "-" na digitação,
+ * então quem manda número negativo veio por fora do formulário — e precisa
+ * ler o motivo exato da recusa, não um "intervalo inválido" genérico.
+ */
+function naoNegativo(v: string) {
+  const n = paraNumero(v);
+  return n === null || !Number.isFinite(n) || n >= 0;
+}
+
 /** "1.234,56" → 1234.56; vazio → 0. Usado depois do zod aprovar. */
 export function valorParaNumero(v: string): number {
   const n = paraNumero(v);
@@ -50,16 +60,20 @@ export const itemSchema = z
     unidade_id: z.string(),
     preco_venda: z
       .string()
+      .refine(naoNegativo, "O preço de venda não pode ser negativo.")
       .refine(numeroNoIntervalo(0, VALOR_MAX), "Preço inválido — use de 0 a 9.999.999,99."),
     preco_custo: z
       .string()
+      .refine(naoNegativo, "O preço de custo não pode ser negativo.")
       .refine(numeroNoIntervalo(0, VALOR_MAX), "Preço inválido — use de 0 a 9.999.999,99."),
     comissao_percentual: z
       .string()
+      .refine(naoNegativo, "A comissão não pode ser negativa.")
       .refine(numeroNoIntervalo(0, 100), "A comissão vai de 0 a 100%."),
     controla_estoque: z.boolean(),
     estoque_minimo: z
       .string()
+      .refine(naoNegativo, "O estoque mínimo não pode ser negativo.")
       .refine(numeroNoIntervalo(0, QTD_MAX), "Quantidade inválida."),
     medicamento: z.boolean(),
     principio_ativo: z.string().max(200, "Texto longo demais."),

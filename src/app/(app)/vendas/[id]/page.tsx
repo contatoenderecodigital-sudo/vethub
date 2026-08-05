@@ -112,7 +112,7 @@ export default async function VendaPage({
             {tutor ? (
               <Link
                 href={`/tutores/${tutor.id}`}
-                className="inline-flex items-center gap-1.5 font-medium text-brand-mint hover:underline"
+                className="inline-flex items-center gap-1.5 font-medium link-vidro"
               >
                 <User className="size-3.5" />
                 {tutor.nome}

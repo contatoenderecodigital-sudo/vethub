@@ -306,14 +306,14 @@ function ResumoContas({
         <div className="flex items-center gap-3 text-sm">
           <Link
             href={`/financeiro/receber?status=${filtro}`}
-            className="inline-flex items-center gap-1 font-medium text-brand-mint hover:underline"
+            className="inline-flex items-center gap-1 font-medium link-vidro"
           >
             A receber
             <ChevronRight className="size-4" />
           </Link>
           <Link
             href={`/financeiro/pagar?status=${filtro}`}
-            className="inline-flex items-center gap-1 font-medium text-brand-mint hover:underline"
+            className="inline-flex items-center gap-1 font-medium link-vidro"
           >
             A pagar
             <ChevronRight className="size-4" />

@@ -221,7 +221,7 @@ export default async function PlanoPage({
           </CardTitulo>
           <Link
             href={`/planos/assinaturas?plano=${plano.id}`}
-            className="inline-flex items-center gap-1 text-sm font-medium text-brand-mint hover:underline"
+            className="inline-flex items-center gap-1 text-sm font-medium link-vidro"
           >
             Ver todas as assinaturas
             <ChevronRight className="size-4" />
@@ -247,7 +247,7 @@ export default async function PlanoPage({
                       {tutor ? (
                         <Link
                           href={`/tutores/${tutor.id}`}
-                          className="text-brand-mint hover:underline"
+                          className="link-vidro"
                         >
                           {tutor.nome}
                         </Link>

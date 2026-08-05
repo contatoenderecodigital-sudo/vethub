@@ -91,7 +91,7 @@ export default async function OrcamentoPage({
               {pet ? (
                 <Link
                   href={`/pets/${pet.id}`}
-                  className="font-medium text-brand-mint hover:underline"
+                  className="font-medium link-vidro"
                 >
                   {pet.nome}
                 </Link>
@@ -106,7 +106,7 @@ export default async function OrcamentoPage({
                   {" · "}
                   <Link
                     href={`/consultas/${orcamento.consulta_id}`}
-                    className="inline-flex items-center gap-1 align-bottom text-brand-mint hover:underline"
+                    className="inline-flex items-center gap-1 align-bottom link-vidro"
                   >
                     <Stethoscope className="size-3.5" />
                     Ver consulta

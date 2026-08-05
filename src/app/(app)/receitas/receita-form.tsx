@@ -58,8 +58,9 @@ export function ReceitaForm({
       {consultaId && <input type="hidden" name="consulta_id" value={consultaId} />}
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Campo rotulo="Pet" obrigatorio>
+        <Campo rotulo="Pet" htmlFor="pet_id" obrigatorio>
           <BuscaCombobox
+            id="pet_id"
             name="pet_id"
             endpoint="/api/busca/pets"
             placeholder="Buscar pet pelo nome…"

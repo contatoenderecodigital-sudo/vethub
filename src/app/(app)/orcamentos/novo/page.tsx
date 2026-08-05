@@ -59,8 +59,9 @@ export default async function NovoOrcamentoPage({
             <input type="hidden" name="consulta_id" value={consulta} />
           )}
 
-          <Campo rotulo="Pet" obrigatorio>
+          <Campo rotulo="Pet" htmlFor="pet_id" obrigatorio>
             <BuscaCombobox
+              id="pet_id"
               name="pet_id"
               endpoint="/api/busca/pets"
               placeholder="Buscar pet pelo nome…"

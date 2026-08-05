@@ -166,7 +166,7 @@ export default async function CompraPage({
                   {i.item_id ? (
                     <Link
                       href={`/itens/${i.item_id}`}
-                      className="text-brand-mint hover:underline"
+                      className="link-vidro"
                     >
                       {i.descricao}
                     </Link>

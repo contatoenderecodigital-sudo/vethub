@@ -102,7 +102,7 @@ export default async function TutorPage({
                   href={`https://wa.me/${zap}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-brand-mint hover:underline"
+                  className="link-vidro"
                 >
                   {formatTelefone(tutor.telefone)}
                 </a>

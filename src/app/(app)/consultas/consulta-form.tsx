@@ -89,8 +89,9 @@ export function ConsultaForm({
       )}
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Campo rotulo="Pet" obrigatorio erro={errors.pet_id?.message}>
+        <Campo rotulo="Pet" htmlFor="pet_id" obrigatorio erro={errors.pet_id?.message}>
           <BuscaCombobox
+            id="pet_id"
             name="pet_id"
             endpoint="/api/busca/pets"
             placeholder="Buscar pet pelo nome…"

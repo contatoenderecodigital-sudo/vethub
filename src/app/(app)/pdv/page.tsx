@@ -123,7 +123,7 @@ export default async function PdvPage({
         <p className="mt-4 text-center">
           <Link
             href="/vendas"
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-brand-mint hover:underline"
+            className="inline-flex items-center gap-1.5 text-sm font-medium link-vidro"
           >
             <History className="size-4" />
             Ver histórico de vendas

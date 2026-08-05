@@ -177,7 +177,16 @@ export function telefoneDoBanco(v: string | null | undefined): string {
 // Blocos reutilizáveis de schema
 // ------------------------------------------------------------------
 
-export const schemaNome = z.string().trim().min(2, "Informe o nome completo.");
+/**
+ * Nome de pessoa: sempre sem espaços nas pontas (o `.trim()` vale também no
+ * servidor — o banco nunca recebe " Ana ") e com teto de tamanho, para não
+ * gravar um texto colado sem querer.
+ */
+export const schemaNome = z
+  .string()
+  .trim()
+  .min(2, "Informe o nome completo.")
+  .max(120, "Nome longo demais.");
 
 export const schemaTelefoneObrigatorio = z
   .string()
@@ -204,11 +213,13 @@ export const schemaCNPJOpcional = z
 export const schemaEmailObrigatorio = z
   .string()
   .trim()
+  .max(150, "E-mail longo demais.")
   .refine((v) => emailValido(v), "E-mail inválido.");
 
 export const schemaEmailOpcional = z
   .string()
   .trim()
+  .max(150, "E-mail longo demais.")
   .refine((v) => v === "" || emailValido(v), "E-mail inválido.");
 
 export const schemaSenhaForte = z
@@ -238,11 +249,11 @@ export const UFS = [
 
 export const camposEndereco = {
   cep: schemaCEPOpcional,
-  logradouro: z.string().trim(),
-  numero: z.string().trim(),
-  complemento: z.string().trim(),
-  bairro: z.string().trim(),
-  cidade: z.string().trim(),
+  logradouro: z.string().trim().max(120, "Endereço longo demais."),
+  numero: z.string().trim().max(20, "Número longo demais."),
+  complemento: z.string().trim().max(60, "Complemento longo demais."),
+  bairro: z.string().trim().max(60, "Bairro longo demais."),
+  cidade: z.string().trim().max(60, "Cidade longa demais."),
   uf: z
     .string()
     .refine((v) => v === "" || (UFS as readonly string[]).includes(v), "UF inválida."),

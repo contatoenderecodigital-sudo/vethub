@@ -17,9 +17,13 @@ export const VALOR_MAXIMO = 9_999_999.99;
 // Moeda
 // ------------------------------------------------------------------
 
-/** Máscara de moeda: só dígitos → centavos → "1.234,56". */
+/**
+ * Máscara de moeda: só dígitos → centavos → "1.234,56".
+ * O sinal de menos (inclusive o "−" do teclado numérico) não entra — o valor
+ * da conta é sempre positivo, e o tipo (receber/pagar) é que dá o sentido.
+ */
 export function mascaraMoeda(v: string): string {
-  const digitos = v.replace(/\D/g, "").slice(0, 9); // até 9.999.999,99
+  const digitos = v.replace(/[-−–—]/g, "").replace(/\D/g, "").slice(0, 9); // até 9.999.999,99
   if (!digitos) return "";
   const centavos = (Number(digitos) / 100).toFixed(2);
   const [inteiro, decimal] = centavos.split(".");

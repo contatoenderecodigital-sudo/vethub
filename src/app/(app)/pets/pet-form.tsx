@@ -76,10 +76,16 @@ export function PetForm({
         <p className="rounded-lg bg-red-400/25 px-3 py-2 text-sm text-red-100">{erro}</p>
       )}
 
-      <Campo rotulo="Tutor" obrigatorio erro={errors.tutor_id?.message}>
+      <Campo
+        rotulo="Tutor"
+        htmlFor="tutor_id"
+        obrigatorio
+        erro={errors.tutor_id?.message}
+      >
         {/* fonte da verdade do tutor_id para o RHF/FormData */}
         <input type="hidden" {...register("tutor_id")} />
         <BuscaCombobox
+          id="tutor_id"
           name="tutor_id"
           endpoint="/api/busca/tutores"
           placeholder="Busque o tutor por nome, telefone ou CPF…"

@@ -19,9 +19,13 @@ export function numeroOuZero(texto: string): number {
   return Number.isFinite(n) ? n : 0;
 }
 
-/** Máscara de moeda digitando da direita para a esquerda: "123456" → "1.234,56". */
+/**
+ * Máscara de moeda digitando da direita para a esquerda: "123456" → "1.234,56".
+ * O sinal de menos (inclusive o "−" do teclado numérico) não entra: dinheiro
+ * negativo não existe no PDV e o zod do servidor barra o que vier por fora.
+ */
 export function mascaraMoeda(v: string): string {
-  const digitos = v.replace(/\D/g, "").slice(0, 9); // até 9.999.999,00
+  const digitos = v.replace(/[-−–—]/g, "").replace(/\D/g, "").slice(0, 9); // até 9.999.999,00
   if (!digitos) return "";
   const centavos = (Number(digitos) / 100).toFixed(2);
   const [inteiro, decimal] = centavos.split(".");

@@ -33,7 +33,7 @@ export default function TermosDeUsoPage() {
         Termos de Uso e com a{" "}
         <Link
           href="/politica-de-privacidade"
-          className="text-brand-mint hover:underline"
+          className="link-vidro"
         >
           Política de Privacidade
         </Link>
@@ -124,7 +124,7 @@ export default function TermosDeUsoPage() {
           Tratar os dados pessoais conforme a{" "}
           <Link
             href="/politica-de-privacidade"
-            className="text-brand-mint hover:underline"
+            className="link-vidro"
           >
             Política de Privacidade
           </Link>{" "}
@@ -143,7 +143,7 @@ export default function TermosDeUsoPage() {
           href="https://business.whatsapp.com/policy"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-brand-mint hover:underline"
+          className="link-vidro"
         >
           Políticas do WhatsApp Business
         </a>
@@ -206,13 +206,13 @@ export default function TermosDeUsoPage() {
         O tratamento de dados pessoais no âmbito do VetHub é regido pela{" "}
         <Link
           href="/politica-de-privacidade"
-          className="text-brand-mint hover:underline"
+          className="link-vidro"
         >
           Política de Privacidade
         </Link>
         , que integra estes Termos para todos os fins. Instruções para
         exclusão de dados estão disponíveis na página{" "}
-        <Link href="/exclusao-de-dados" className="text-brand-mint hover:underline">
+        <Link href="/exclusao-de-dados" className="link-vidro">
           Exclusão de Dados
         </Link>
         .
@@ -226,12 +226,12 @@ export default function TermosDeUsoPage() {
         exclusão pelo e-mail{" "}
         <a
           href={`mailto:${EMAIL_CONTATO}`}
-          className="text-brand-mint hover:underline"
+          className="link-vidro"
         >
           {EMAIL_CONTATO}
         </a>
         , conforme as instruções da página de{" "}
-        <Link href="/exclusao-de-dados" className="text-brand-mint hover:underline">
+        <Link href="/exclusao-de-dados" className="link-vidro">
           Exclusão de Dados
         </Link>
         . O VetHub pode suspender ou encerrar contas em caso de violação
@@ -263,7 +263,7 @@ export default function TermosDeUsoPage() {
         contrário. Dúvidas sobre estes Termos podem ser enviadas para{" "}
         <a
           href={`mailto:${EMAIL_CONTATO}`}
-          className="text-brand-mint hover:underline"
+          className="link-vidro"
         >
           {EMAIL_CONTATO}
         </a>

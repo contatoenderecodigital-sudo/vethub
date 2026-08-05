@@ -81,7 +81,7 @@ export default async function FichaDoPetPage({
           Tutor:{" "}
           <Link
             href={`/tutores/${pet.tutor.id}`}
-            className="text-brand-mint hover:underline"
+            className="link-vidro"
           >
             {pet.tutor.nome}
           </Link>

@@ -53,8 +53,9 @@ export function AssinaturaForm({
       )}
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Campo rotulo="Tutor" obrigatorio>
+        <Campo rotulo="Tutor" htmlFor="assinatura-tutor" obrigatorio>
           <BuscaCombobox
+            id="assinatura-tutor"
             name="tutor_id"
             endpoint="/api/busca/tutores"
             placeholder="Buscar tutor pelo nome…"
@@ -63,8 +64,13 @@ export function AssinaturaForm({
           />
         </Campo>
 
-        <Campo rotulo="Pet" dica="Opcional — planos por pet ficam mais fáceis de controlar">
+        <Campo
+          rotulo="Pet"
+          htmlFor="assinatura-pet"
+          dica="Opcional — planos por pet ficam mais fáceis de controlar"
+        >
           <BuscaCombobox
+            id="assinatura-pet"
             name="pet_id"
             endpoint="/api/busca/pets"
             placeholder="Buscar pet pelo nome…"

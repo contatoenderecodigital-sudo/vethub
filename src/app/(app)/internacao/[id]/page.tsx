@@ -203,7 +203,7 @@ export default async function PacienteInternadoPage({
                 {pet ? (
                   <Link
                     href={`/pets/${pet.id}`}
-                    className="block truncate text-lg font-semibold text-brand-mint hover:underline"
+                    className="block truncate text-lg font-semibold link-vidro"
                   >
                     {pet.nome}
                   </Link>
@@ -222,7 +222,7 @@ export default async function PacienteInternadoPage({
                 {pet?.tutor ? (
                   <Link
                     href={`/tutores/${pet.tutor.id}`}
-                    className="text-brand-mint hover:underline"
+                    className="link-vidro"
                   >
                     {pet.tutor.nome}
                   </Link>

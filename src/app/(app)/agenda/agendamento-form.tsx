@@ -67,10 +67,11 @@ export function AgendamentoForm({
         </p>
       )}
 
-      <Campo rotulo="Pet" obrigatorio erro={errors.pet_id?.message}>
+      <Campo rotulo="Pet" htmlFor="pet_id" obrigatorio erro={errors.pet_id?.message}>
         {/* fonte da verdade do pet_id para o RHF/FormData */}
         <input type="hidden" {...register("pet_id")} />
         <BuscaCombobox
+          id="pet_id"
           name="pet_id"
           endpoint="/api/busca/pets"
           placeholder="Busque o pet pelo nome…"

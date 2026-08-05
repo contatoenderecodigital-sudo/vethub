@@ -50,7 +50,7 @@ export default function ExclusaoDeDadosPage() {
           Envie um e-mail para{" "}
           <a
             href={`mailto:${EMAIL_CONTATO}`}
-            className="text-brand-mint hover:underline"
+            className="link-vidro"
           >
             {EMAIL_CONTATO}
           </a>{" "}
@@ -80,7 +80,7 @@ export default function ExclusaoDeDadosPage() {
           Enviar o pedido diretamente ao VetHub pelo e-mail{" "}
           <a
             href={`mailto:${EMAIL_CONTATO}`}
-            className="text-brand-mint hover:underline"
+            className="link-vidro"
           >
             {EMAIL_CONTATO}
           </a>
@@ -128,7 +128,7 @@ export default function ExclusaoDeDadosPage() {
         Para mais detalhes sobre como tratamos dados pessoais, consulte a{" "}
         <Link
           href="/politica-de-privacidade"
-          className="text-brand-mint hover:underline"
+          className="link-vidro"
         >
           Política de Privacidade
         </Link>

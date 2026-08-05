@@ -13,6 +13,7 @@ export function SeletorPetFicha() {
   return (
     <BuscaCombobox
       name="pet_id"
+      rotulo="Pet"
       endpoint="/api/busca/pets"
       placeholder="Buscar o pet pelo nome…"
       aoSelecionar={(opcao) => {

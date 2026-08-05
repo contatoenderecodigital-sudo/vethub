@@ -189,7 +189,7 @@ export default async function ConsultaPage({
             <div className="min-w-0">
               <Link
                 href={`/pets/${pet.id}`}
-                className="block truncate text-sm font-semibold text-brand-mint hover:underline"
+                className="block truncate text-sm font-semibold link-vidro"
               >
                 {pet.nome}
               </Link>
@@ -209,7 +209,7 @@ export default async function ConsultaPage({
                 {pet.tutor ? (
                   <Link
                     href={`/tutores/${pet.tutor.id}`}
-                    className="text-brand-mint hover:underline"
+                    className="link-vidro"
                   >
                     {pet.tutor.nome}
                   </Link>
@@ -309,7 +309,7 @@ export default async function ConsultaPage({
                             href={a.urlAssinada}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-xs font-medium text-brand-mint hover:underline"
+                            className="inline-flex items-center gap-1 text-xs font-medium link-vidro"
                           >
                             Abrir
                             <ExternalLink className="size-3.5" aria-hidden />

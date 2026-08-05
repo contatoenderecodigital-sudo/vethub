@@ -328,7 +328,7 @@ export default async function CaixaPage({
       <p className="mt-4 text-center">
         <Link
           href="/vendas"
-          className="text-sm font-medium text-brand-mint hover:underline"
+          className="text-sm font-medium link-vidro"
         >
           Ver histórico de vendas
         </Link>

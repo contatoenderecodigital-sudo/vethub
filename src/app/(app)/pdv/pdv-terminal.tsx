@@ -310,7 +310,7 @@ export function PdvTerminal({ vendedor }: { vendedor: string }) {
         </div>
         <Link
           href={`/vendas/${concluida.id}`}
-          className="mt-3 inline-block text-sm font-medium text-brand-mint hover:underline"
+          className="mt-3 inline-block text-sm font-medium link-vidro"
         >
           Abrir os detalhes da venda
         </Link>
@@ -326,9 +326,10 @@ export function PdvTerminal({ vendedor }: { vendedor: string }) {
         {/* ---------- coluna esquerda: itens ---------- */}
         <div className="glass rounded-2xl p-4 sm:p-5">
           <div className="grid gap-3 sm:grid-cols-[1fr_14rem]">
-            <Campo rotulo="Buscar item">
+            <Campo rotulo="Buscar item" htmlFor="pdv-busca-item">
               <BuscaCombobox
                 key={chaveBusca}
+                id="pdv-busca-item"
                 name="item_id"
                 endpoint="/api/busca/itens"
                 placeholder="Nome, código ou serviço…"
@@ -551,8 +552,13 @@ export function PdvTerminal({ vendedor }: { vendedor: string }) {
           </div>
 
           <div className="mt-4">
-            <Campo rotulo="Tutor" dica="Deixe em branco para venda avulsa.">
+            <Campo
+              rotulo="Tutor"
+              htmlFor="pdv-tutor"
+              dica="Deixe em branco para venda avulsa."
+            >
               <BuscaCombobox
+                id="pdv-tutor"
                 name="tutor_id"
                 endpoint="/api/busca/tutores"
                 placeholder="Buscar tutor…"

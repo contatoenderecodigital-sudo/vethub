@@ -59,7 +59,7 @@ export function PrescricaoForm({
       className="mb-4 space-y-3 rounded-xl border border-white/20 bg-white/10 p-3"
       noValidate
     >
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2 sm:gap-x-4">
         <Campo
           rotulo="Medicamento"
           htmlFor="medicamento"
@@ -83,7 +83,9 @@ export function PrescricaoForm({
         </Campo>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-3">
+      {/* Larguras mínimas por coluna + gap maior: "Frequência (h)" e
+          "Duração (dias)" param de encostar uma na outra no painel estreito. */}
+      <div className="grid gap-3 sm:grid-cols-[minmax(7rem,0.8fr)_minmax(9rem,1fr)_minmax(9rem,1fr)] sm:gap-x-4">
         <Campo rotulo="Via" htmlFor="via" erro={errors.via?.message}>
           <Select id="via" {...register("via")}>
             <option value="">— Não informada —</option>

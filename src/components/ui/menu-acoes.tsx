@@ -25,7 +25,13 @@ export function MenuAcoes({
     if (!aberto) return;
 
     function aoClicarFora(e: MouseEvent) {
-      if (raiz.current && !raiz.current.contains(e.target as Node)) {
+      const alvo = e.target as Element | null;
+      // Clique dentro de uma janela de confirmação NÃO é "clique fora": a
+      // janela é aberta por um filho deste menu e vive num portal, fora
+      // desta árvore. Fechar aqui desmontaria o filho no meio do caminho e
+      // o botão Confirmar não teria mais o que enviar.
+      if (alvo?.closest('[role="dialog"], [role="alertdialog"]')) return;
+      if (raiz.current && alvo && !raiz.current.contains(alvo)) {
         setAberto(false);
       }
     }
@@ -59,10 +65,26 @@ export function MenuAcoes({
       {aberto && (
         // Fecha ao acionar qualquer item: os filhos navegam ou enviam form,
         // então o painel não deve continuar aberto por cima do resultado.
+        //
+        // Exceção: itens marcados com `data-mantem-menu` (o botão que pede
+        // confirmação). Eles ainda têm trabalho a fazer depois do clique —
+        // abrir a janela e só então enviar o formulário — e fechar o painel
+        // aqui os desmontaria antes disso. Era o que deixava o Excluir sem
+        // efeito nenhum nas telas que usam este menu.
         <div
           role="menu"
           aria-label={rotulo}
-          onClickCapture={() => setAberto(false)}
+          onClickCapture={(e) => {
+            const alvo = e.target as Element;
+            if (alvo.closest("[data-mantem-menu]")) return;
+            // Atenção: no React o evento de um portal sobe pela árvore de
+            // COMPONENTES, não pela do DOM. O clique no "Confirmar" da
+            // janela — que mora num portal no <body> — chega aqui mesmo
+            // estando fora deste <div>. Fechar nesse clique desmontava o
+            // botão antes de ele enviar o formulário.
+            if (alvo.closest('[role="dialog"], [role="alertdialog"]')) return;
+            setAberto(false);
+          }}
           // No celular abre para a direita (o botão fica encostado à
           // esquerda da barra); do sm: para cima alinha pela direita.
           className="glass-menu absolute left-0 z-40 mt-2 flex w-56 max-w-[calc(100vw-2rem)] flex-col gap-1 rounded-2xl p-2 sm:right-0 sm:left-auto [&_a]:min-h-11 [&_a]:w-full [&_a]:justify-start [&_button]:min-h-11 [&_button]:w-full [&_button]:justify-start [&_form]:w-full"

@@ -32,7 +32,15 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   const nonce = (await headers()).get("x-nonce") ?? undefined;
 
   return (
-    <html lang="pt-BR" className={`${inter.variable} h-full antialiased`}>
+    <html
+      lang="pt-BR"
+      className={`${inter.variable} h-full antialiased`}
+      // O script acima carimba data-tema no <html> ANTES do React hidratar,
+      // então o servidor e o cliente nunca batem nesse atributo. Sem este
+      // aviso suprimido, todo usuário que escolheu uma cor via erro de
+      // hidratação no console a cada página. É a única diferença esperada.
+      suppressHydrationWarning
+    >
       <head>
         <script nonce={nonce} dangerouslySetInnerHTML={{ __html: APLICAR_TEMA }} />
       </head>

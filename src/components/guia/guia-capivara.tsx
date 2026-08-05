@@ -209,11 +209,14 @@ function Guia({ chave, passos }: { chave: string; passos: Passo[] }) {
         title="Como usar esta página"
         className="glass-forte fixed right-4 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-30 flex size-12 cursor-pointer items-center justify-center rounded-full text-white transition-transform hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white md:right-6 md:bottom-6"
       >
-        {/* Enquanto a página nunca foi vista, a bolinha pulsa de leve */}
+        {/* Enquanto a página nunca foi vista, a bolinha pulsa de leve.
+            O anel é MENOR que o botão (inset-2) de propósito: o animate-ping
+            dobra o tamanho, e partindo do tamanho cheio ele passava da borda
+            direita da tela no celular e aparecia cortado. */}
         {naoVisto && (
           <span
             aria-hidden
-            className="absolute inset-0 animate-ping rounded-full bg-white/25 motion-reduce:hidden"
+            className="absolute inset-2 animate-ping rounded-full bg-white/25 motion-reduce:hidden"
           />
         )}
         <CircleQuestionMark className="relative size-6" strokeWidth={2} />
@@ -223,8 +226,15 @@ function Guia({ chave, passos }: { chave: string; passos: Passo[] }) {
 
   return (
     <>
-      {/* Camada que escurece e segura os cliques da página de trás */}
-      <div className="fixed inset-0 z-[60]" aria-hidden>
+      {/* Camada que escurece e segura os cliques da página de trás.
+          Clicar nela fecha o guia: ele abre sozinho na primeira visita de
+          cada página, e sem essa saída o usuário fica preso procurando o X
+          toda vez que só queria usar a tela. */}
+      <div
+        className="fixed inset-0 z-[60] cursor-pointer"
+        aria-hidden
+        onClick={fechar}
+      >
         {holofote ? (
           <div
             className="absolute rounded-xl ring-2 ring-white/80"

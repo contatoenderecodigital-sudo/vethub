@@ -52,6 +52,23 @@ SaaS multi-tenant: cada clínica é um tenant, isolado no banco via Row Level Se
 
    Acesse http://localhost:3000, crie sua clínica em **/cadastro** e pronto.
 
+> **Trocando de computador?** O passo a passo completo (inclusive como
+> recuperar as chaves sem passar arquivo à mão) está em
+> [docs/TROCANDO-DE-PC.md](docs/TROCANDO-DE-PC.md).
+
+## Testes
+
+| Comando | O que faz |
+| --- | --- |
+| `npm test` | isolamento entre clínicas — **obrigatório antes de todo deploy** |
+| `node tests/varredura/varredura.mjs` | abre as 76 telas no computador e no celular, com print |
+| `node tests/varredura/cadastros.mjs` | criar, editar e apagar de ponta a ponta |
+| `node tests/varredura/backend.mjs` | RLS, APIs sem sessão e vazamento de chave |
+| `node tests/varredura/velocidade.mjs` | cronometra abrir página, trocar de aba e salvar |
+
+Os quatro últimos abrem um navegador de verdade e precisam de login. Detalhes
+em [docs/testes-de-navegador.md](docs/testes-de-navegador.md).
+
 ## Estrutura
 
 ```

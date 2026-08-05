@@ -141,16 +141,25 @@ export function CampoData({
         </Popover.Trigger>
 
         <Popover.Portal>
+          {/* Sem a classe de animação da janela modal aqui: ela aplica
+              translate(-50%,-50%) para centralizar, e o Radix também usa
+              transform para posicionar o popover. Os dois brigando faziam
+              o calendário piscar e saltar de lugar. O popover só desmaia
+              (opacidade), sem mexer em transform. */}
           <Popover.Content
             align="start"
             sideOffset={6}
-            className="glass-menu janela-modal z-50 rounded-2xl p-3"
+            collisionPadding={12}
+            className="popover-vidro glass-menu z-50 rounded-2xl p-3 select-none"
           >
             <DayPicker
               mode="single"
               locale={ptBR}
               selected={selecionada}
               defaultMonth={selecionada}
+              /* Sempre seis semanas: sem isso a altura muda de mês para
+                 mês e o popover se reposiciona a cada navegação. */
+              fixedWeeks
               disabled={[
                 ...(min ? [{ before: paraData(min)! }] : []),
                 ...(max ? [{ after: paraData(max)! }] : []),

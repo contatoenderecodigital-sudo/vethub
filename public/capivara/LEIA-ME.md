@@ -1,36 +1,36 @@
 # As imagens do Bento
 
-A capivara do guia ("?" no canto de toda página). Enquanto um arquivo não
-existir aqui, o guia mostra uma patinha no lugar e continua funcionando.
+A capivara do guia ("?" no canto de toda página). Se algum arquivo faltar, o
+guia mostra uma patinha no lugar e continua funcionando.
 
-## Arquivos esperados
+## Arquivos em uso
 
-| Arquivo           | Pose na sua folha de personagem      |
-| ----------------- | ------------------------------------ |
-| `acenando.png`    | acenando com a mão (boas-vindas)     |
-| `apontando.png`   | apontando para o lado                |
-| `joinha.png`      | polegar para cima                    |
-| `prancheta.png`   | segurando a prancheta                |
-| `explicando.png`  | mão aberta, explicando               |
-| `comemorando.png` | braços para cima, comemorando        |
-| `pet.png`         | segurando o cachorrinho              |
+| Arquivo                     | Pose                          | Onde aparece                          |
+| --------------------------- | ----------------------------- | ------------------------------------- |
+| `capivaraacenando.png`      | acenando com a mão            | boas-vindas, primeiro passo            |
+| `capivaraapontando.png`     | apontando para o lado         | quando aponta um botão ou uma coluna   |
+| `capivarajoinha.png`        | polegar para cima             | despedida de todo roteiro              |
+| `capivaraprancheta.png`     | segurando a prancheta         | telas de lista e cadastro              |
+| `capivaraexplicando.png`    | mão aberta, explicando        | pose padrão de explicação              |
+| `capivarabracopracima.png`  | braços para cima              | comemoração (tema, planos)             |
+| `capivaracachorro.png`      | segurando o cachorrinho       | telas de pet, consulta e internação    |
 
-Nome tudo minúsculo, sem acento, terminando em `.png`.
+A ligação entre a pose e o arquivo está em `ARQUIVO`, no começo de
+`src/components/guia/guia-capivara.tsx`. Para trocar uma arte, basta
+substituir o PNG mantendo o nome — nenhum código muda.
 
-## Como exportar
+## Se for gerar novas poses
 
 - **Tamanho:** 1024 × 1024 px (quadrado).
-- **Formato:** PNG com fundo **transparente** (canal alfa). Nada de fundo
-  branco: o balão é escuro e o quadrado branco apareceria.
-- **Enquadramento:** capivara inteira, centralizada na horizontal, os pés
-  encostando numa linha fixa a ~6% do rodapé, altura do corpo ocupando ~85%
-  da altura da folha.
-- **Margem:** deixe pelo menos 5% de espaço vazio nas quatro bordas.
-- **O mais importante:** a capivara precisa ter **o mesmo tamanho e a mesma
-  posição em todas as poses**. É isso que faz ela parecer parada, só trocando
-  de gesto, em vez de pular de lugar a cada passo do guia.
-- **Peso:** até ~300 KB por arquivo (passe no tinypng.com depois de exportar).
+- **Formato:** PNG com fundo **transparente**. Nada de fundo branco: o balão
+  é escuro e o quadrado apareceria.
+- **Enquadramento:** capivara inteira, centralizada na horizontal, pés numa
+  linha fixa perto do rodapé, corpo ocupando ~85% da altura.
+- **O mais importante:** mesmo tamanho e mesma posição do corpo em **todas**
+  as poses. É isso que faz ele parecer parado, só trocando de gesto, em vez
+  de pular de lugar a cada passo do guia.
+- **Peso:** até ~300 KB por arquivo.
 
-Na tela ela aparece dentro de um quadrado de 96 px (celular) ou 128 px
-(computador), com `object-contain` ancorado embaixo — ou seja, a imagem
-inteira sempre cabe e **nunca é cortada**; sobra de altura vira espaço vazio.
+Na tela ele aparece dentro de um quadrado de 112 px (celular) ou 144 px
+(computador), com `object-contain` ancorado embaixo — a imagem inteira sempre
+cabe e **nunca é cortada**; sobra vira espaço vazio.

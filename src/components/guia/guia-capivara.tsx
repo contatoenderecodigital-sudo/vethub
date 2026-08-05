@@ -25,10 +25,23 @@ import { roteiroDaRota, type Passo, type Pose } from "./passos";
  * (`box-shadow: 0 0 0 9999px …`): tudo fora dele escurece e o que está
  * dentro continua nítido, sem precisar de máscara SVG.
  *
- * As imagens ficam em /public/capivara/<pose>.png: PNG com fundo
- * transparente, quadrado, a capivara centralizada. Enquanto o arquivo não
- * existir, entra uma patinha no lugar e o guia continua funcionando.
+ * As imagens ficam em /public/capivara: PNG quadrado (1024×1024) com fundo
+ * transparente e o Bento sempre no mesmo tamanho e na mesma posição — é isso
+ * que faz ele parecer parado, só trocando de gesto entre um passo e outro.
+ * Se algum arquivo faltar, entra uma patinha no lugar e o guia continua
+ * funcionando.
  */
+
+/** Arquivo de cada pose (o nome do arquivo não é o nome da pose). */
+const ARQUIVO: Record<Pose, string> = {
+  acenando: "capivaraacenando.png",
+  apontando: "capivaraapontando.png",
+  joinha: "capivarajoinha.png",
+  prancheta: "capivaraprancheta.png",
+  explicando: "capivaraexplicando.png",
+  comemorando: "capivarabracopracima.png",
+  pet: "capivaracachorro.png",
+};
 
 /** Onde o painel se encaixa para não cobrir o que está sendo explicado. */
 type Ancoragem = "baixo" | "cima";
@@ -235,20 +248,21 @@ function Guia({ chave, passos }: { chave: string; passos: Passo[] }) {
             : "bottom-[calc(5.5rem+env(safe-area-inset-bottom))] md:bottom-6"
         }`}
       >
-        {/* A capivara: caixa quadrada e object-contain, ela nunca é cortada,
-            só encolhe se a tela apertar. */}
-        <div className="relative size-24 shrink-0 sm:size-32">
+        {/* O Bento: caixa quadrada e object-contain — ele nunca é cortado, só
+            encolhe se a tela apertar. A margem negativa aproxima o balão,
+            porque a arte já vem com bastante espaço vazio dos lados. */}
+        <div className="relative -mr-3 size-28 shrink-0 sm:-mr-4 sm:size-36">
           {semImagem[pose] ? (
             <span className="glass-forte flex size-full items-center justify-center rounded-full text-white">
               <PawPrint className="size-8" strokeWidth={1.8} aria-hidden />
             </span>
           ) : (
             <Image
-              src={`/capivara/${pose}.png`}
+              src={`/capivara/${ARQUIVO[pose]}`}
               alt="Bento, a capivara mascote do VetHub"
               width={1024}
               height={1024}
-              sizes="128px"
+              sizes="(min-width: 640px) 144px, 112px"
               priority
               onError={() => setSemImagem((atual) => ({ ...atual, [pose]: true }))}
               className="size-full object-contain object-bottom drop-shadow-[0_10px_20px_rgb(0_0_0_/_0.45)]"

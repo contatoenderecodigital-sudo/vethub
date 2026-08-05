@@ -16,11 +16,15 @@ export function Input({ className = "", ...props }: ComponentProps<"input">) {
  * substituída por um chevron branco desenhado no próprio fundo do
  * campo: o menu de opções continua sendo o nativo, que é o certo
  * para acessibilidade e para o teclado do celular.
+ *
+ * A URL do SVG vai entre ASPAS SIMPLES e os atributos de dentro usam %22.
+ * Com aspas duplas o JavaScript escapa a barra invertida e o CSS gerado sai
+ * como `url(\"data:…\")`, que o navegador descarta — a seta some.
  */
 const SETA_SELECT =
   "appearance-none bg-no-repeat pr-9 " +
   "bg-[length:1.15rem_1.15rem] bg-[position:right_0.6rem_center] " +
-  "bg-[image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2024%2024'%20fill%3D'none'%20stroke%3D'%23ffffff'%20stroke-width%3D'2'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Cpath%20d%3D'm6%209%206%206%206-6'%2F%3E%3C%2Fsvg%3E\")]";
+  "bg-[image:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')]";
 
 export function Select({ className = "", ...props }: ComponentProps<"select">) {
   return (

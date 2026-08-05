@@ -1,4 +1,4 @@
-# As imagens da Capi
+# As imagens do Bento
 
 A capivara do guia ("?" no canto de toda página). Enquanto um arquivo não
 existir aqui, o guia mostra uma patinha no lugar e continua funcionando.

@@ -242,16 +242,19 @@ function Guia({ chave, passos }: { chave: string; passos: Passo[] }) {
       </div>
 
       <div
-        className={`fixed inset-x-3 z-[61] mx-auto flex max-w-md items-end gap-1 sm:inset-x-auto sm:right-6 sm:mx-0 sm:w-[27rem] sm:max-w-none ${
+        className={`fixed inset-x-3 z-[61] mx-auto flex max-w-md items-end gap-1 sm:inset-x-auto sm:right-6 sm:mx-0 sm:w-[34rem] sm:max-w-none ${
           ancoragem === "cima"
             ? "top-4 md:top-6"
             : "bottom-[calc(5.5rem+env(safe-area-inset-bottom))] md:bottom-6"
         }`}
       >
-        {/* O Bento: caixa quadrada e object-contain — ele nunca é cortado, só
-            encolhe se a tela apertar. A margem negativa aproxima o balão,
-            porque a arte já vem com bastante espaço vazio dos lados. */}
-        <div className="relative -mr-3 size-28 shrink-0 sm:-mr-4 sm:size-36">
+        {/* O Bento fica MAIS ALTO que o balão: como o alinhamento é pelo pé
+            (`items-end`), ele cresce para cima e a cabeça passa da borda de
+            cima da caixa. Caixa quadrada com object-contain, então ele nunca
+            é cortado — só encolhe se a tela apertar. A margem negativa
+            aproxima o balão, porque a arte já vem com bastante espaço vazio
+            dos lados. */}
+        <div className="relative -mr-4 size-36 shrink-0 sm:-mr-6 sm:size-64">
           {semImagem[pose] ? (
             <span className="glass-forte flex size-full items-center justify-center rounded-full text-white">
               <PawPrint className="size-8" strokeWidth={1.8} aria-hidden />
@@ -262,7 +265,7 @@ function Guia({ chave, passos }: { chave: string; passos: Passo[] }) {
               alt="Bento, a capivara mascote do VetHub"
               width={1024}
               height={1024}
-              sizes="(min-width: 640px) 144px, 112px"
+              sizes="(min-width: 640px) 256px, 144px"
               priority
               onError={() => setSemImagem((atual) => ({ ...atual, [pose]: true }))}
               className="size-full object-contain object-bottom drop-shadow-[0_10px_20px_rgb(0_0_0_/_0.45)]"

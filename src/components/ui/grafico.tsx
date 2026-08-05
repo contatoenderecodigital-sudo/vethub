@@ -24,26 +24,37 @@ import { formatBRL } from "@/lib/format";
  * branco translúcido, séries com degradê vertical e dica de valor
  * dentro de um cartão de vidro.
  *
- * As cores vêm do tema ativo (variáveis CSS), então trocar a cor do
- * sistema troca os gráficos junto.
+ * A paleta das séries é fixa e clara (ver CORES_SERIE): o fundo da tela
+ * é o degradê do tema, então série na cor do tema desapareceria nele.
  */
 
-/** Paleta das séries — segue o tema, com dois tons de apoio neutros. */
+/**
+ * Paleta das séries.
+ *
+ * NÃO usa as cores do tema de propósito: o fundo do sistema é o próprio
+ * degradê do tema, então uma série na cor do tema desaparece dentro dele
+ * (o roxo some no roxo). Estas são cores claras e saturadas, escolhidas
+ * para saltar sobre qualquer fundo colorido — verde, azul, roxo ou
+ * vermelho — mantendo contraste de leitura.
+ */
 export const CORES_SERIE = [
-  "var(--tema-claro)",
-  "var(--tema-menta)",
-  "#fbbf24",
-  "#f87171",
-  "#a5b4fc",
-  "#5eead4",
+  "#fcd34d", // âmbar
+  "#5eead4", // turquesa
+  "#fda4af", // rosa
+  "#bef264", // limão
+  "#a5b4fc", // lavanda
+  "#fdba74", // laranja
 ] as const;
 
 const EIXO = {
-  stroke: "rgb(255 255 255 / 0.55)",
+  stroke: "rgb(255 255 255 / 0.8)",
   fontSize: 11,
   tickLine: false,
   axisLine: false,
 } as const;
+
+/** Grade discreta, mas visível o bastante para servir de referência. */
+const COR_GRADE = "rgb(255 255 255 / 0.22)";
 
 type Formato = "moeda" | "numero";
 
@@ -116,12 +127,12 @@ export function GraficoBarras({
             return (
               <linearGradient key={s.chave} id={`barra-${s.chave}`} x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor={cor} stopOpacity={0.95} />
-                <stop offset="100%" stopColor={cor} stopOpacity={0.35} />
+                <stop offset="100%" stopColor={cor} stopOpacity={0.6} />
               </linearGradient>
             );
           })}
         </defs>
-        <CartesianGrid strokeDasharray="3 3" stroke="rgb(255 255 255 / 0.14)" vertical={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke={COR_GRADE} vertical={false} />
         <XAxis dataKey={eixoX} {...EIXO} />
         <YAxis {...EIXO} tickFormatter={compacto} width={52} />
         <Tooltip
@@ -166,13 +177,13 @@ export function GraficoArea({
             const cor = s.cor ?? CORES_SERIE[i % CORES_SERIE.length];
             return (
               <linearGradient key={s.chave} id={`area-${s.chave}`} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={cor} stopOpacity={0.55} />
-                <stop offset="100%" stopColor={cor} stopOpacity={0.02} />
+                <stop offset="0%" stopColor={cor} stopOpacity={0.85} />
+                <stop offset="100%" stopColor={cor} stopOpacity={0.12} />
               </linearGradient>
             );
           })}
         </defs>
-        <CartesianGrid strokeDasharray="3 3" stroke="rgb(255 255 255 / 0.14)" vertical={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke={COR_GRADE} vertical={false} />
         <XAxis dataKey={eixoX} {...EIXO} />
         <YAxis {...EIXO} tickFormatter={compacto} width={52} />
         <Tooltip
@@ -194,7 +205,7 @@ export function GraficoArea({
               dataKey={s.chave}
               name={s.rotulo}
               stroke={cor}
-              strokeWidth={2}
+              strokeWidth={3}
               fill={`url(#area-${s.chave})`}
               dot={false}
               activeDot={{ r: 4, strokeWidth: 2, stroke: "#fff" }}
@@ -218,7 +229,7 @@ export function GraficoLinha({
   return (
     <ResponsiveContainer width="100%" height={altura}>
       <LineChart data={dados} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="rgb(255 255 255 / 0.14)" vertical={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke={COR_GRADE} vertical={false} />
         <XAxis dataKey={eixoX} {...EIXO} />
         <YAxis {...EIXO} tickFormatter={compacto} width={52} />
         <Tooltip content={<Dica formato={formato} />} />
@@ -226,7 +237,7 @@ export function GraficoLinha({
           type="monotone"
           dataKey={chave}
           name={rotulo}
-          stroke="var(--tema-menta)"
+          stroke={CORES_SERIE[0]}
           strokeWidth={2.5}
           dot={false}
           activeDot={{ r: 4, strokeWidth: 2, stroke: "#fff" }}
@@ -257,7 +268,7 @@ export function GraficoRosca({
           {CORES_SERIE.map((cor, i) => (
             <linearGradient key={i} id={`fatia-${i}`} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor={cor} stopOpacity={0.95} />
-              <stop offset="100%" stopColor={cor} stopOpacity={0.55} />
+              <stop offset="100%" stopColor={cor} stopOpacity={0.85} />
             </linearGradient>
           ))}
         </defs>

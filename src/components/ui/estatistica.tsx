@@ -3,26 +3,32 @@ import { TrendingDown, TrendingUp, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
- * Cartão de número (KPI). Padroniza os indicadores do sistema: número
- * grande e legível, rótulo curto, ícone num quadrado da cor do tema e,
- * quando fizer sentido, a variação em relação ao período anterior.
+ * Cartão de número (KPI).
  *
- * Substitui os blocos soltos que cada tela montava do seu jeito.
+ * Tudo centralizado — ícone, número e rótulo no eixo do cartão. Numa
+ * fileira de cartões, alinhar à esquerda faz cada bloco "cair" para um
+ * lado e a linha perde o ritmo; centralizado, a leitura corre de cartão
+ * em cartão.
+ *
+ * Os ícones são SEMPRE iguais (vidro branco sobre o tema): cor em ícone
+ * de KPI não carrega informação e vira poluição. A única cor que
+ * sobrevive é o vermelho de "crítico", porque ali ela É a informação —
+ * dinheiro vencido precisa saltar aos olhos.
  */
 
 type Tom = "neutro" | "positivo" | "atencao" | "critico";
 
-const TONS: Record<Tom, { icone: string; valor: string }> = {
-  neutro: { icone: "bg-white/20 text-white", valor: "text-ink" },
-  positivo: { icone: "bg-emerald-300/25 text-emerald-50", valor: "text-emerald-50" },
-  atencao: { icone: "bg-amber-300/25 text-amber-50", valor: "text-amber-50" },
-  critico: { icone: "bg-red-400/25 text-red-50", valor: "text-red-50" },
+const COR_VALOR: Record<Tom, string> = {
+  neutro: "text-ink",
+  positivo: "text-ink",
+  atencao: "text-ink",
+  critico: "text-red-100",
 };
 
 export interface EstatisticaProps {
   rotulo: string;
   valor: string | number;
-  /** Texto pequeno abaixo do número (ex.: "3 vencidas"). */
+  /** Texto pequeno abaixo do rótulo (ex.: "3 vencidas"). */
   detalhe?: string;
   icone?: LucideIcon;
   tom?: Tom;
@@ -42,70 +48,67 @@ export function Estatistica({
   href,
   className,
 }: EstatisticaProps) {
-  const cores = TONS[tom];
   const subiu = (variacao ?? 0) >= 0;
 
   const conteudo = (
     <>
-      <div className="mb-3 flex items-start justify-between gap-2">
-        {Icone && (
-          <span
-            className={cn(
-              "flex size-10 shrink-0 items-center justify-center rounded-xl",
-              cores.icone
-            )}
-          >
-            <Icone className="size-5" strokeWidth={1.8} />
-          </span>
-        )}
-        {variacao !== undefined && (
-          <span
-            className={cn(
-              "inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold",
-              subiu
-                ? "bg-emerald-300/25 text-emerald-50"
-                : "bg-amber-300/25 text-amber-50"
-            )}
-            title="Comparado ao período anterior"
-          >
-            {subiu ? (
-              <TrendingUp className="size-3" strokeWidth={2.4} />
-            ) : (
-              <TrendingDown className="size-3" strokeWidth={2.4} />
-            )}
-            {Math.abs(variacao).toLocaleString("pt-BR", {
-              maximumFractionDigits: 1,
-            })}
-            %
-          </span>
-        )}
-      </div>
+      {Icone && (
+        <span className="mb-2.5 flex size-10 shrink-0 items-center justify-center rounded-xl bg-white/20 text-white">
+          <Icone className="size-5" strokeWidth={1.8} />
+        </span>
+      )}
 
-      {/* break-words: valores longos (BRL com milhar) não estouram o cartão
+      {/* break-words: valor longo (BRL com milhar) não estoura o cartão
           na grade de 2 colunas de um celular de 320px. */}
       <p
         className={cn(
           "text-xl leading-tight font-bold break-words tabular-nums sm:text-[1.75rem]",
-          cores.valor
+          COR_VALOR[tom]
         )}
       >
         {valor}
       </p>
-      <p className="mt-0.5 text-xs break-words text-ink-muted">{rotulo}</p>
+
+      <p className="mt-1 text-xs break-words text-ink-muted">{rotulo}</p>
+
       {detalhe && (
-        <p className="mt-1 text-[11px] text-ink-muted/80">{detalhe}</p>
+        <p className="mt-1 text-[11px] break-words text-ink-muted/85">
+          {detalhe}
+        </p>
+      )}
+
+      {variacao !== undefined && (
+        <span
+          className={cn(
+            "mt-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold",
+            subiu
+              ? "bg-emerald-300/25 text-emerald-50"
+              : "bg-amber-300/25 text-amber-50"
+          )}
+          title="Comparado ao período anterior"
+        >
+          {subiu ? (
+            <TrendingUp className="size-3" strokeWidth={2.4} />
+          ) : (
+            <TrendingDown className="size-3" strokeWidth={2.4} />
+          )}
+          {Math.abs(variacao).toLocaleString("pt-BR", {
+            maximumFractionDigits: 1,
+          })}
+          %
+        </span>
       )}
     </>
   );
 
   const base = cn(
-    "glass rounded-2xl p-4 transition-all",
+    "glass flex h-full flex-col items-center rounded-2xl p-4 text-center transition-all",
     href && "hover:bg-white/20 hover:shadow-lg hover:shadow-black/10",
     className
   );
 
   return href ? (
-    <Link href={href} className={cn(base, "block")}>
+    <Link href={href} className={base}>
       {conteudo}
     </Link>
   ) : (
@@ -114,8 +117,14 @@ export function Estatistica({
 }
 
 /**
- * Grade de indicadores. Escolhe a quantidade de colunas conforme o
- * número de cartões, sempre 2 no celular (nunca 1 — desperdiça tela).
+ * Grade de indicadores.
+ *
+ * As colunas se ajustam à quantidade de cartões (auto-fit): três cartões
+ * ocupam a linha inteira em três colunas, dois em duas — nunca sobra
+ * buraco à direita, que era o que acontecia com número fixo de colunas.
+ * No celular são sempre duas colunas; uma só desperdiça tela.
+ *
+ * `colunas` virou só uma dica de largura mínima do cartão.
  */
 export function GradeEstatisticas({
   children,
@@ -126,15 +135,17 @@ export function GradeEstatisticas({
   colunas?: 3 | 4 | 5 | 6;
   className?: string;
 }) {
-  const grade = {
-    3: "sm:grid-cols-3",
-    4: "sm:grid-cols-2 lg:grid-cols-4",
-    5: "sm:grid-cols-3 lg:grid-cols-5",
-    6: "sm:grid-cols-3 lg:grid-cols-6",
-  }[colunas];
+  const larguraMinima = colunas >= 5 ? "10.5rem" : "12.5rem";
 
   return (
-    <div className={cn("grid grid-cols-2 gap-3", grade, className)}>
+    <div
+      className={cn(
+        "grid grid-cols-2 items-stretch gap-3",
+        "sm:grid-cols-[repeat(auto-fit,minmax(var(--min-cartao),1fr))]",
+        className
+      )}
+      style={{ "--min-cartao": larguraMinima } as React.CSSProperties}
+    >
       {children}
     </div>
   );
@@ -142,7 +153,7 @@ export function GradeEstatisticas({
 
 /**
  * Barra de progresso fina (uso de plano, meta do mês).
- * Aceita valor acima de 100% sem estourar o desenho.
+ * Aceita valor acima do máximo sem estourar o desenho.
  */
 export function Progresso({
   valor,
@@ -162,10 +173,10 @@ export function Progresso({
     <div className={className}>
       {rotulo && (
         <div className="mb-1 flex items-baseline justify-between gap-2 text-xs">
-          <span className="text-ink-muted">{rotulo}</span>
+          <span className="min-w-0 truncate text-ink-muted">{rotulo}</span>
           <span
             className={cn(
-              "font-semibold tabular-nums",
+              "shrink-0 font-semibold tabular-nums",
               esgotou ? "text-amber-50" : "text-ink"
             )}
           >
@@ -186,7 +197,7 @@ export function Progresso({
             "h-full rounded-full transition-all",
             esgotou
               ? "bg-gradient-to-r from-amber-300 to-amber-100"
-              : "bg-gradient-to-r from-[var(--tema-claro)] to-[var(--tema-menta)]"
+              : "bg-gradient-to-r from-white/70 to-white"
           )}
           style={{ width: `${pct}%` }}
         />

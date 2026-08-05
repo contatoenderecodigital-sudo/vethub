@@ -121,20 +121,21 @@ export default async function ItensPage({
         })}
       </nav>
 
-      <form method="get" className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center">
+      {/* Barra de filtros: quebra linha em vez de espremer o botão. */}
+      <form method="get" className="mb-4 flex flex-wrap items-center gap-2">
         {tipoAtivo && <input type="hidden" name="tipo" value={tipoAtivo} />}
         <Input
           type="search"
           name="q"
           defaultValue={q ?? ""}
           placeholder="Buscar por nome ou código…"
-          className="sm:max-w-md"
+          className="min-w-56 flex-1 sm:max-w-md"
         />
         <Select
           name="grupo"
           defaultValue={grupo ?? ""}
           aria-label="Filtrar por grupo"
-          className="sm:w-56"
+          className="min-w-48 flex-1 sm:max-w-56"
         >
           <option value="">Todos os grupos</option>
           {(gruposFiltro ?? []).map((g) => {
@@ -146,8 +147,12 @@ export default async function ItensPage({
             );
           })}
         </Select>
-        <Button type="submit" variante="secondary">
-          <Search className="size-4" />
+        <Button
+          type="submit"
+          variante="secondary"
+          className="min-h-11 shrink-0 sm:min-h-10"
+        >
+          <Search className="size-4 shrink-0" />
           Filtrar
         </Button>
       </form>

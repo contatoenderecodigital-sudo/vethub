@@ -38,6 +38,7 @@ export function BaixaForm({
         type="button"
         variante="secondary"
         tamanho="sm"
+        className="min-h-11 sm:min-h-10"
         onClick={() => setAberto(true)}
       >
         <CircleCheckBig className="size-4" />
@@ -110,13 +111,14 @@ export function BaixaForm({
       </p>
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
-        <SubmitButton tamanho="sm" carregando="Salvando…">
+        <SubmitButton tamanho="sm" carregando="Salvando…" className="min-h-11 sm:min-h-10">
           Confirmar baixa
         </SubmitButton>
         <Button
           type="button"
           variante="ghost"
           tamanho="sm"
+          className="min-h-11 sm:min-h-10"
           onClick={() => setAberto(false)}
         >
           Cancelar

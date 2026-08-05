@@ -203,40 +203,46 @@ export default async function RelatorioVacinasPage({
       periodo={descricao}
     >
       <FiltrosRelatorio base={BASE} params={params} semPeriodo>
-        <Campo rotulo="Situação" htmlFor="situacao">
-          <Select id="situacao" name="situacao" defaultValue={situacao}>
-            {SITUACOES.map((s) => (
-              <option key={s} value={s}>
-                {ROTULO_SITUACAO[s]}
-              </option>
-            ))}
-          </Select>
-        </Campo>
-        <Campo
-          rotulo="Vencem em (dias)"
-          htmlFor="dias"
-          dica={`De ${DIAS_MINIMO} a ${DIAS_MAXIMO} dias`}
-        >
-          <Input
-            id="dias"
-            name="dias"
-            type="number"
-            min={DIAS_MINIMO}
-            max={DIAS_MAXIMO}
-            step={1}
-            defaultValue={dias}
-          />
-        </Campo>
-        <Campo rotulo="Tipo" htmlFor="tipo">
-          <Select id="tipo" name="tipo" defaultValue={tipo ?? ""}>
-            <option value="">Todos</option>
-            {TIPOS_PROTOCOLO.map((t) => (
-              <option key={t.valor} value={t.valor}>
-                {t.plural}
-              </option>
-            ))}
-          </Select>
-        </Campo>
+        <div className="min-w-48 flex-1">
+          <Campo rotulo="Situação" htmlFor="situacao">
+            <Select id="situacao" name="situacao" defaultValue={situacao}>
+              {SITUACOES.map((s) => (
+                <option key={s} value={s}>
+                  {ROTULO_SITUACAO[s]}
+                </option>
+              ))}
+            </Select>
+          </Campo>
+        </div>
+        <div className="min-w-40 flex-1">
+          <Campo
+            rotulo="Vencem em (dias)"
+            htmlFor="dias"
+            dica={`De ${DIAS_MINIMO} a ${DIAS_MAXIMO} dias`}
+          >
+            <Input
+              id="dias"
+              name="dias"
+              type="number"
+              min={DIAS_MINIMO}
+              max={DIAS_MAXIMO}
+              step={1}
+              defaultValue={dias}
+            />
+          </Campo>
+        </div>
+        <div className="min-w-40 flex-1">
+          <Campo rotulo="Tipo" htmlFor="tipo">
+            <Select id="tipo" name="tipo" defaultValue={tipo ?? ""}>
+              <option value="">Todos</option>
+              {TIPOS_PROTOCOLO.map((t) => (
+                <option key={t.valor} value={t.valor}>
+                  {t.plural}
+                </option>
+              ))}
+            </Select>
+          </Campo>
+        </div>
       </FiltrosRelatorio>
 
       <AvisoLimite

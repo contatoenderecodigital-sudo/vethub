@@ -247,46 +247,53 @@ export async function ListaContas({
         })}
       </nav>
 
-      <form method="get" className="mb-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+      <form method="get" className="mb-4 flex flex-wrap items-end gap-2">
         <input type="hidden" name="status" value={status} />
-        <Input
-          type="search"
-          name="q"
-          defaultValue={busca ?? ""}
-          placeholder={`Buscar por descrição${tipo === "receber" ? " ou tutor" : " ou fornecedor"}…`}
-          className="lg:col-span-2"
-          aria-label="Buscar"
-        />
-        <Select
-          name="categoria"
-          defaultValue={categoria ?? ""}
-          aria-label="Filtrar por categoria"
-        >
-          <option value="">Todas as categorias</option>
-          {(categorias ?? []).map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.nome}
-            </option>
-          ))}
-        </Select>
-        <div className="flex items-center gap-2">
+        <div className="min-w-56 flex-1">
           <Input
-            type="date"
-            name="de"
-            defaultValue={de ?? ""}
-            aria-label="Vencimento de"
-            title="Vencimento de"
-          />
-          <span className="text-sm text-ink-muted">até</span>
-          <Input
-            type="date"
-            name="ate"
-            defaultValue={ate ?? ""}
-            aria-label="Vencimento até"
-            title="Vencimento até"
+            type="search"
+            name="q"
+            defaultValue={busca ?? ""}
+            placeholder={`Buscar por descrição${tipo === "receber" ? " ou tutor" : " ou fornecedor"}…`}
+            aria-label="Buscar"
           />
         </div>
-        <div className="flex gap-2">
+        <div className="min-w-48 flex-1">
+          <Select
+            name="categoria"
+            defaultValue={categoria ?? ""}
+            aria-label="Filtrar por categoria"
+          >
+            <option value="">Todas as categorias</option>
+            {(categorias ?? []).map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.nome}
+              </option>
+            ))}
+          </Select>
+        </div>
+        <div className="flex min-w-64 flex-1 flex-wrap items-center gap-2">
+          <div className="min-w-32 flex-1">
+            <Input
+              type="date"
+              name="de"
+              defaultValue={de ?? ""}
+              aria-label="Vencimento de"
+              title="Vencimento de"
+            />
+          </div>
+          <span className="text-sm text-ink-muted">até</span>
+          <div className="min-w-32 flex-1">
+            <Input
+              type="date"
+              name="ate"
+              defaultValue={ate ?? ""}
+              aria-label="Vencimento até"
+              title="Vencimento até"
+            />
+          </div>
+        </div>
+        <div className="flex shrink-0 gap-2">
           <Button type="submit" variante="secondary">
             <Search className="size-4" />
             Filtrar
@@ -397,7 +404,7 @@ export async function ListaContas({
                       </div>
                     </div>
 
-                    <div className="flex w-full flex-wrap items-center gap-1.5 sm:w-auto">
+                    <div className="flex w-full shrink-0 flex-wrap items-center gap-2 sm:w-auto">
                       {podeBaixar && (
                         <BaixaForm
                           contaId={c.id}
@@ -412,6 +419,7 @@ export async function ListaContas({
                           <ConfirmButton
                             variante="ghost"
                             tamanho="sm"
+                            className="min-h-11 sm:min-h-10"
                             mensagem="Estornar a baixa? A conta volta para 'em aberto' e o valor pago é zerado."
                             aria-label={`Estornar baixa de ${c.descricao}`}
                           >
@@ -425,7 +433,7 @@ export async function ListaContas({
                         <Link
                           href={`/financeiro/${c.id}/editar`}
                           aria-label={`Editar ${c.descricao}`}
-                          className="inline-flex size-8 items-center justify-center rounded-md text-ink-muted transition-colors hover:bg-white/15 hover:text-white"
+                          className="inline-flex min-h-11 size-8 items-center justify-center rounded-md text-ink-muted transition-colors hover:bg-white/15 hover:text-white sm:min-h-10"
                         >
                           <Pencil className="size-4" />
                         </Link>
@@ -436,6 +444,7 @@ export async function ListaContas({
                           <ConfirmButton
                             variante="ghost"
                             tamanho="sm"
+                            className="min-h-11 sm:min-h-10"
                             mensagem="Cancelar esta conta? Ela sai dos totais, mas fica no histórico."
                             aria-label={`Cancelar ${c.descricao}`}
                           >
@@ -450,6 +459,7 @@ export async function ListaContas({
                           <ConfirmButton
                             variante="ghost"
                             tamanho="sm"
+                            className="min-h-11 sm:min-h-10"
                             mensagem="Excluir esta conta em definitivo?"
                             aria-label={`Excluir ${c.descricao}`}
                           >

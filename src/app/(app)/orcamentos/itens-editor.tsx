@@ -180,7 +180,7 @@ export function ItensEditor({
                   }
                   onBlur={() => marcarTocado(linha.chave, "descricao")}
                 />
-                <div className="grid grid-cols-[4.5rem_1fr_auto_auto] items-end gap-2 sm:contents">
+                <div className="grid grid-cols-2 items-end gap-2 sm:contents">
                   <label className="block sm:contents">
                     <span className="mb-1 block text-[11px] font-medium text-ink-muted sm:hidden">
                       Qtd

@@ -221,36 +221,42 @@ export default async function RelatorioFinanceiroPage({
         rotuloDe="Vencimento de"
         rotuloAte="Vencimento até"
       >
-        <Campo rotulo="Tipo" htmlFor="tipo">
-          <Select id="tipo" name="tipo" defaultValue={tipo ?? ""}>
-            <option value="">A pagar e a receber</option>
-            {TIPOS.map((t) => (
-              <option key={t} value={t}>
-                {ROTULO_TIPO_CONTA[t]}
-              </option>
-            ))}
-          </Select>
-        </Campo>
-        <Campo rotulo="Status" htmlFor="status">
-          <Select id="status" name="status" defaultValue={status ?? ""}>
-            <option value="">Todos</option>
-            {STATUS.map((s) => (
-              <option key={s} value={s}>
-                {ROTULO_STATUS_CONTA[s]}
-              </option>
-            ))}
-          </Select>
-        </Campo>
-        <Campo rotulo="Categoria" htmlFor="categoria">
-          <Select id="categoria" name="categoria" defaultValue={categoria ?? ""}>
-            <option value="">Todas</option>
-            {(categorias ?? []).map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.nome} ({c.tipo === "receita" ? "receita" : "despesa"})
-              </option>
-            ))}
-          </Select>
-        </Campo>
+        <div className="min-w-40 flex-1">
+          <Campo rotulo="Tipo" htmlFor="tipo">
+            <Select id="tipo" name="tipo" defaultValue={tipo ?? ""}>
+              <option value="">A pagar e a receber</option>
+              {TIPOS.map((t) => (
+                <option key={t} value={t}>
+                  {ROTULO_TIPO_CONTA[t]}
+                </option>
+              ))}
+            </Select>
+          </Campo>
+        </div>
+        <div className="min-w-40 flex-1">
+          <Campo rotulo="Status" htmlFor="status">
+            <Select id="status" name="status" defaultValue={status ?? ""}>
+              <option value="">Todos</option>
+              {STATUS.map((s) => (
+                <option key={s} value={s}>
+                  {ROTULO_STATUS_CONTA[s]}
+                </option>
+              ))}
+            </Select>
+          </Campo>
+        </div>
+        <div className="min-w-48 flex-1">
+          <Campo rotulo="Categoria" htmlFor="categoria">
+            <Select id="categoria" name="categoria" defaultValue={categoria ?? ""}>
+              <option value="">Todas</option>
+              {(categorias ?? []).map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.nome} ({c.tipo === "receita" ? "receita" : "despesa"})
+                </option>
+              ))}
+            </Select>
+          </Campo>
+        </div>
       </FiltrosRelatorio>
 
       <AvisoLimite quantidade={contas.length} />

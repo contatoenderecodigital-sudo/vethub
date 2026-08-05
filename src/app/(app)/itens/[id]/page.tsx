@@ -145,7 +145,7 @@ export default async function ItemPage({
           {item.vacina && <Badge tom="brand">Vacina</Badge>}
         </div>
 
-        <dl className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+        <dl className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <Dado rotulo="Preço de venda" valor={formatBRL(item.preco_venda)} />
           <Dado rotulo="Preço de custo" valor={formatBRL(item.preco_custo)} />
           <Dado

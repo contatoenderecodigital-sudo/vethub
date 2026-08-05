@@ -14,6 +14,11 @@ import { STATUS_ASSINATURA, type AssinaturaStatus } from "@/lib/types";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { EmptyState } from "@/components/ui/empty-state";
+import {
+  Estatistica,
+  GradeEstatisticas,
+  type EstatisticaProps,
+} from "@/components/ui/estatistica";
 import { Input, Select } from "@/components/ui/form";
 import { PageHeader } from "@/components/ui/page-header";
 import { BadgeAssinatura } from "../badges";
@@ -110,27 +115,26 @@ export default async function AssinaturasPage({
     </ButtonLink>
   );
 
-  const cards = [
+  const cards: EstatisticaProps[] = [
     {
       rotulo: "Assinaturas ativas",
-      valor: String(ativas.length),
+      valor: ativas.length,
       icone: Repeat,
-      cor: "text-ink",
       detalhe: `${todas.length} no total (todos os status)`,
     },
     {
       rotulo: "Receita recorrente (MRR)",
       valor: formatBRL(mrr),
       icone: TrendingUp,
-      cor: "text-emerald-50",
+      tom: "positivo",
       detalhe: "Soma do valor mensal das assinaturas ativas",
     },
     {
       rotulo: `Cobrando em ${DIAS_AVISO} dias`,
-      valor: String(vencendo),
+      valor: vencendo,
       icone: CalendarClock,
-      cor: "text-amber-50",
-      detalhe: "Assinaturas com cobrança nos próximos 7 dias",
+      tom: vencendo > 0 ? "atencao" : "neutro",
+      detalhe: `Assinaturas com cobrança nos próximos ${DIAS_AVISO} dias`,
     },
   ];
 
@@ -181,62 +185,55 @@ export default async function AssinaturasPage({
         </p>
       )}
 
-      <div className="mb-6 grid gap-3 sm:grid-cols-3">
+      <GradeEstatisticas colunas={3} className="mb-6">
         {cards.map((c) => (
-          <div key={c.rotulo} className="glass rounded-2xl p-4">
-            <p className="flex items-center gap-1.5 text-xs font-medium tracking-wide text-ink-muted uppercase">
-              <c.icone className="size-3.5 shrink-0" strokeWidth={1.8} aria-hidden />
-              {c.rotulo}
-            </p>
-            <p className={`mt-1 text-2xl font-bold tabular-nums ${c.cor}`}>
-              {c.valor}
-            </p>
-            <p className="mt-1 text-xs text-ink-muted">{c.detalhe}</p>
-          </div>
+          <Estatistica key={c.rotulo} {...c} />
         ))}
-      </div>
+      </GradeEstatisticas>
 
-      <form
-        method="get"
-        className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center"
-      >
-        <Input
-          type="search"
-          name="q"
-          defaultValue={q ?? ""}
-          placeholder="Buscar por tutor ou pet…"
-          className="sm:max-w-xs"
-        />
-        <Select
-          name="status"
-          defaultValue={statusFiltro ?? ""}
-          aria-label="Filtrar por status"
-          className="sm:w-44"
-        >
-          <option value="">Todos os status</option>
-          {STATUS_ASSINATURA.map((s) => (
-            <option key={s.valor} value={s.valor}>
-              {s.rotulo}
-            </option>
-          ))}
-        </Select>
-        <Select
-          name="plano"
-          defaultValue={plano ?? ""}
-          aria-label="Filtrar por plano"
-          className="sm:w-56"
-        >
-          <option value="">Todos os planos</option>
-          {(planos ?? []).map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.nome}
-            </option>
-          ))}
-        </Select>
-        <Button type="submit" variante="secondary">
-          <Search className="size-4" />
-          Filtrar
-        </Button>
+      <form method="get" className="mb-4 flex flex-wrap items-end gap-2">
+        <div className="min-w-56 flex-1">
+          <Input
+            type="search"
+            name="q"
+            defaultValue={q ?? ""}
+            placeholder="Buscar por tutor ou pet…"
+          />
+        </div>
+        <div className="min-w-40 flex-1">
+          <Select
+            name="status"
+            defaultValue={statusFiltro ?? ""}
+            aria-label="Filtrar por status"
+          >
+            <option value="">Todos os status</option>
+            {STATUS_ASSINATURA.map((s) => (
+              <option key={s.valor} value={s.valor}>
+                {s.rotulo}
+              </option>
+            ))}
+          </Select>
+        </div>
+        <div className="min-w-48 flex-1">
+          <Select
+            name="plano"
+            defaultValue={plano ?? ""}
+            aria-label="Filtrar por plano"
+          >
+            <option value="">Todos os planos</option>
+            {(planos ?? []).map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.nome}
+              </option>
+            ))}
+          </Select>
+        </div>
+        <div className="flex shrink-0 gap-2">
+          <Button type="submit" variante="secondary">
+            <Search className="size-4" />
+            Filtrar
+          </Button>
+        </div>
       </form>
 
       {lista.length === 0 ? (

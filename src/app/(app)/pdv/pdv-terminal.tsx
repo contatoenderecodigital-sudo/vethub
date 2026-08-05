@@ -431,7 +431,7 @@ export function PdvTerminal({ vendedor }: { vendedor: string }) {
                         </div>
                       </div>
 
-                      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-[10rem_1fr_1fr]">
+                      <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-[10rem_1fr_1fr]">
                         <div>
                           <span className="mb-1 block text-[11px] font-medium text-ink-muted">
                             Quantidade

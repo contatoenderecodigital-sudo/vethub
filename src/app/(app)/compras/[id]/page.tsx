@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardTitulo } from "@/components/ui/card";
 import { ConfirmButton } from "@/components/ui/confirm-button";
+import { MenuAcoes } from "@/components/ui/menu-acoes";
 import { formatQuantidade } from "../../itens/formato";
 import { BadgeCompra } from "../badge-compra";
 import { cancelarCompra, receberCompra } from "../actions";
@@ -84,6 +85,28 @@ export default async function CompraPage({
   const receber = receberCompra.bind(null, id);
   const cancelar = cancelarCompra.bind(null, id);
 
+  // Cabeçalho: quando as três ações coexistem elas não cabem na linha do
+  // título, então "Receber mercadoria" fica visível e o resto vai ao menu.
+  const podeReceber = ehAdmin && compra.status === "pendente";
+  const podeCancelar = ehAdmin && compra.status !== "cancelada";
+  const usarMenu = podeReceber && podeCancelar;
+
+  const botaoCancelar = (
+    <form action={cancelar}>
+      <ConfirmButton
+        variante="danger"
+        mensagem={
+          compra.status === "recebida"
+            ? "Cancelar esta compra? O estoque será estornado com saídas e a conta a pagar em aberto será cancelada."
+            : "Cancelar esta compra? Ela sai dos totais, mas fica no histórico."
+        }
+      >
+        <Ban className="size-4 shrink-0" />
+        Cancelar compra
+      </ConfirmButton>
+    </form>
+  );
+
   return (
     <div className="space-y-4">
       <PageHeader
@@ -98,35 +121,32 @@ export default async function CompraPage({
         acao={
           <>
             <BadgeCompra status={compra.status} />
-            {ehAdmin && compra.status === "pendente" && (
-              <form action={receber}>
-                <ConfirmButton
-                  mensagem="Receber a mercadoria? Isso dá entrada no estoque, atualiza o custo dos produtos e gera a conta a pagar do fornecedor."
-                >
-                  <PackageCheck className="size-4" />
-                  Receber mercadoria
-                </ConfirmButton>
-              </form>
+            {usarMenu ? (
+              <MenuAcoes>
+                {botaoCancelar}
+                <ButtonLink href="/compras" variante="ghost">
+                  Voltar
+                </ButtonLink>
+              </MenuAcoes>
+            ) : (
+              <>
+                {podeCancelar && botaoCancelar}
+                <ButtonLink href="/compras" variante="secondary">
+                  Voltar
+                </ButtonLink>
+              </>
             )}
-            {ehAdmin && compra.status !== "cancelada" && (
-              <form action={cancelar}>
-                <ConfirmButton
-                  variante="danger"
-                  mensagem={
-                    compra.status === "recebida"
-                      ? "Cancelar esta compra? O estoque será estornado com saídas e a conta a pagar em aberto será cancelada."
-                      : "Cancelar esta compra? Ela sai dos totais, mas fica no histórico."
-                  }
-                >
-                  <Ban className="size-4" />
-                  Cancelar compra
-                </ConfirmButton>
-              </form>
-            )}
-            <ButtonLink href="/compras" variante="secondary">
-              Voltar
-            </ButtonLink>
           </>
+        }
+        acaoPrincipal={
+          podeReceber && (
+            <form action={receber}>
+              <ConfirmButton mensagem="Receber a mercadoria? Isso dá entrada no estoque, atualiza o custo dos produtos e gera a conta a pagar do fornecedor.">
+                <PackageCheck className="size-4 shrink-0" />
+                Receber mercadoria
+              </ConfirmButton>
+            </form>
+          )
         }
       />
 

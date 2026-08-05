@@ -7,10 +7,11 @@ import {
   FileText,
   PawPrint,
   Plus,
+  TrendingDown,
+  TrendingUp,
   TriangleAlert,
   Users,
   Wallet,
-  type LucideIcon,
 } from "lucide-react";
 import { getSessao } from "@/lib/auth";
 import { formatBRL, formatHora, hojeISO, ROTULO_TIPO } from "@/lib/format";
@@ -20,10 +21,25 @@ import { BadgeAgendamento } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardTitulo } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
+import {
+  Estatistica,
+  GradeEstatisticas,
+  type EstatisticaProps,
+} from "@/components/ui/estatistica";
+import { GraficoArea } from "@/components/ui/grafico";
 import { IconeEspecie } from "@/components/icone-especie";
 import { PageHeader } from "@/components/ui/page-header";
 
 export const metadata = { title: "Início" };
+
+/** Dias no gráfico de atendimentos. */
+const DIAS_GRAFICO = 7;
+
+/** Soma dias a uma data ISO em UTC — não escorrega no fuso. */
+function deslocarDia(data: string, dias: number): string {
+  const [ano, mes, dia] = data.split("-").map(Number);
+  return new Date(Date.UTC(ano, mes - 1, dia + dias)).toISOString().slice(0, 10);
+}
 
 export default async function DashboardPage() {
   const { supabase, usuario } = await getSessao();
@@ -32,6 +48,9 @@ export default async function DashboardPage() {
   const hoje = hojeISO();
   const inicio = `${hoje}T00:00:00-03:00`;
   const fim = `${hoje}T23:59:59-03:00`;
+
+  // Janela do gráfico: os 7 dias que terminam hoje, mesmo fuso.
+  const inicioSemana = deslocarDia(hoje, -(DIAS_GRAFICO - 1));
 
   // Contas ainda em aberto até o fim do mês: alimentam o card do financeiro.
   const mes = limitesDoMes(hoje);
@@ -44,6 +63,7 @@ export default async function DashboardPage() {
     pets,
     orcamentosAbertos,
     contasAbertas,
+    agendaSemana,
   ] = await Promise.all([
       supabase
         .from("agendamento")
@@ -81,6 +101,16 @@ export default async function DashboardPage() {
         .returns<
           Pick<Conta, "tipo" | "valor" | "valor_pago" | "vencimento">[]
         >(),
+      // Só a data/hora dos agendamentos da semana — o resto vem dos contadores.
+      // Teto alto de propósito: 7 dias de agenda cabem folgado nele.
+      supabase
+        .from("agendamento")
+        .select("data_hora")
+        .gte("data_hora", `${inicioSemana}T00:00:00-03:00`)
+        .lte("data_hora", fim)
+        .neq("status", "cancelado")
+        .limit(1000)
+        .returns<{ data_hora: string }[]>(),
     ]);
 
   let aReceber = 0;
@@ -95,14 +125,28 @@ export default async function DashboardPage() {
     if (c.vencimento < hoje) vencidas += saldo;
   }
 
+  // Série do gráfico: um ponto por dia, mesmo nos dias sem agendamento.
+  const diasSemana = Array.from({ length: DIAS_GRAFICO }, (_, i) =>
+    deslocarDia(inicioSemana, i)
+  );
+  const porDia = new Map(diasSemana.map((d) => [d, 0]));
+  for (const a of agendaSemana.data ?? []) {
+    // O instante vem do banco em UTC: o dia é o da clínica.
+    const dia = new Date(a.data_hora).toLocaleDateString("en-CA", {
+      timeZone: "America/Sao_Paulo",
+    });
+    const atual = porDia.get(dia);
+    if (atual !== undefined) porDia.set(dia, atual + 1);
+  }
+  const serieSemana = diasSemana.map((d) => ({
+    dia: `${d.slice(8, 10)}/${d.slice(5, 7)}`,
+    atendimentos: porDia.get(d) ?? 0,
+  }));
+  const temSerieSemana = serieSemana.some((p) => p.atendimentos > 0);
+
   const primeiroNome = usuario.nome.split(" ")[0];
 
-  const tiles: {
-    rotulo: string;
-    valor: number;
-    href: string;
-    icone: LucideIcon;
-  }[] = [
+  const tiles: EstatisticaProps[] = [
     {
       rotulo: "Agendamentos hoje",
       valor: agendaHoje.count ?? 0,
@@ -114,6 +158,7 @@ export default async function DashboardPage() {
       valor: aguardando.count ?? 0,
       href: "/agenda",
       icone: Clock,
+      tom: "atencao",
     },
     {
       rotulo: "Internados",
@@ -128,6 +173,30 @@ export default async function DashboardPage() {
       valor: orcamentosAbertos.count ?? 0,
       href: "/orcamentos?status=aberto",
       icone: FileText,
+    },
+  ];
+
+  const financeiro: EstatisticaProps[] = [
+    {
+      rotulo: "A receber",
+      valor: formatBRL(aReceber),
+      icone: TrendingUp,
+      tom: "positivo",
+      href: "/financeiro/receber?status=abertas",
+    },
+    {
+      rotulo: "A pagar",
+      valor: formatBRL(aPagar),
+      icone: TrendingDown,
+      tom: "atencao",
+      href: "/financeiro/pagar?status=abertas",
+    },
+    {
+      rotulo: "Vencidas",
+      valor: formatBRL(vencidas),
+      icone: TriangleAlert,
+      tom: vencidas > 0 ? "critico" : "neutro",
+      href: "/financeiro/receber?status=vencidas",
     },
   ];
 
@@ -151,29 +220,19 @@ export default async function DashboardPage() {
       />
 
       {/* Indicadores */}
-      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+      <GradeEstatisticas colunas={6} className="mb-6">
         {tiles.map((t) => (
-          <Link
-            key={t.rotulo}
-            href={t.href}
-            className="glass group flex flex-col items-center rounded-2xl p-4 text-center transition-all hover:bg-white/20 hover:shadow-lg hover:shadow-black/10"
-          >
-            <span className="mb-2 flex size-10 items-center justify-center rounded-xl bg-white/20 text-white">
-              <t.icone className="size-5" strokeWidth={1.8} />
-            </span>
-            <p className="text-2xl font-bold text-ink tabular-nums">{t.valor}</p>
-            <p className="mt-0.5 text-xs text-ink-muted">{t.rotulo}</p>
-          </Link>
+          <Estatistica key={t.rotulo} {...t} />
         ))}
-      </div>
+      </GradeEstatisticas>
 
       {/* Financeiro do mês */}
-      <Card className="mb-6">
-        <div className="mb-3 flex items-center justify-between">
-          <CardTitulo className="mb-0 flex items-center gap-2">
+      <div className="mb-6">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+          <h2 className="flex items-center gap-2 text-base font-semibold text-ink">
             <Wallet className="size-4" strokeWidth={1.8} aria-hidden />
             Financeiro do mês
-          </CardTitulo>
+          </h2>
           <Link
             href="/financeiro"
             className="inline-flex items-center gap-1 text-sm font-medium link-vidro"
@@ -183,43 +242,26 @@ export default async function DashboardPage() {
           </Link>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-3">
-          <div className="rounded-xl border border-edge bg-white/10 p-4">
-            <p className="text-xs font-medium tracking-wide text-ink-muted uppercase">
-              A receber
-            </p>
-            <p className="mt-1 text-xl font-semibold text-emerald-50 tabular-nums">
-              {formatBRL(aReceber)}
-            </p>
-          </div>
-          <div className="rounded-xl border border-edge bg-white/10 p-4">
-            <p className="text-xs font-medium tracking-wide text-ink-muted uppercase">
-              A pagar
-            </p>
-            <p className="mt-1 text-xl font-semibold text-amber-50 tabular-nums">
-              {formatBRL(aPagar)}
-            </p>
-          </div>
-          <div
-            className={`rounded-xl border p-4 ${
-              vencidas > 0
-                ? "border-red-200/40 bg-red-400/20"
-                : "border-edge bg-white/10"
-            }`}
-          >
-            <p className="flex items-center gap-1.5 text-xs font-medium tracking-wide text-ink-muted uppercase">
-              <TriangleAlert className="size-3.5 shrink-0" strokeWidth={1.8} aria-hidden />
-              Vencidas
-            </p>
-            <p
-              className={`mt-1 text-xl font-semibold tabular-nums ${
-                vencidas > 0 ? "text-red-50" : "text-ink"
-              }`}
-            >
-              {formatBRL(vencidas)}
-            </p>
-          </div>
-        </div>
+        <GradeEstatisticas colunas={3}>
+          {financeiro.map((c) => (
+            <Estatistica key={c.rotulo} {...c} />
+          ))}
+        </GradeEstatisticas>
+      </div>
+
+      {/* Movimento da semana */}
+      <Card className="mb-6">
+        <CardTitulo>Atendimentos dos últimos {DIAS_GRAFICO} dias</CardTitulo>
+        {temSerieSemana ? (
+          <GraficoArea
+            dados={serieSemana}
+            eixoX="dia"
+            altura={220}
+            series={[{ chave: "atendimentos", rotulo: "Atendimentos" }]}
+          />
+        ) : (
+          <p className="text-xs text-ink-muted">Sem dados no período.</p>
+        )}
       </Card>
 
       {/* Agenda de hoje */}

@@ -119,18 +119,23 @@ export default async function FornecedoresPage({
         })}
       </nav>
 
-      <form method="get" className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center">
+      {/* Barra de filtros: quebra linha em vez de espremer o botão. */}
+      <form method="get" className="mb-4 flex flex-wrap items-center gap-2">
         {filtro !== "ativos" && <input type="hidden" name="situacao" value={filtro} />}
         <Input
           type="search"
           name="q"
           defaultValue={q ?? ""}
           placeholder="Buscar por nome, razão social ou CNPJ…"
-          className="sm:max-w-md"
+          className="min-w-56 flex-1 sm:max-w-md"
           aria-label="Buscar fornecedor"
         />
-        <Button type="submit" variante="secondary">
-          <Search className="size-4" />
+        <Button
+          type="submit"
+          variante="secondary"
+          className="min-h-11 shrink-0 sm:min-h-10"
+        >
+          <Search className="size-4 shrink-0" />
           Buscar
         </Button>
       </form>

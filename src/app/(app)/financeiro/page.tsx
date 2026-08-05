@@ -14,9 +14,15 @@ import { formatBRL, formatDataISO, hojeISO } from "@/lib/format";
 import { saldoDaConta, type ContaStatus, type ContaTipo } from "@/lib/types";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardTitulo } from "@/components/ui/card";
+import {
+  Estatistica,
+  GradeEstatisticas,
+  type EstatisticaProps,
+} from "@/components/ui/estatistica";
+import { GraficoBarras } from "@/components/ui/grafico";
 import { PageHeader } from "@/components/ui/page-header";
 import { BadgeVencimento } from "./badges";
-import { limitesDoMes, rotuloMes, ultimosMeses, valorCompacto } from "./schema";
+import { limitesDoMes, rotuloMes, ultimosMeses } from "./schema";
 
 export const metadata = { title: "Painel financeiro" };
 
@@ -116,48 +122,41 @@ export default async function PainelFinanceiroPage() {
     else alvo.despesa += Number(p.valor_pago);
   }
   const barras = chavesMeses.map((chave) => ({
-    chave,
-    rotulo: rotuloMes(chave),
-    ...porMes.get(chave)!,
+    mes: rotuloMes(chave),
+    recebido: porMes.get(chave)!.receita,
+    pago: porMes.get(chave)!.despesa,
   }));
-  const maiorBarra = Math.max(
-    1,
-    ...barras.map((b) => Math.max(b.receita, b.despesa))
-  );
-  /** Altura em % da coluna, com teto de 84% para o valor caber acima da barra. */
-  const altura = (valor: number) =>
-    valor <= 0 ? 0 : Math.max(3, (valor / maiorBarra) * 84);
+  const temMovimento = barras.some((b) => b.recebido > 0 || b.pago > 0);
 
-  const cards = [
+  const cards: EstatisticaProps[] = [
     {
       rotulo: "A receber no mês",
-      valor: aReceber,
+      valor: formatBRL(aReceber),
       href: "/financeiro/receber?status=abertas",
       icone: ArrowUpRight,
-      cor: "text-emerald-50",
+      tom: "positivo",
     },
     {
       rotulo: "A pagar no mês",
-      valor: aPagar,
+      valor: formatBRL(aPagar),
       href: "/financeiro/pagar?status=abertas",
       icone: ArrowDownRight,
-      cor: "text-amber-50",
+      tom: "atencao",
     },
     {
       rotulo: "Vencidas",
-      valor: totalVencido,
+      valor: formatBRL(totalVencido),
       href: "/financeiro/receber?status=vencidas",
       icone: TriangleAlert,
-      cor: "text-red-50",
-      alerta: totalVencido > 0,
+      tom: totalVencido > 0 ? "critico" : "neutro",
       detalhe: `${formatBRL(vencidoReceber)} a receber · ${formatBRL(vencidoPagar)} a pagar`,
     },
     {
       rotulo: "Saldo previsto",
-      valor: saldoPrevisto,
+      valor: formatBRL(saldoPrevisto),
       href: "/financeiro/receber",
       icone: Scale,
-      cor: saldoPrevisto < 0 ? "text-red-50" : "text-ink",
+      tom: saldoPrevisto < 0 ? "critico" : "neutro",
       detalhe: "A receber menos a pagar no mês",
     },
   ];
@@ -181,28 +180,11 @@ export default async function PainelFinanceiroPage() {
         }
       />
 
-      <div className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <GradeEstatisticas colunas={4} className="mb-6">
         {cards.map((c) => (
-          <Link
-            key={c.rotulo}
-            href={c.href}
-            className={`glass rounded-2xl p-4 transition-all hover:bg-white/20 hover:shadow-lg hover:shadow-black/10 ${
-              c.alerta ? "border-red-200/50 bg-red-400/20" : ""
-            }`}
-          >
-            <p className="flex items-center gap-1.5 text-xs font-medium tracking-wide text-ink-muted uppercase">
-              <c.icone className="size-3.5 shrink-0" strokeWidth={1.8} aria-hidden />
-              {c.rotulo}
-            </p>
-            <p className={`mt-1 text-2xl font-bold tabular-nums ${c.cor}`}>
-              {formatBRL(c.valor)}
-            </p>
-            {c.detalhe && (
-              <p className="mt-1 text-xs text-ink-muted">{c.detalhe}</p>
-            )}
-          </Link>
+          <Estatistica key={c.rotulo} {...c} />
         ))}
-      </div>
+      </GradeEstatisticas>
 
       <div className="mb-6 grid gap-4 lg:grid-cols-2">
         <ResumoContas
@@ -221,53 +203,23 @@ export default async function PainelFinanceiroPage() {
       </div>
 
       <Card>
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <CardTitulo className="mb-0">Últimos 6 meses</CardTitulo>
-          <div className="flex items-center gap-3 text-xs text-ink-muted">
-            <span className="flex items-center gap-1.5">
-              <span className="size-2.5 rounded-full bg-emerald-300" aria-hidden />
-              Recebido
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="size-2.5 rounded-full bg-amber-300" aria-hidden />
-              Pago
-            </span>
-          </div>
-        </div>
+        <CardTitulo>Últimos {MESES_GRAFICO} meses</CardTitulo>
 
-        <div className="overflow-x-auto">
-          <div className="flex min-w-[30rem] items-end gap-2 sm:min-w-0 sm:gap-4">
-            {barras.map((b) => (
-              <div key={b.chave} className="flex flex-1 flex-col items-center gap-2">
-                <div className="flex h-44 w-full items-end justify-center gap-1.5">
-                  {/* barra de receita */}
-                  <div className="flex h-full flex-1 flex-col items-center justify-end gap-1">
-                    <span className="text-[10px] text-emerald-50 tabular-nums">
-                      {b.receita > 0 ? valorCompacto(b.receita) : "—"}
-                    </span>
-                    <div
-                      style={{ height: `${altura(b.receita)}%` }}
-                      className="w-full max-w-10 rounded-t-md bg-emerald-300/80"
-                      title={`Recebido em ${b.rotulo}: ${formatBRL(b.receita)}`}
-                    />
-                  </div>
-                  {/* barra de despesa */}
-                  <div className="flex h-full flex-1 flex-col items-center justify-end gap-1">
-                    <span className="text-[10px] text-amber-50 tabular-nums">
-                      {b.despesa > 0 ? valorCompacto(b.despesa) : "—"}
-                    </span>
-                    <div
-                      style={{ height: `${altura(b.despesa)}%` }}
-                      className="w-full max-w-10 rounded-t-md bg-amber-300/80"
-                      title={`Pago em ${b.rotulo}: ${formatBRL(b.despesa)}`}
-                    />
-                  </div>
-                </div>
-                <span className="text-xs text-ink-muted">{b.rotulo}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+        {temMovimento ? (
+          <GraficoBarras
+            dados={barras}
+            eixoX="mes"
+            formato="moeda"
+            altura={260}
+            empilhado={false}
+            series={[
+              { chave: "recebido", rotulo: "Recebido", cor: "#6ee7b7" },
+              { chave: "pago", rotulo: "Pago", cor: "#fcd34d" },
+            ]}
+          />
+        ) : (
+          <p className="text-xs text-ink-muted">Sem dados no período.</p>
+        )}
 
         <p className="mt-3 text-xs text-ink-muted">
           Valores efetivamente recebidos e pagos, pela data da baixa.

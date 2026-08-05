@@ -82,35 +82,39 @@ export function FiltrosRelatorio({
         </div>
       )}
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:items-end">
+      <div className="flex flex-wrap items-end gap-2">
         {!semPeriodo && periodo && (
           <>
-            <Campo rotulo={rotuloDe} htmlFor="de">
-              <Input
-                id="de"
-                name="de"
-                type="date"
-                min="2015-01-01"
-                max="2099-12-31"
-                defaultValue={periodo.de}
-              />
-            </Campo>
-            <Campo rotulo={rotuloAte} htmlFor="ate">
-              <Input
-                id="ate"
-                name="ate"
-                type="date"
-                min="2015-01-01"
-                max="2099-12-31"
-                defaultValue={periodo.ate}
-              />
-            </Campo>
+            <div className="min-w-32 flex-1">
+              <Campo rotulo={rotuloDe} htmlFor="de">
+                <Input
+                  id="de"
+                  name="de"
+                  type="date"
+                  min="2015-01-01"
+                  max="2099-12-31"
+                  defaultValue={periodo.de}
+                />
+              </Campo>
+            </div>
+            <div className="min-w-32 flex-1">
+              <Campo rotulo={rotuloAte} htmlFor="ate">
+                <Input
+                  id="ate"
+                  name="ate"
+                  type="date"
+                  min="2015-01-01"
+                  max="2099-12-31"
+                  defaultValue={periodo.ate}
+                />
+              </Campo>
+            </div>
           </>
         )}
 
         {children}
 
-        <div className="flex items-center gap-2 sm:col-span-2 lg:col-span-1">
+        <div className="flex shrink-0 gap-2">
           <button
             type="submit"
             className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg bg-white px-4 text-sm font-semibold text-brand-dark shadow-lg shadow-black/10 transition-colors hover:bg-white/90"

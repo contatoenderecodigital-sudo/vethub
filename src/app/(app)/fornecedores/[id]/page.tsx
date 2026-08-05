@@ -22,6 +22,7 @@ import { ButtonLink } from "@/components/ui/button";
 import { Card, CardTitulo } from "@/components/ui/card";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { EmptyState } from "@/components/ui/empty-state";
+import { MenuAcoes } from "@/components/ui/menu-acoes";
 import { BadgeCompra } from "../../compras/badge-compra";
 import { excluirFornecedor } from "../actions";
 import { formatCNPJ } from "../schema";
@@ -93,27 +94,36 @@ export default async function FornecedorPage({
         titulo={fornecedor.nome}
         subtitulo={fornecedor.razao_social ?? "Fornecedor"}
         acao={
-          <>
-            <ButtonLink href={`/compras/nova?fornecedor=${id}`} variante="secondary">
-              <Plus className="size-4" />
-              Nova compra
-            </ButtonLink>
-            <ButtonLink href={`/fornecedores/${id}/editar`} variante="secondary">
-              <Pencil className="size-4" />
-              Editar
-            </ButtonLink>
-            {usuario.papel === "admin" && (
+          // Com o Excluir do admin são 3 ações: só "Nova compra" fica
+          // visível e o resto entra no menu.
+          usuario.papel === "admin" ? (
+            <MenuAcoes>
+              <ButtonLink href={`/fornecedores/${id}/editar`} variante="ghost">
+                <Pencil className="size-4 shrink-0" />
+                Editar
+              </ButtonLink>
               <form action={excluirComId}>
                 <ConfirmButton
                   variante="danger"
                   mensagem="Excluir este fornecedor? As compras já lançadas continuam no histórico, mas sem o vínculo."
                 >
-                  <Trash2 className="size-4" />
+                  <Trash2 className="size-4 shrink-0" />
                   Excluir
                 </ConfirmButton>
               </form>
-            )}
-          </>
+            </MenuAcoes>
+          ) : (
+            <ButtonLink href={`/fornecedores/${id}/editar`} variante="secondary">
+              <Pencil className="size-4 shrink-0" />
+              Editar
+            </ButtonLink>
+          )
+        }
+        acaoPrincipal={
+          <ButtonLink href={`/compras/nova?fornecedor=${id}`} variante="secondary">
+            <Plus className="size-4 shrink-0" />
+            Nova compra
+          </ButtonLink>
         }
       />
 

@@ -14,6 +14,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { EmptyState } from "@/components/ui/empty-state";
+import {
+  Estatistica,
+  GradeEstatisticas,
+  type EstatisticaProps,
+} from "@/components/ui/estatistica";
 import { Campo, Input, Select } from "@/components/ui/form";
 import { PageHeader } from "@/components/ui/page-header";
 import { Pagination } from "@/components/ui/pagination";
@@ -204,26 +209,25 @@ export default async function ComissoesPage({
   const geradas = filtros.geradas != null ? Number(filtros.geradas) : null;
   const puladas = Number(filtros.puladas ?? 0);
 
-  const cards = [
+  const cards: EstatisticaProps[] = [
     {
       rotulo: "A pagar no período",
       valor: formatBRL(totalAPagar),
       icone: Wallet,
-      cor: totalAPagar > 0 ? "text-amber-50" : "text-ink",
+      tom: totalAPagar > 0 ? "atencao" : "neutro",
       detalhe: "Comissões apuradas e ainda não quitadas",
     },
     {
       rotulo: "Pago no período",
       valor: formatBRL(totalPago),
       icone: BadgeCheck,
-      cor: "text-emerald-50",
+      tom: "positivo",
       detalhe: "Comissões já quitadas com a equipe",
     },
     {
       rotulo: "Total apurado",
       valor: formatBRL(centavos(totalAPagar + totalPago)),
       icone: Percent,
-      cor: "text-ink",
       detalhe: `${todas?.length ?? 0} ${
         (todas?.length ?? 0) === 1 ? "lançamento" : "lançamentos"
       } no período`,
@@ -297,42 +301,48 @@ export default async function ComissoesPage({
 
       <form
         method="get"
-        className="glass mb-4 grid gap-3 rounded-2xl p-3 sm:grid-cols-2 sm:p-4 lg:grid-cols-4 lg:items-end"
+        className="glass mb-4 flex flex-wrap items-end gap-2 rounded-2xl p-3 sm:p-4"
       >
         <input type="hidden" name="status" value={status} />
-        <Campo rotulo="De" htmlFor="de">
-          <Input
-            id="de"
-            name="de"
-            type="date"
-            min="2015-01-01"
-            max="2099-12-31"
-            defaultValue={periodo.de}
-          />
-        </Campo>
-        <Campo rotulo="Até" htmlFor="ate">
-          <Input
-            id="ate"
-            name="ate"
-            type="date"
-            min="2015-01-01"
-            max="2099-12-31"
-            defaultValue={periodo.ate}
-          />
-        </Campo>
-        {!ehVeterinario && (
-          <Campo rotulo="Profissional" htmlFor="prof">
-            <Select id="prof" name="prof" defaultValue={profissional ?? ""}>
-              <option value="">Todos</option>
-              {(equipe ?? []).map((u) => (
-                <option key={u.id} value={u.id}>
-                  {u.nome}
-                </option>
-              ))}
-            </Select>
+        <div className="min-w-32 flex-1">
+          <Campo rotulo="De" htmlFor="de">
+            <Input
+              id="de"
+              name="de"
+              type="date"
+              min="2015-01-01"
+              max="2099-12-31"
+              defaultValue={periodo.de}
+            />
           </Campo>
+        </div>
+        <div className="min-w-32 flex-1">
+          <Campo rotulo="Até" htmlFor="ate">
+            <Input
+              id="ate"
+              name="ate"
+              type="date"
+              min="2015-01-01"
+              max="2099-12-31"
+              defaultValue={periodo.ate}
+            />
+          </Campo>
+        </div>
+        {!ehVeterinario && (
+          <div className="min-w-48 flex-1">
+            <Campo rotulo="Profissional" htmlFor="prof">
+              <Select id="prof" name="prof" defaultValue={profissional ?? ""}>
+                <option value="">Todos</option>
+                {(equipe ?? []).map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.nome}
+                  </option>
+                ))}
+              </Select>
+            </Campo>
+          </div>
         )}
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 gap-2">
           <Button type="submit" variante="secondary">
             <Search className="size-4" />
             Filtrar
@@ -343,18 +353,11 @@ export default async function ComissoesPage({
         </div>
       </form>
 
-      <div className="mb-4 grid gap-3 sm:grid-cols-3">
+      <GradeEstatisticas colunas={3} className="mb-4">
         {cards.map((c) => (
-          <div key={c.rotulo} className="glass rounded-2xl p-4">
-            <p className="flex items-center gap-1.5 text-xs font-medium tracking-wide text-ink-muted uppercase">
-              <c.icone className="size-3.5 shrink-0" strokeWidth={1.8} aria-hidden />
-              {c.rotulo}
-            </p>
-            <p className={`mt-1 text-2xl font-bold tabular-nums ${c.cor}`}>{c.valor}</p>
-            <p className="mt-1 text-xs text-ink-muted">{c.detalhe}</p>
-          </div>
+          <Estatistica key={c.rotulo} {...c} />
         ))}
-      </div>
+      </GradeEstatisticas>
 
       {truncado && (
         <p className="mb-4 text-xs text-ink-muted">

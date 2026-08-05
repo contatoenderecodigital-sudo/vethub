@@ -171,12 +171,13 @@ export async function PesoHistorico({
                     </p>
                   )}
                 </div>
-                <form action={excluir}>
+                <form action={excluir} className="shrink-0">
                   <ConfirmButton
                     variante="ghost"
                     tamanho="sm"
                     mensagem="Excluir esta pesagem? O peso atual do pet volta para a pesagem anterior."
                     aria-label={`Excluir pesagem de ${formatDataISO(p.data)}`}
+                    className="min-h-11 min-w-11 sm:min-h-8 sm:min-w-0"
                   >
                     <Trash2 className="size-4" />
                   </ConfirmButton>

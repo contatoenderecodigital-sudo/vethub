@@ -26,6 +26,7 @@ import { ButtonLink } from "@/components/ui/button";
 import { Card, CardTitulo } from "@/components/ui/card";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { EmptyState } from "@/components/ui/empty-state";
+import { MenuAcoes } from "@/components/ui/menu-acoes";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { IconeEspecie } from "@/components/icone-especie";
 import {
@@ -150,31 +151,40 @@ export default async function PacienteInternadoPage({
           internacao.data_saida
         )}`}
         acao={
-          <>
+          ativa ? (
+            // Com a internação ativa são 3 ações: "Dar alta" fica visível,
+            // Editar e Óbito entram no menu para não brigarem com o título.
+            <MenuAcoes>
+              <ButtonLink href={`/internacao/${id}/editar`} variante="ghost">
+                <Pencil className="size-4 shrink-0" />
+                Editar
+              </ButtonLink>
+              <form action={encerrarInternacao.bind(null, id, "obito")}>
+                <ConfirmButton
+                  variante="danger"
+                  mensagem="Registrar o óbito deste paciente e encerrar a internação?"
+                >
+                  <Trash2 className="size-4 shrink-0" />
+                  Óbito
+                </ConfirmButton>
+              </form>
+            </MenuAcoes>
+          ) : (
             <ButtonLink href={`/internacao/${id}/editar`} variante="secondary">
-              <Pencil className="size-4" />
+              <Pencil className="size-4 shrink-0" />
               Editar
             </ButtonLink>
-            {ativa && (
-              <>
-                <form action={encerrarInternacao.bind(null, id, "obito")}>
-                  <ConfirmButton
-                    variante="danger"
-                    mensagem="Registrar o óbito deste paciente e encerrar a internação?"
-                  >
-                    <Trash2 className="size-4" />
-                    Óbito
-                  </ConfirmButton>
-                </form>
-                <form action={encerrarInternacao.bind(null, id, "alta")}>
-                  <ConfirmButton mensagem="Dar alta encerra a internação e suspende as medicações pendentes. Confirmar?">
-                    <LogOut className="size-4" />
-                    Dar alta
-                  </ConfirmButton>
-                </form>
-              </>
-            )}
-          </>
+          )
+        }
+        acaoPrincipal={
+          ativa && (
+            <form action={encerrarInternacao.bind(null, id, "alta")}>
+              <ConfirmButton mensagem="Dar alta encerra a internação e suspende as medicações pendentes. Confirmar?">
+                <LogOut className="size-4 shrink-0" />
+                Dar alta
+              </ConfirmButton>
+            </form>
+          )
         }
       />
 
@@ -415,12 +425,15 @@ export default async function PacienteInternadoPage({
                     )}
                   </div>
                   {podeClinicar && (
-                    <form action={excluirPrescricao.bind(null, p.id, id)}>
+                    <form
+                      action={excluirPrescricao.bind(null, p.id, id)}
+                      className="shrink-0"
+                    >
                       <ConfirmButton
                         variante="ghost"
                         tamanho="sm"
                         mensagem="Excluir esta prescrição apaga também o checklist gerado por ela. Tem certeza?"
-                        className="px-2"
+                        className="min-h-11 min-w-11 px-2 sm:min-h-8 sm:min-w-0"
                         aria-label="Excluir prescrição"
                       >
                         <Trash2 className="size-4" />

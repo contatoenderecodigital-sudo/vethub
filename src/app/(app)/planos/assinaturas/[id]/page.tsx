@@ -13,6 +13,7 @@ import type { AssinaturaStatus } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardTitulo } from "@/components/ui/card";
 import { ConfirmButton } from "@/components/ui/confirm-button";
+import { Progresso } from "@/components/ui/estatistica";
 import { PageHeader } from "@/components/ui/page-header";
 import { alterarStatusAssinatura } from "../../actions";
 import { BadgeAssinatura } from "../../badges";
@@ -287,44 +288,26 @@ export default async function AssinaturaPage({
             {listaBeneficios.map((b) => {
               const usados = usadosPorBeneficio.get(b.id) ?? 0;
               const esgotado = usados >= b.quantidade_mes;
-              // Barra em CSS puro: largura em % do que já foi consumido.
-              const percentual = Math.min(
-                100,
-                Math.round((usados / b.quantidade_mes) * 100)
-              );
+              const desconto = Number(b.desconto_percentual ?? 0);
               return (
                 <li key={b.id}>
-                  <div className="mb-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
-                    <span className="min-w-0 flex-1 truncate text-sm font-medium text-ink">
-                      {b.descricao}
-                    </span>
-                    <span className="text-sm text-ink-muted tabular-nums">
-                      {usados} de {b.quantidade_mes} usados
-                    </span>
-                    {esgotado && <Badge tom="pending">Franquia esgotada</Badge>}
-                  </div>
-                  <div
-                    className="h-2 w-full overflow-hidden rounded-full bg-white/20"
-                    role="progressbar"
-                    aria-valuemin={0}
-                    aria-valuemax={b.quantidade_mes}
-                    aria-valuenow={usados}
-                    aria-label={`${b.descricao}: ${usados} de ${b.quantidade_mes} usados no mês`}
-                  >
-                    <div
-                      style={{ width: `${percentual}%` }}
-                      className={`h-full rounded-full transition-all ${
-                        esgotado ? "bg-amber-300" : "bg-emerald-300"
-                      }`}
-                    />
-                  </div>
-                  {Number(b.desconto_percentual ?? 0) > 0 && (
-                    <p className="mt-1 text-xs text-ink-muted">
-                      {Number(b.desconto_percentual).toLocaleString("pt-BR", {
-                        maximumFractionDigits: 2,
-                      })}
-                      % de desconto no que passar da franquia.
-                    </p>
+                  <Progresso
+                    rotulo={b.descricao}
+                    valor={usados}
+                    maximo={b.quantidade_mes}
+                  />
+                  {(esgotado || desconto > 0) && (
+                    <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
+                      {esgotado && <Badge tom="pending">Franquia esgotada</Badge>}
+                      {desconto > 0 && (
+                        <p className="text-xs text-ink-muted">
+                          {desconto.toLocaleString("pt-BR", {
+                            maximumFractionDigits: 2,
+                          })}
+                          % de desconto no que passar da franquia.
+                        </p>
+                      )}
+                    </div>
                   )}
                 </li>
               );

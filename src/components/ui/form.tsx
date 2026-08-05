@@ -10,8 +10,25 @@ export function Input({ className = "", ...props }: ComponentProps<"input">) {
   return <input className={`${CAMPO_BASE} h-10 ${className}`} {...props} />;
 }
 
+/**
+ * A seta padrão do <select> é desenhada pelo sistema operacional e
+ * destoa do vidro (aparece cinza e quadrada no Windows). Aqui ela é
+ * substituída por um chevron branco desenhado no próprio fundo do
+ * campo — o menu de opções continua sendo o nativo, que é o certo
+ * para acessibilidade e para o teclado do celular.
+ */
+const SETA_SELECT =
+  "appearance-none bg-no-repeat pr-9 " +
+  "bg-[length:1.15rem_1.15rem] bg-[position:right_0.6rem_center] " +
+  "bg-[image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2024%2024'%20fill%3D'none'%20stroke%3D'%23ffffff'%20stroke-width%3D'2'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Cpath%20d%3D'm6%209%206%206%206-6'%2F%3E%3C%2Fsvg%3E\")]";
+
 export function Select({ className = "", ...props }: ComponentProps<"select">) {
-  return <select className={`${CAMPO_BASE} h-10 ${className}`} {...props} />;
+  return (
+    <select
+      className={`${CAMPO_BASE} ${SETA_SELECT} h-10 ${className}`}
+      {...props}
+    />
+  );
 }
 
 export function Textarea({ className = "", ...props }: ComponentProps<"textarea">) {

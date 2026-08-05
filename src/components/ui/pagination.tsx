@@ -26,11 +26,15 @@ export function Pagination({
     return `${baseUrl}?${sp.toString()}`;
   };
 
+  // min-h-11 no toque: alvo de 44px no celular, altura normal no desktop.
   const classe =
-    "inline-flex h-9 items-center gap-1 rounded-lg border border-white/40 bg-white/15 px-3 text-sm font-medium text-white backdrop-blur-md hover:bg-white/25";
+    "inline-flex min-h-11 shrink-0 items-center gap-1 rounded-lg border border-white/40 bg-white/15 px-3 text-sm font-medium text-white backdrop-blur-md hover:bg-white/25 sm:min-h-9";
 
   return (
-    <nav className="mt-4 flex items-center justify-between gap-2" aria-label="Paginação">
+    <nav
+      className="mt-4 flex flex-wrap items-center justify-between gap-2"
+      aria-label="Paginação"
+    >
       {pagina > 1 ? (
         <Link href={linkPara(pagina - 1)} className={classe}>
           <ChevronLeft className="size-4" />
@@ -39,7 +43,7 @@ export function Pagination({
       ) : (
         <span />
       )}
-      <span className="text-sm text-white/85 drop-shadow-sm">
+      <span className="order-last w-full text-center text-sm text-white/85 drop-shadow-sm sm:order-none sm:w-auto">
         Página {pagina} de {totalPaginas}
       </span>
       {pagina < totalPaginas ? (

@@ -163,12 +163,16 @@ export async function CardFinanceiro({ tutorId }: { tutorId: string }) {
                   {credito ? "+" : "-"} {formatBRL(Number(l.valor))}
                 </span>
                 {podeLancar && (
-                  <form action={excluirLancamento.bind(null, l.id, tutorId)}>
+                  <form
+                    action={excluirLancamento.bind(null, l.id, tutorId)}
+                    className="shrink-0"
+                  >
                     <ConfirmButton
                       variante="ghost"
                       tamanho="sm"
                       mensagem="Excluir este lançamento? O saldo do tutor será recalculado."
                       aria-label={`Excluir lançamento: ${l.descricao}`}
+                      className="min-h-11 min-w-11 sm:min-h-8 sm:min-w-0"
                     >
                       <Trash2 className="size-4" />
                       <span className="sr-only">Excluir</span>

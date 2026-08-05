@@ -1,4 +1,10 @@
+import { Boxes, PackageX, TriangleAlert, Wallet } from "lucide-react";
 import { formatBRL, hojeISO, formatDataISO } from "@/lib/format";
+import {
+  Estatistica,
+  GradeEstatisticas,
+  type EstatisticaProps,
+} from "@/components/ui/estatistica";
 import { Campo, Select } from "@/components/ui/form";
 import { abrirRelatorio, type OpcaoSimples } from "../dados";
 import {
@@ -10,7 +16,7 @@ import {
 } from "../definicoes";
 import { FiltrosRelatorio } from "../filtros-relatorio";
 import { FolhaRelatorio } from "../impressao";
-import { AvisoLimite, CartoesResumo, type ItemResumo } from "../resumo";
+import { AvisoLimite } from "../resumo";
 import { TabelaRelatorio, type ColunaRelatorio } from "../tabela-relatorio";
 
 export const metadata = { title: "Relatório de posição de estoque" };
@@ -93,15 +99,22 @@ export default async function RelatorioEstoquePage({
     else if (minimo > 0 && atual < minimo) abaixoDoMinimo += 1;
   }
 
-  const cards: ItemResumo[] = [
+  const cards: EstatisticaProps[] = [
     {
       rotulo: "Valor imobilizado",
       valor: formatBRL(centavos(valorImobilizado)),
       detalhe: "Estoque atual pelo preço de custo",
+      icone: Wallet,
+      tom: "neutro",
     },
-    { rotulo: "Produtos", valor: itens.length },
-    { rotulo: "Abaixo do mínimo", valor: abaixoDoMinimo },
-    { rotulo: "Zerados", valor: zerados },
+    { rotulo: "Produtos", valor: itens.length, icone: Boxes },
+    {
+      rotulo: "Abaixo do mínimo",
+      valor: abaixoDoMinimo,
+      icone: TriangleAlert,
+      tom: "atencao",
+    },
+    { rotulo: "Zerados", valor: zerados, icone: PackageX, tom: "critico" },
   ];
 
   const colunas: ColunaRelatorio<ItemEstoque>[] = [
@@ -162,26 +175,30 @@ export default async function RelatorioEstoquePage({
       periodo={`Posição em ${formatDataISO(hoje)}`}
     >
       <FiltrosRelatorio base={BASE} params={params} semPeriodo>
-        <Campo rotulo="Grupo" htmlFor="grupo">
-          <Select id="grupo" name="grupo" defaultValue={grupo ?? ""}>
-            <option value="">Todos</option>
-            {(grupos ?? []).map((g) => (
-              <option key={g.id} value={g.id}>
-                {g.nome}
-              </option>
-            ))}
-          </Select>
-        </Campo>
-        <Campo rotulo="Situação" htmlFor="situacao">
-          <Select id="situacao" name="situacao" defaultValue={situacao ?? ""}>
-            <option value="">Todos os produtos</option>
-            {SITUACOES.map((s) => (
-              <option key={s} value={s}>
-                {ROTULO_SITUACAO[s]}
-              </option>
-            ))}
-          </Select>
-        </Campo>
+        <div className="min-w-40 flex-1">
+          <Campo rotulo="Grupo" htmlFor="grupo">
+            <Select id="grupo" name="grupo" defaultValue={grupo ?? ""}>
+              <option value="">Todos</option>
+              {(grupos ?? []).map((g) => (
+                <option key={g.id} value={g.id}>
+                  {g.nome}
+                </option>
+              ))}
+            </Select>
+          </Campo>
+        </div>
+        <div className="min-w-40 flex-1">
+          <Campo rotulo="Situação" htmlFor="situacao">
+            <Select id="situacao" name="situacao" defaultValue={situacao ?? ""}>
+              <option value="">Todos os produtos</option>
+              {SITUACOES.map((s) => (
+                <option key={s} value={s}>
+                  {ROTULO_SITUACAO[s]}
+                </option>
+              ))}
+            </Select>
+          </Campo>
+        </div>
       </FiltrosRelatorio>
 
       <AvisoLimite
@@ -189,7 +206,11 @@ export default async function RelatorioEstoquePage({
         dica="Filtre por grupo para ver a posição completa."
       />
 
-      <CartoesResumo itens={cards} />
+      <GradeEstatisticas colunas={4} className="mb-4">
+        {cards.map((c) => (
+          <Estatistica key={c.rotulo} {...c} />
+        ))}
+      </GradeEstatisticas>
 
       <TabelaRelatorio
         colunas={colunas}

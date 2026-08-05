@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Bath,
   BedDouble,
@@ -16,6 +16,7 @@ import {
   FileText,
   Handshake,
   LayoutDashboard,
+  Menu,
   MessageCircle,
   Package,
   PawPrint,
@@ -254,34 +255,148 @@ export function NavLateral({ ehAdmin }: { ehAdmin: boolean }) {
   );
 }
 
+/** Atalhos fixos da barra inferior — o 5º slot é o botão "Mais". */
 const ITENS_MOBILE: Item[] = [
   { href: "/dashboard", rotulo: "Início", icone: LayoutDashboard },
   { href: "/agenda", rotulo: "Agenda", icone: CalendarDays },
   { href: "/consultas", rotulo: "Consultas", icone: Stethoscope },
   { href: "/tutores", rotulo: "Tutores", icone: Users },
-  { href: "/pets", rotulo: "Pets", icone: PawPrint },
 ];
 
-/** Navegação inferior (mobile). */
-export function NavInferior() {
+/**
+ * Navegação inferior (mobile). Quatro atalhos + "Mais", que abre um painel
+ * de baixo para cima com TODAS as seções do menu lateral — sem ele o celular
+ * não alcançaria Itens, Financeiro, Relatórios e Configurações.
+ */
+export function NavInferior({ ehAdmin }: { ehAdmin: boolean }) {
   const pathname = usePathname();
+  const [aberto, setAberto] = useState(false);
+  const visiveis = GRUPOS.filter((g) => !g.somenteAdmin || ehAdmin);
+
+  useEffect(() => {
+    if (!aberto) return;
+    function aoTeclar(e: KeyboardEvent) {
+      if (e.key === "Escape") setAberto(false);
+    }
+    document.addEventListener("keydown", aoTeclar);
+    return () => document.removeEventListener("keydown", aoTeclar);
+  }, [aberto]);
+
+  const classeItem = (ativo: boolean) =>
+    `flex min-h-11 flex-1 flex-col items-center justify-center gap-1 px-1 py-2 text-[10px] font-medium ${
+      ativo ? "text-brand-mint" : "text-ink-muted"
+    }`;
+
   return (
-    <nav className="glass-forte fixed inset-x-3 bottom-3 z-30 flex rounded-2xl pb-[env(safe-area-inset-bottom)] md:hidden">
-      {ITENS_MOBILE.map((item) => {
-        const ativo = estaAtivo(pathname, item.href);
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={`flex flex-1 flex-col items-center gap-1 py-2 text-[10px] font-medium ${
-              ativo ? "text-brand-mint" : "text-ink-muted"
-            }`}
+    <>
+      {aberto && (
+        <div className="fixed inset-0 z-40 flex flex-col justify-end md:hidden">
+          {/* Toque fora fecha */}
+          <button
+            type="button"
+            aria-label="Fechar menu"
+            onClick={() => setAberto(false)}
+            className="absolute inset-0 cursor-default bg-black/30 backdrop-blur-[2px]"
+          />
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Todas as seções"
+            className="glass-menu relative max-h-[80dvh] overflow-y-auto rounded-t-3xl px-4 pt-3 pb-[calc(1rem+env(safe-area-inset-bottom))]"
           >
-            <item.icone className="size-5" strokeWidth={ativo ? 2.2 : 1.8} />
-            {item.rotulo}
-          </Link>
-        );
-      })}
-    </nav>
+            <span
+              aria-hidden
+              className="mx-auto mb-2 block h-1 w-10 rounded-full bg-white/50"
+            />
+            <div className="mb-2 flex items-center justify-between gap-3">
+              <p className="min-w-0 truncate text-sm font-semibold text-white drop-shadow-sm">
+                Todas as seções
+              </p>
+              <button
+                type="button"
+                onClick={() => setAberto(false)}
+                className="inline-flex min-h-11 shrink-0 cursor-pointer items-center justify-center rounded-lg px-3 text-sm font-medium text-white/85 hover:bg-white/15 hover:text-white"
+              >
+                Fechar
+              </button>
+            </div>
+
+            <Link
+              href={INICIO.href}
+              onClick={() => setAberto(false)}
+              className={`flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium ${
+                estaAtivo(pathname, INICIO.href)
+                  ? "bg-white/25 text-white"
+                  : "text-ink-muted hover:bg-white/15 hover:text-ink"
+              }`}
+            >
+              <INICIO.icone className="size-[18px] shrink-0" strokeWidth={1.8} />
+              <span className="min-w-0 truncate">{INICIO.rotulo}</span>
+            </Link>
+
+            {visiveis.map((grupo) => (
+              <div key={grupo.titulo} className="mt-3">
+                <p className="flex items-center gap-2 px-3 pb-1 text-[11px] font-semibold tracking-wider text-white/70 uppercase drop-shadow-sm">
+                  <grupo.icone className="size-3.5 shrink-0" strokeWidth={2} />
+                  {grupo.titulo}
+                </p>
+                <div className="flex flex-col gap-0.5">
+                  {grupo.itens.map((item) =>
+                    item.breve ? (
+                      <span
+                        key={item.href}
+                        className="flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm text-ink-muted/45"
+                      >
+                        <item.icone className="size-[18px] shrink-0" strokeWidth={1.8} />
+                        <span className="min-w-0 flex-1 truncate">{item.rotulo}</span>
+                        <span className="shrink-0 rounded-full bg-white/15 px-1.5 py-0.5 text-[9px] font-semibold tracking-wide uppercase">
+                          breve
+                        </span>
+                      </span>
+                    ) : (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setAberto(false)}
+                        className={`flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm ${
+                          estaAtivo(pathname, item.href)
+                            ? "bg-white/25 font-semibold text-white"
+                            : "text-ink-muted hover:bg-white/15 hover:text-ink"
+                        }`}
+                      >
+                        <item.icone className="size-[18px] shrink-0" strokeWidth={1.8} />
+                        <span className="min-w-0 truncate">{item.rotulo}</span>
+                      </Link>
+                    )
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <nav className="glass-forte fixed inset-x-3 bottom-3 z-30 flex rounded-2xl pb-[env(safe-area-inset-bottom)] md:hidden">
+        {ITENS_MOBILE.map((item) => {
+          const ativo = estaAtivo(pathname, item.href);
+          return (
+            <Link key={item.href} href={item.href} className={classeItem(ativo)}>
+              <item.icone className="size-5 shrink-0" strokeWidth={ativo ? 2.2 : 1.8} />
+              <span className="max-w-full truncate">{item.rotulo}</span>
+            </Link>
+          );
+        })}
+        <button
+          type="button"
+          onClick={() => setAberto(true)}
+          aria-haspopup="dialog"
+          aria-expanded={aberto}
+          className={`${classeItem(aberto)} cursor-pointer`}
+        >
+          <Menu className="size-5 shrink-0" strokeWidth={aberto ? 2.2 : 1.8} />
+          <span className="max-w-full truncate">Mais</span>
+        </button>
+      </nav>
+    </>
   );
 }

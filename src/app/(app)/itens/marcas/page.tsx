@@ -88,13 +88,14 @@ export default async function MarcasPage({
                       aria-label={`Nome da marca ${marca.nome}`}
                       className="sm:flex-1"
                     />
-                    <div className="flex gap-2">
-                      <SubmitButton variante="secondary" tamanho="sm">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <SubmitButton variante="secondary" tamanho="sm" className="min-h-11 sm:min-h-10">
                         Salvar
                       </SubmitButton>
                       <ConfirmButton
                         variante="ghost"
                         tamanho="sm"
+                        className="min-h-11 sm:min-h-10"
                         formAction={excluirMarca.bind(null, marca.id)}
                         mensagem={`Excluir a marca "${marca.nome}"?`}
                       >

@@ -153,7 +153,9 @@ export function BeneficiosEditor({
                 />
               </label>
 
-              <div className="grid grid-cols-[1fr_1fr_auto] items-end gap-2 sm:contents">
+              {/* minmax(0,1fr): sem isso os campos usam o próprio tamanho
+                  mínimo e a linha estoura num celular de 320px. */}
+              <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] items-end gap-2 sm:contents">
                 <label className="block sm:contents">
                   <span className="mb-1 block text-[11px] font-medium text-ink-muted sm:hidden">
                     Vezes/mês

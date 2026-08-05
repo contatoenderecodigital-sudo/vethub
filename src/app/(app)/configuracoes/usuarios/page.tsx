@@ -79,7 +79,7 @@ export default async function UsuariosPage({
                 {ehVoce ? (
                   <Badge tom="neutro">{ROTULO_PAPEL[m.papel]}</Badge>
                 ) : (
-                  <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex w-full shrink-0 flex-wrap items-center gap-2 sm:w-auto">
                     <form action={alterarComId} className="flex flex-wrap items-center gap-2">
                       <Select
                         name="papel"
@@ -92,7 +92,7 @@ export default async function UsuariosPage({
                           </option>
                         ))}
                       </Select>
-                      <SubmitButton variante="secondary">
+                      <SubmitButton variante="secondary" className="min-h-11 sm:min-h-10">
                         <Check className="size-4" />
                         Salvar
                       </SubmitButton>
@@ -101,7 +101,7 @@ export default async function UsuariosPage({
                       <ConfirmButton
                         variante="ghost"
                         mensagem={`Remover ${m.nome} da clínica? O acesso será revogado.`}
-                        className="text-red-100"
+                        className="min-h-11 text-red-100 sm:min-h-10"
                       >
                         <Trash2 className="size-4" />
                         Remover

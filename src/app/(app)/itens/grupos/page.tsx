@@ -73,7 +73,7 @@ function GrupoForm({
           ))}
         </Select>
       </div>
-      <div className="flex gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {novo ? (
           <SubmitButton carregando="Adicionando…">
             <Plus className="size-4" />
@@ -81,13 +81,14 @@ function GrupoForm({
           </SubmitButton>
         ) : (
           <>
-            <SubmitButton variante="secondary" tamanho="sm">
+            <SubmitButton variante="secondary" tamanho="sm" className="min-h-11 sm:min-h-10">
               Salvar
             </SubmitButton>
             {grupo && (
               <ConfirmButton
                 variante="ghost"
                 tamanho="sm"
+                className="min-h-11 sm:min-h-10"
                 formAction={excluirGrupo.bind(null, grupo.id)}
                 mensagem={`Excluir "${grupo.nome}"? Os subgrupos dele também somem.`}
               >

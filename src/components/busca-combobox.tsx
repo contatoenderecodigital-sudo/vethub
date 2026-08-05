@@ -175,12 +175,14 @@ export function BuscaCombobox({
             onMouseDown={(e) => e.preventDefault()} // não tirar o foco do input
             onMouseEnter={() => setDestacado(indice)}
             onClick={() => escolher(o)}
-            className={`flex cursor-pointer flex-col items-start px-3 py-2 text-left text-sm ${
+            className={`flex min-h-11 cursor-pointer flex-col items-start justify-center px-3 py-2 text-left text-sm ${
               indice === destacado ? "bg-white/20" : "hover:bg-white/15"
             }`}
           >
-            <span className="font-medium text-ink">{o.rotulo}</span>
-            {o.detalhe && <span className="text-xs text-ink-muted">{o.detalhe}</span>}
+            <span className="w-full truncate font-medium text-ink">{o.rotulo}</span>
+            {o.detalhe && (
+              <span className="w-full truncate text-xs text-ink-muted">{o.detalhe}</span>
+            )}
           </li>
         ))}
       </ul>

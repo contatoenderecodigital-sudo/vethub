@@ -153,7 +153,7 @@ export default async function AgendaKanbanPage({
             href={linkDia(deslocarDia(data, -1), vet)}
             variante="secondary"
             tamanho="sm"
-            className="max-sm:min-h-10 max-sm:min-w-10"
+            className="max-sm:min-h-11 max-sm:min-w-11"
           >
             <ChevronLeft className="size-4" />
             <span className="max-sm:sr-only">Anterior</span>
@@ -162,7 +162,7 @@ export default async function AgendaKanbanPage({
             href={linkDia(hojeISO(), vet)}
             variante="secondary"
             tamanho="sm"
-            className="max-sm:min-h-10"
+            className="max-sm:min-h-11"
           >
             Hoje
           </ButtonLink>
@@ -170,7 +170,7 @@ export default async function AgendaKanbanPage({
             href={linkDia(deslocarDia(data, 1), vet)}
             variante="secondary"
             tamanho="sm"
-            className="max-sm:min-h-10 max-sm:min-w-10"
+            className="max-sm:min-h-11 max-sm:min-w-11"
           >
             <span className="max-sm:sr-only">Próximo</span>
             <ChevronRight className="size-4" />
@@ -183,7 +183,7 @@ export default async function AgendaKanbanPage({
             name="vet"
             defaultValue={vet ?? ""}
             aria-label="Filtrar por veterinário"
-            className="h-8 w-auto min-w-0 max-w-56 text-sm max-sm:min-h-10"
+            className="h-8 w-auto min-w-0 max-w-56 text-sm max-sm:min-h-11"
           >
             <option value="">Todos os veterinários</option>
             {(veterinarios ?? []).map((v) => (
@@ -196,7 +196,7 @@ export default async function AgendaKanbanPage({
             type="submit"
             variante="secondary"
             tamanho="sm"
-            className="max-sm:min-h-10"
+            className="max-sm:min-h-11"
           >
             <SlidersHorizontal className="size-4" />
             Filtrar

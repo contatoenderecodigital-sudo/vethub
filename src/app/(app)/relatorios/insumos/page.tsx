@@ -265,36 +265,42 @@ export default async function RelatorioInsumosPage({
     >
       <FiltrosRelatorio base={BASE} periodo={periodo} params={params}>
         <input type="hidden" name="modo" value={modo} />
-        <Campo rotulo="Grupo" htmlFor="grupo">
-          <Select id="grupo" name="grupo" defaultValue={grupo ?? ""}>
-            <option value="">Todos</option>
-            {(grupos ?? []).map((g) => (
-              <option key={g.id} value={g.id}>
-                {g.nome}
-              </option>
-            ))}
-          </Select>
-        </Campo>
-        <Campo rotulo="Item" htmlFor="item">
-          <Select id="item" name="item" defaultValue={item ?? ""}>
-            <option value="">Todos</option>
-            {(itens ?? []).map((i) => (
-              <option key={i.id} value={i.id}>
-                {i.nome}
-              </option>
-            ))}
-          </Select>
-        </Campo>
-        <Campo rotulo="Origem" htmlFor="origem">
-          <Select id="origem" name="origem" defaultValue={origem ?? ""}>
-            <option value="">Todas</option>
-            {ORIGENS.map((o) => (
-              <option key={o} value={o}>
-                {ROTULO_ORIGEM[o]}
-              </option>
-            ))}
-          </Select>
-        </Campo>
+        <div className="min-w-40 flex-1">
+          <Campo rotulo="Grupo" htmlFor="grupo">
+            <Select id="grupo" name="grupo" defaultValue={grupo ?? ""}>
+              <option value="">Todos</option>
+              {(grupos ?? []).map((g) => (
+                <option key={g.id} value={g.id}>
+                  {g.nome}
+                </option>
+              ))}
+            </Select>
+          </Campo>
+        </div>
+        <div className="min-w-40 flex-1">
+          <Campo rotulo="Item" htmlFor="item">
+            <Select id="item" name="item" defaultValue={item ?? ""}>
+              <option value="">Todos</option>
+              {(itens ?? []).map((i) => (
+                <option key={i.id} value={i.id}>
+                  {i.nome}
+                </option>
+              ))}
+            </Select>
+          </Campo>
+        </div>
+        <div className="min-w-40 flex-1">
+          <Campo rotulo="Origem" htmlFor="origem">
+            <Select id="origem" name="origem" defaultValue={origem ?? ""}>
+              <option value="">Todas</option>
+              {ORIGENS.map((o) => (
+                <option key={o} value={o}>
+                  {ROTULO_ORIGEM[o]}
+                </option>
+              ))}
+            </Select>
+          </Campo>
+        </div>
       </FiltrosRelatorio>
 
       <div className="mb-4 flex flex-wrap items-center gap-1.5 print:hidden">

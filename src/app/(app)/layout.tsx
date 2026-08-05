@@ -123,7 +123,7 @@ export default async function AppLayout({
       </div>
 
       {/* Navegação inferior (mobile) */}
-      <NavInferior />
+      <NavInferior ehAdmin={usuario.papel === "admin"} />
     </div>
   );
 }

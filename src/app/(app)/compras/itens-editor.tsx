@@ -231,7 +231,7 @@ export function CompraItensEditor({
                 </label>
               </div>
 
-              <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-[6rem_9rem_1fr_10rem_auto] sm:items-end">
+              <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-[6rem_9rem_1fr_10rem_auto] sm:items-end">
                 <label className="block">
                   <span className="mb-1 block text-[11px] font-medium text-ink-muted">
                     Qtd

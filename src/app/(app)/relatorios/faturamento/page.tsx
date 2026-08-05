@@ -1,13 +1,22 @@
+import { DollarSign, Percent, Receipt, Scale } from "lucide-react";
 import { formatBRL, formatDataHora } from "@/lib/format";
 import {
   FORMAS_PAGAMENTO_VENDA,
   rotuloFormaVenda,
   type VendaStatus,
 } from "@/lib/types";
+import { Card, CardTitulo } from "@/components/ui/card";
+import {
+  Estatistica,
+  GradeEstatisticas,
+  type EstatisticaProps,
+} from "@/components/ui/estatistica";
+import { GraficoBarras, GraficoRosca } from "@/components/ui/grafico";
 import { Campo, Select } from "@/components/ui/form";
 import { abrirRelatorio, type OpcaoSimples } from "../dados";
 import {
   LIMITE_LINHAS,
+  agrupamentoDoPeriodo,
   centavos,
   descricaoPeriodo,
   exigirAcessoFinanceiro,
@@ -16,6 +25,7 @@ import {
   inicioDoDia,
   opcaoDaUrl,
   resolverPeriodo,
+  serieDoPeriodo,
 } from "../definicoes";
 import { FiltrosRelatorio } from "../filtros-relatorio";
 import { FolhaRelatorio } from "../impressao";
@@ -131,11 +141,25 @@ export default async function RelatorioFaturamentoPage({
 
   const ticketMedio = vendas.length > 0 ? totalGeral / vendas.length : 0;
 
-  const cardsPrincipais: ItemResumo[] = [
-    { rotulo: "Faturamento", valor: formatBRL(centavos(totalGeral)) },
-    { rotulo: "Vendas", valor: vendas.length },
-    { rotulo: "Ticket médio", valor: formatBRL(centavos(ticketMedio)) },
-    { rotulo: "Descontos", valor: formatBRL(centavos(totalDesconto)) },
+  const cardsPrincipais: EstatisticaProps[] = [
+    {
+      rotulo: "Faturamento",
+      valor: formatBRL(centavos(totalGeral)),
+      icone: DollarSign,
+      tom: "positivo",
+    },
+    { rotulo: "Vendas", valor: vendas.length, icone: Receipt },
+    {
+      rotulo: "Ticket médio",
+      valor: formatBRL(centavos(ticketMedio)),
+      icone: Scale,
+    },
+    {
+      rotulo: "Descontos",
+      valor: formatBRL(centavos(totalDesconto)),
+      icone: Percent,
+      tom: totalDesconto > 0 ? "atencao" : "neutro",
+    },
   ];
 
   const ordenarPorValor = (mapa: Map<string, { valor: number; quantidade: number }>) =>
@@ -146,6 +170,22 @@ export default async function RelatorioFaturamentoPage({
     valor: formatBRL(centavos(t.valor)),
     detalhe: `${t.quantidade} ${t.quantidade === 1 ? "pagamento" : "pagamentos"}`,
   }));
+
+  // Rosca: participação de cada forma de pagamento no que entrou.
+  const fatiasForma = ordenarPorValor(porForma).map(([forma, t]) => ({
+    forma,
+    valor: centavos(t.valor),
+  }));
+
+  // Barras do faturamento ao longo do período. O agrupamento é por dia até
+  // 62 dias e por mês acima disso (ver `agrupamentoDoPeriodo`): num trimestre
+  // inteiro as barras diárias viram um pente ilegível, ainda mais no celular.
+  const agrupamento = agrupamentoDoPeriodo(periodo);
+  const serieFaturamento = serieDoPeriodo(
+    periodo,
+    vendas.map((v) => ({ quando: v.data, valor: Number(v.valor_total) }))
+  );
+  const temFaturamento = serieFaturamento.some((p) => p.valor > 0);
 
   const cardsVendedor: ItemResumo[] = ordenarPorValor(porVendedor).map(
     ([rotulo, t]) => ({
@@ -200,31 +240,76 @@ export default async function RelatorioFaturamentoPage({
       periodo={descricaoPeriodo(periodo)}
     >
       <FiltrosRelatorio base={BASE} periodo={periodo} params={params}>
-        <Campo rotulo="Forma de pagamento" htmlFor="forma">
-          <Select id="forma" name="forma" defaultValue={forma ?? ""}>
-            <option value="">Todas</option>
-            {FORMAS_PAGAMENTO_VENDA.map((f) => (
-              <option key={f.valor} value={f.valor}>
-                {f.rotulo}
-              </option>
-            ))}
-          </Select>
-        </Campo>
-        <Campo rotulo="Vendedor" htmlFor="vendedor">
-          <Select id="vendedor" name="vendedor" defaultValue={vendedor ?? ""}>
-            <option value="">Todos</option>
-            {(equipe ?? []).map((u) => (
-              <option key={u.id} value={u.id}>
-                {u.nome}
-              </option>
-            ))}
-          </Select>
-        </Campo>
+        <div className="min-w-48 flex-1">
+          <Campo rotulo="Forma de pagamento" htmlFor="forma">
+            <Select id="forma" name="forma" defaultValue={forma ?? ""}>
+              <option value="">Todas</option>
+              {FORMAS_PAGAMENTO_VENDA.map((f) => (
+                <option key={f.valor} value={f.valor}>
+                  {f.rotulo}
+                </option>
+              ))}
+            </Select>
+          </Campo>
+        </div>
+        <div className="min-w-40 flex-1">
+          <Campo rotulo="Vendedor" htmlFor="vendedor">
+            <Select id="vendedor" name="vendedor" defaultValue={vendedor ?? ""}>
+              <option value="">Todos</option>
+              {(equipe ?? []).map((u) => (
+                <option key={u.id} value={u.id}>
+                  {u.nome}
+                </option>
+              ))}
+            </Select>
+          </Campo>
+        </div>
       </FiltrosRelatorio>
 
       <AvisoLimite quantidade={todas.length} />
 
-      <CartoesResumo itens={cardsPrincipais} />
+      <GradeEstatisticas colunas={4} className="mb-4">
+        {cardsPrincipais.map((c) => (
+          <Estatistica key={c.rotulo} {...c} />
+        ))}
+      </GradeEstatisticas>
+
+      {/* Gráficos só na tela: o ResponsiveContainer mede a largura do
+          navegador e no papel sairia cortado. A impressão fica com os
+          cartões e a tabela, que já têm os mesmos números. */}
+      <div className="mb-4 grid gap-4 lg:grid-cols-2 print:hidden">
+        <Card>
+          <CardTitulo>
+            Faturamento por {agrupamento === "mes" ? "mês" : "dia"}
+          </CardTitulo>
+          {temFaturamento ? (
+            <GraficoBarras
+              dados={serieFaturamento}
+              eixoX="rotulo"
+              formato="moeda"
+              altura={240}
+              series={[{ chave: "valor", rotulo: "Faturamento" }]}
+            />
+          ) : (
+            <p className="text-xs text-ink-muted">Sem dados no período.</p>
+          )}
+        </Card>
+
+        <Card>
+          <CardTitulo>Participação por forma de pagamento</CardTitulo>
+          {fatiasForma.length > 0 ? (
+            <GraficoRosca
+              dados={fatiasForma}
+              chaveRotulo="forma"
+              chaveValor="valor"
+              formato="moeda"
+              altura={240}
+            />
+          ) : (
+            <p className="text-xs text-ink-muted">Sem dados no período.</p>
+          )}
+        </Card>
+      </div>
 
       {cardsForma.length > 0 && (
         <>

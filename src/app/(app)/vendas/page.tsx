@@ -241,10 +241,11 @@ export default async function VendasPage({
                   </span>
 
                   {ehAdmin && v.status !== "cancelada" && (
-                    <form action={cancelarVenda.bind(null, v.id)}>
+                    <form action={cancelarVenda.bind(null, v.id)} className="shrink-0">
                       <ConfirmButton
                         variante="ghost"
                         tamanho="sm"
+                        className="min-h-11 sm:min-h-10"
                         mensagem={`Cancelar a venda nº ${v.numero}? O estoque dos produtos volta e a conta a receber é cancelada.`}
                       >
                         <Ban className="size-4" />

@@ -27,6 +27,7 @@ import { ButtonLink } from "@/components/ui/button";
 import { Card, CardTitulo } from "@/components/ui/card";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { EmptyState } from "@/components/ui/empty-state";
+import { MenuAcoes } from "@/components/ui/menu-acoes";
 import { IconeEspecie } from "@/components/icone-especie";
 import { AnexoUpload } from "../anexo-upload";
 import { excluirAnexo, excluirConsulta } from "../actions";
@@ -142,35 +143,41 @@ export default async function ConsultaPage({
         }`}
         acao={
           podeEditar && (
-            <>
-              <ButtonLink href={`/consultas/${id}/editar`} variante="secondary">
-                <Pencil className="size-4" />
-                Editar
+            // Quatro ações não cabem lado a lado com o título: só a principal
+            // fica visível, o resto vai para o menu.
+            <MenuAcoes>
+              <ButtonLink
+                href={`/receitas/nova?pet=${consulta.pet_id}&consulta=${id}`}
+                variante="ghost"
+              >
+                <Pill className="size-4 shrink-0" />
+                Receituário
+              </ButtonLink>
+              <ButtonLink
+                href={`/orcamentos/novo?pet=${consulta.pet_id}&consulta=${id}`}
+                variante="ghost"
+              >
+                <Plus className="size-4 shrink-0" />
+                Orçamento
               </ButtonLink>
               <form action={excluirComIds}>
                 <ConfirmButton
                   variante="danger"
                   mensagem="Excluir esta consulta apaga também os anexos dela. Tem certeza?"
                 >
-                  <Trash2 className="size-4" />
+                  <Trash2 className="size-4 shrink-0" />
                   Excluir
                 </ConfirmButton>
               </form>
-              <ButtonLink
-                href={`/receitas/nova?pet=${consulta.pet_id}&consulta=${id}`}
-                variante="secondary"
-              >
-                <Pill className="size-4" />
-                Receituário
-              </ButtonLink>
-              <ButtonLink
-                href={`/orcamentos/novo?pet=${consulta.pet_id}&consulta=${id}`}
-                variante="secondary"
-              >
-                <Plus className="size-4" />
-                Orçamento
-              </ButtonLink>
-            </>
+            </MenuAcoes>
+          )
+        }
+        acaoPrincipal={
+          podeEditar && (
+            <ButtonLink href={`/consultas/${id}/editar`} variante="secondary">
+              <Pencil className="size-4 shrink-0" />
+              Editar
+            </ButtonLink>
           )
         }
       />
@@ -321,7 +328,7 @@ export default async function ConsultaPage({
                               variante="ghost"
                               tamanho="sm"
                               mensagem="Excluir este anexo?"
-                              className="px-2"
+                              className="min-h-11 min-w-11 px-2 sm:min-h-8 sm:min-w-0"
                               aria-label="Excluir anexo"
                             >
                               <Trash2 className="size-4" />

@@ -35,6 +35,7 @@ import { ButtonLink } from "@/components/ui/button";
 import { Card, CardTitulo } from "@/components/ui/card";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { EmptyState } from "@/components/ui/empty-state";
+import { MenuAcoes } from "@/components/ui/menu-acoes";
 import { excluirPet } from "../actions";
 import { FotoUpload } from "../foto-upload";
 import { PesoHistorico } from "./peso-historico";
@@ -171,28 +172,32 @@ export default async function PetPage({
               </div>
             )}
 
-            <div className="mt-4 flex flex-wrap items-center gap-2">
+            {/* Barra de ações: quebra linha em vez de escapar do card, e
+                Editar/Excluir vão para o menu para caber num celular. */}
+            <div className="mt-4 flex flex-wrap items-center gap-2 [&>a]:min-h-11 sm:[&>a]:min-h-10">
               <ButtonLink href={`/agenda/novo?pet=${id}`} variante="secondary">
-                <CalendarDays className="size-4" />
+                <CalendarDays className="size-4 shrink-0" />
                 Agendamento
               </ButtonLink>
               <ButtonLink href={`/consultas/nova?pet=${id}`}>
-                <Stethoscope className="size-4" />
+                <Stethoscope className="size-4 shrink-0" />
                 Consulta
               </ButtonLink>
-              <ButtonLink href={`/pets/${id}/editar`} variante="secondary">
-                <Pencil className="size-4" />
-                Editar
-              </ButtonLink>
-              <form action={excluirComId}>
-                <ConfirmButton
-                  variante="danger"
-                  mensagem="Excluir este pet apaga também todo o histórico dele (consultas e agendamentos). Tem certeza?"
-                >
-                  <Trash2 className="size-4" />
-                  Excluir
-                </ConfirmButton>
-              </form>
+              <MenuAcoes>
+                <ButtonLink href={`/pets/${id}/editar`} variante="ghost">
+                  <Pencil className="size-4 shrink-0" />
+                  Editar
+                </ButtonLink>
+                <form action={excluirComId}>
+                  <ConfirmButton
+                    variante="danger"
+                    mensagem="Excluir este pet apaga também todo o histórico dele (consultas e agendamentos). Tem certeza?"
+                  >
+                    <Trash2 className="size-4 shrink-0" />
+                    Excluir
+                  </ConfirmButton>
+                </form>
+              </MenuAcoes>
             </div>
           </div>
         </div>

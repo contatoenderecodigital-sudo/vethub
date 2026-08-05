@@ -96,8 +96,8 @@ export default async function VendaPage({
         Voltar para as vendas
       </Link>
 
-      <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
+        <div className="min-w-0 sm:flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-xl font-bold text-ink sm:text-2xl">
               Venda nº {venda.numero}
@@ -123,9 +123,9 @@ export default async function VendaPage({
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:shrink-0 sm:justify-end [&>a]:min-h-11 [&>form>button]:min-h-11 sm:[&>a]:min-h-10 sm:[&>form>button]:min-h-10">
           <ButtonLink href={`/vendas/${venda.id}/comprovante`} variante="secondary">
-            <Printer className="size-4" />
+            <Printer className="size-4 shrink-0" />
             Imprimir comprovante
           </ButtonLink>
           {ehAdmin && venda.status !== "cancelada" && (

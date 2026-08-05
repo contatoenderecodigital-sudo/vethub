@@ -218,10 +218,11 @@ export default async function ValidadePage({
                     )}
 
                     {podeExcluir && (
-                      <form action={excluirLote.bind(null, lote.id)}>
+                      <form action={excluirLote.bind(null, lote.id)} className="shrink-0">
                         <ConfirmButton
                           variante="ghost"
                           tamanho="sm"
+                          className="min-h-11 sm:min-h-10"
                           mensagem={`Excluir o lote "${lote.codigo}"?`}
                         >
                           <Trash2 className="size-4" />

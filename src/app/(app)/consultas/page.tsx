@@ -84,7 +84,9 @@ export default async function ConsultasPage({
             className="pl-9"
           />
         </div>
-        <label className="text-xs font-medium text-white/90 drop-shadow-sm">
+        {/* As datas têm largura mínima e crescem juntas: em telas estreitas
+            caem para a linha de baixo inteiras, nunca espremidas. */}
+        <label className="min-w-36 flex-1 text-xs font-medium text-white/90 drop-shadow-sm sm:max-w-40">
           De
           <Input
             type="date"
@@ -92,10 +94,10 @@ export default async function ConsultasPage({
             min="2000-01-01"
             max="2099-12-31"
             defaultValue={de ?? ""}
-            className="mt-1 w-36"
+            className="mt-1"
           />
         </label>
-        <label className="text-xs font-medium text-white/90 drop-shadow-sm">
+        <label className="min-w-36 flex-1 text-xs font-medium text-white/90 drop-shadow-sm sm:max-w-40">
           Até
           <Input
             type="date"
@@ -103,12 +105,12 @@ export default async function ConsultasPage({
             min="2000-01-01"
             max="2099-12-31"
             defaultValue={ate ?? ""}
-            className="mt-1 w-36"
+            className="mt-1"
           />
         </label>
         <button
           type="submit"
-          className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-lg border border-white/40 bg-white/15 px-4 text-sm font-medium text-white backdrop-blur-md transition-colors hover:bg-white/25"
+          className="inline-flex min-h-11 shrink-0 cursor-pointer items-center gap-2 rounded-lg border border-white/40 bg-white/15 px-4 text-sm font-medium text-white backdrop-blur-md transition-colors hover:bg-white/25 sm:min-h-10"
         >
           Filtrar
         </button>

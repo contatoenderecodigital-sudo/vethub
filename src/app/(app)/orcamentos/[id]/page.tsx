@@ -14,6 +14,7 @@ import type { OrcamentoStatus } from "@/lib/types";
 import { BadgeOrcamento } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { ConfirmButton } from "@/components/ui/confirm-button";
+import { MenuAcoes } from "@/components/ui/menu-acoes";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { IconeEspecie } from "@/components/icone-especie";
 import { atualizarStatus, excluirOrcamento } from "../actions";
@@ -79,11 +80,11 @@ export default async function OrcamentoPage({
 
   return (
     <div>
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-start gap-3">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <div className="flex min-w-0 items-start gap-3 sm:flex-1">
           <IconeEspecie especie={pet?.especie} />
-          <div>
-            <div className="flex items-center gap-2">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
               <h1 className="text-xl font-bold text-ink sm:text-2xl">Orçamento</h1>
               <BadgeOrcamento status={orcamento.status} />
             </div>
@@ -117,39 +118,43 @@ export default async function OrcamentoPage({
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:shrink-0 sm:justify-end [&>a]:min-h-11 [&>form>button]:min-h-11 sm:[&>a]:min-h-10 sm:[&>form>button]:min-h-10">
           {orcamento.status === "aberto" ? (
+            // Quatro ações não cabem na linha do título: só "Aprovar" fica
+            // visível, o resto entra no menu.
             <>
+              <MenuAcoes>
+                <form action={recusar}>
+                  <SubmitButton variante="ghost" carregando="Recusando…">
+                    <CircleX className="size-4 shrink-0" />
+                    Recusar
+                  </SubmitButton>
+                </form>
+                <ButtonLink href={`/orcamentos/${id}/editar`} variante="ghost">
+                  <Pencil className="size-4 shrink-0" />
+                  Editar itens
+                </ButtonLink>
+                <form action={excluir}>
+                  <ConfirmButton
+                    variante="danger"
+                    mensagem="Excluir este orçamento apaga também os itens dele. Tem certeza?"
+                  >
+                    <Trash2 className="size-4 shrink-0" />
+                    Excluir
+                  </ConfirmButton>
+                </form>
+              </MenuAcoes>
               <form action={aprovar}>
                 <SubmitButton carregando="Aprovando…">
-                  <CircleCheck className="size-4" />
+                  <CircleCheck className="size-4 shrink-0" />
                   Aprovar
                 </SubmitButton>
-              </form>
-              <form action={recusar}>
-                <SubmitButton variante="secondary" carregando="Recusando…">
-                  <CircleX className="size-4" />
-                  Recusar
-                </SubmitButton>
-              </form>
-              <ButtonLink href={`/orcamentos/${id}/editar`} variante="secondary">
-                <Pencil className="size-4" />
-                Editar itens
-              </ButtonLink>
-              <form action={excluir}>
-                <ConfirmButton
-                  variante="danger"
-                  mensagem="Excluir este orçamento apaga também os itens dele. Tem certeza?"
-                >
-                  <Trash2 className="size-4" />
-                  Excluir
-                </ConfirmButton>
               </form>
             </>
           ) : (
             <form action={reabrir}>
               <SubmitButton variante="secondary" carregando="Reabrindo…">
-                <RotateCcw className="size-4" />
+                <RotateCcw className="size-4 shrink-0" />
                 Reabrir
               </SubmitButton>
             </form>

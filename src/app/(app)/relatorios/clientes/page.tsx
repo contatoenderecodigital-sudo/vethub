@@ -319,21 +319,23 @@ export default async function RelatorioClientesPage({
         rotuloDe="Cadastros de"
         rotuloAte="Cadastros até"
       >
-        <Campo
-          rotulo="Sem atendimento há (dias)"
-          htmlFor="dias"
-          dica="De 30 a 1095 dias"
-        >
-          <Input
-            id="dias"
-            name="dias"
-            type="number"
-            min={30}
-            max={1095}
-            step={1}
-            defaultValue={dias}
-          />
-        </Campo>
+        <div className="min-w-48 flex-1">
+          <Campo
+            rotulo="Sem atendimento há (dias)"
+            htmlFor="dias"
+            dica="De 30 a 1095 dias"
+          >
+            <Input
+              id="dias"
+              name="dias"
+              type="number"
+              min={30}
+              max={1095}
+              step={1}
+              defaultValue={dias}
+            />
+          </Campo>
+        </div>
       </FiltrosRelatorio>
 
       <CartoesResumo itens={cards} />

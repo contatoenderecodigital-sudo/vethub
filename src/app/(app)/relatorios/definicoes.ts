@@ -237,3 +237,113 @@ export function formatQuantidade(valor: number | string | null | undefined): str
 export function centavos(valor: number): number {
   return Math.round(valor * 100) / 100;
 }
+
+// ------------------------------------------------------------------
+// Séries dos gráficos
+// ------------------------------------------------------------------
+
+export type Agrupamento = "dia" | "mes";
+
+/**
+ * REGRA DO EIXO X: até 62 dias (dois meses) o gráfico mostra uma barra por
+ * dia; acima disso passa a mostrar uma barra por mês. Um trimestre em barras
+ * diárias vira um pente ilegível, ainda mais na largura de um celular.
+ */
+export const DIAS_ATE_AGRUPAR_POR_MES = 62;
+
+/**
+ * Teto de barras desenhadas. Por dia o próprio agrupamento já limita em 62;
+ * por mês, um período de vários anos mostra só os 36 meses finais — mais que
+ * isso vira um borrão de barras de 2 pixels.
+ */
+const MAXIMO_BARRAS: Record<Agrupamento, number> = {
+  dia: DIAS_ATE_AGRUPAR_POR_MES,
+  mes: 36,
+};
+
+const MESES_CURTOS = [
+  "jan", "fev", "mar", "abr", "mai", "jun",
+  "jul", "ago", "set", "out", "nov", "dez",
+];
+
+/** Quantidade de dias do período, contando as duas pontas. */
+function diasNoPeriodo(periodo: Periodo): number {
+  const emUTC = (iso: string) => {
+    const [ano, mes, dia] = iso.slice(0, 10).split("-").map(Number);
+    return Date.UTC(ano, mes - 1, dia);
+  };
+  return Math.round((emUTC(periodo.ate) - emUTC(periodo.de)) / 86_400_000) + 1;
+}
+
+export function agrupamentoDoPeriodo(periodo: Periodo): Agrupamento {
+  return diasNoPeriodo(periodo) > DIAS_ATE_AGRUPAR_POR_MES ? "mes" : "dia";
+}
+
+/**
+ * Dia da clínica (YYYY-MM-DD) de um instante gravado no banco. O Brasil não
+ * tem mais horário de verão, mas `toLocaleDateString` com o fuso resolve
+ * qualquer caso — é a mesma conta de `hojeISO()`.
+ */
+export function diaDaClinica(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-CA", {
+    timeZone: "America/Sao_Paulo",
+  });
+}
+
+/** "04/08" por dia, "ago/26" por mês. */
+function rotuloDaChave(chave: string, agrupamento: Agrupamento): string {
+  if (agrupamento === "mes") {
+    const [ano, mes] = chave.split("-").map(Number);
+    return `${MESES_CURTOS[mes - 1]}/${String(ano).slice(2)}`;
+  }
+  return `${chave.slice(8, 10)}/${chave.slice(5, 7)}`;
+}
+
+/** Todas as chaves do período, inclusive as sem movimento (barra zerada). */
+function chavesDoPeriodo(periodo: Periodo, agrupamento: Agrupamento): string[] {
+  const chaves: string[] = [];
+  if (agrupamento === "dia") {
+    for (let dia = periodo.de; dia <= periodo.ate; dia = deslocarDia(dia, 1)) {
+      chaves.push(dia);
+    }
+  } else {
+    const fim = periodo.ate.slice(0, 7);
+    let chave = periodo.de.slice(0, 7);
+    while (chave <= fim) {
+      chaves.push(chave);
+      const [ano, mes] = chave.split("-").map(Number);
+      chave =
+        mes === 12
+          ? `${ano + 1}-01`
+          : `${ano}-${String(mes + 1).padStart(2, "0")}`;
+    }
+  }
+  return chaves.slice(-MAXIMO_BARRAS[agrupamento]);
+}
+
+/**
+ * Soma os itens do período em uma série pronta para o gráfico de barras.
+ * `quando` é o instante do lançamento (timestamptz do banco) e `valor` é o
+ * que deve ser somado — 1 para contagem, o valor em reais para dinheiro.
+ */
+export function serieDoPeriodo(
+  periodo: Periodo,
+  itens: { quando: string; valor: number }[]
+): { rotulo: string; valor: number }[] {
+  const agrupamento = agrupamentoDoPeriodo(periodo);
+  const chaves = chavesDoPeriodo(periodo, agrupamento);
+  const soma = new Map(chaves.map((chave) => [chave, 0]));
+
+  for (const item of itens) {
+    const dia = diaDaClinica(item.quando);
+    const chave = agrupamento === "mes" ? dia.slice(0, 7) : dia;
+    const atual = soma.get(chave);
+    if (atual === undefined) continue; // fora da janela desenhada
+    soma.set(chave, atual + item.valor);
+  }
+
+  return chaves.map((chave) => ({
+    rotulo: rotuloDaChave(chave, agrupamento),
+    valor: centavos(soma.get(chave) ?? 0),
+  }));
+}

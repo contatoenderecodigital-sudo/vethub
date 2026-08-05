@@ -176,12 +176,13 @@ export async function Protocolos({
                     </p>
                   )}
                 </div>
-                <form action={excluir}>
+                <form action={excluir} className="shrink-0">
                   <ConfirmButton
                     variante="ghost"
                     tamanho="sm"
                     mensagem={`Excluir o registro de ${p.nome}?`}
                     aria-label={`Excluir ${p.nome}`}
+                    className="min-h-11 min-w-11 sm:min-h-8 sm:min-w-0"
                   >
                     <Trash2 className="size-4" />
                   </ConfirmButton>

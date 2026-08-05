@@ -213,6 +213,41 @@ select option {
   );
 }
 
+/* ------------------------------------------------------------------
+ * Animações de entrada e saída (janelas modais e menus).
+ * Escritas à mão para não depender de plugin: o Radix marca o elemento
+ * com data-state=open/closed e o CSS reage.
+ * ------------------------------------------------------------------ */
+@keyframes surgir {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes sumir {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@keyframes entrar-janela {
+  from { opacity: 0; transform: translate(-50%, -48%) scale(0.96); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+@keyframes sair-janela {
+  from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  to { opacity: 0; transform: translate(-50%, -48%) scale(0.96); }
+}
+
+.fundo-modal[data-state="open"] { animation: surgir 150ms ease-out; }
+.fundo-modal[data-state="closed"] { animation: sumir 120ms ease-in; }
+.janela-modal[data-state="open"] { animation: entrar-janela 170ms cubic-bezier(0.16, 1, 0.3, 1); }
+.janela-modal[data-state="closed"] { animation: sair-janela 130ms ease-in; }
+
+/* Quem prefere menos movimento não recebe animação nenhuma. */
+@media (prefers-reduced-motion: reduce) {
+  .fundo-modal[data-state],
+  .janela-modal[data-state] {
+    animation: none;
+  }
+}
+
 /* Wordmark: VetHub junto, sem espaço, tracking levemente apertado */
 .wordmark {
   font-weight: 700;

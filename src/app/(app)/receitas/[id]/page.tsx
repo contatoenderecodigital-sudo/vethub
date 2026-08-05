@@ -21,6 +21,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardTitulo } from "@/components/ui/card";
 import { ConfirmButton } from "@/components/ui/confirm-button";
+import { MenuAcoes } from "@/components/ui/menu-acoes";
 import { IconeEspecie } from "@/components/icone-especie";
 import { BadgeTipoReceita } from "../badge-tipo";
 import { excluirReceita } from "../actions";
@@ -85,36 +86,34 @@ export default async function ReceitaPage({
           receita.veterinario ? ` · ${receita.veterinario.nome}` : ""
         }`}
         acao={
-          <>
-            <ButtonLink href={`/receitas/${id}/imprimir`}>
-              <Printer className="size-4" />
-              Imprimir
-            </ButtonLink>
-            {podeEditar && (
-              <>
-                <ButtonLink href={`/receitas/${id}/editar`} variante="secondary">
-                  <Pencil className="size-4" />
-                  Editar
-                </ButtonLink>
-                <ButtonLink
-                  href={`/receitas/nova?pet=${receita.pet_id}`}
-                  variante="secondary"
+          podeEditar && (
+            // São 4 ações: só "Imprimir" fica visível, o resto vai para o menu.
+            <MenuAcoes>
+              <ButtonLink href={`/receitas/${id}/editar`} variante="ghost">
+                <Pencil className="size-4 shrink-0" />
+                Editar
+              </ButtonLink>
+              <ButtonLink href={`/receitas/nova?pet=${receita.pet_id}`} variante="ghost">
+                <Plus className="size-4 shrink-0" />
+                Nova receita para este pet
+              </ButtonLink>
+              <form action={excluirComIds}>
+                <ConfirmButton
+                  variante="danger"
+                  mensagem="Excluir esta receita apaga também os medicamentos dela. Tem certeza?"
                 >
-                  <Plus className="size-4" />
-                  Nova receita para este pet
-                </ButtonLink>
-                <form action={excluirComIds}>
-                  <ConfirmButton
-                    variante="danger"
-                    mensagem="Excluir esta receita apaga também os medicamentos dela. Tem certeza?"
-                  >
-                    <Trash2 className="size-4" />
-                    Excluir
-                  </ConfirmButton>
-                </form>
-              </>
-            )}
-          </>
+                  <Trash2 className="size-4 shrink-0" />
+                  Excluir
+                </ConfirmButton>
+              </form>
+            </MenuAcoes>
+          )
+        }
+        acaoPrincipal={
+          <ButtonLink href={`/receitas/${id}/imprimir`}>
+            <Printer className="size-4 shrink-0" />
+            Imprimir
+          </ButtonLink>
         }
       />
 

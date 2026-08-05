@@ -60,22 +60,20 @@ export default async function PetsPage({
         }
       />
 
-      <form
-        method="get"
-        className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center"
-      >
+      {/* Barra de filtros: quebra linha em vez de espremer o botão. */}
+      <form method="get" className="mb-4 flex flex-wrap items-center gap-2">
         <Input
           type="search"
           name="q"
           defaultValue={q ?? ""}
           placeholder="Buscar pelo nome do pet…"
-          className="sm:max-w-md"
+          className="min-w-56 flex-1 sm:max-w-md"
         />
         <Select
           name="especie"
           defaultValue={especie ?? ""}
           aria-label="Filtrar por espécie"
-          className="sm:w-44"
+          className="min-w-40 flex-1 sm:max-w-44"
         >
           <option value="">Todas as espécies</option>
           {ESPECIES.map((e) => (
@@ -84,8 +82,12 @@ export default async function PetsPage({
             </option>
           ))}
         </Select>
-        <Button type="submit" variante="secondary">
-          <Search className="size-4" />
+        <Button
+          type="submit"
+          variante="secondary"
+          className="min-h-11 shrink-0 sm:min-h-10"
+        >
+          <Search className="size-4 shrink-0" />
           Filtrar
         </Button>
       </form>

@@ -65,7 +65,7 @@ function novaChave() {
 }
 
 /**
- * Terminal de venda rápida. Todo o cálculo daqui é para a TELA — quem manda
+ * Terminal de venda rápida. Todo o cálculo daqui é para a TELA. Quem manda
  * nos totais é o servidor, que recalcula tudo em finalizarVenda a partir dos
  * itens e do catálogo.
  */
@@ -411,7 +411,7 @@ export function PdvTerminal({ vendedor }: { vendedor: string }) {
                               }`}
                             >
                               Estoque: {textoQuantidade(l.estoque_atual)}
-                              {semEstoque && " — quantidade acima do disponível"}
+                              {semEstoque && " · quantidade acima do disponível"}
                             </p>
                           )}
                         </div>
@@ -735,7 +735,7 @@ export function PdvTerminal({ vendedor }: { vendedor: string }) {
             {fiadoSemTutor && (
               <p className="mt-3 flex items-start gap-2 rounded-lg border border-amber-200/40 bg-amber-300/25 px-3 py-2 text-sm font-medium text-amber-50">
                 <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden />
-                Fiado exige um tutor selecionado no resumo — é ele quem fica
+                Fiado exige um tutor selecionado no resumo. É ele quem fica
                 devendo.
               </p>
             )}
@@ -753,7 +753,7 @@ export function PdvTerminal({ vendedor }: { vendedor: string }) {
                   id="pdv-observacao"
                   maxLength={500}
                   className="min-h-16"
-                  placeholder="Opcional — aparece no comprovante interno."
+                  placeholder="Opcional. Aparece no comprovante interno."
                   value={observacao}
                   onChange={(e) => setObservacao(e.target.value)}
                 />

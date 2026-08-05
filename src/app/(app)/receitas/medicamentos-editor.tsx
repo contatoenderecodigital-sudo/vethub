@@ -53,7 +53,7 @@ export function MedicamentosEditor({
       : [novaLinha()]
   );
 
-  // Campos já tocados (blur) — erro nunca aparece no primeiro render.
+  // Campos já tocados (blur): erro nunca aparece no primeiro render.
   const [tocados, setTocados] = useState<Record<string, boolean>>({});
 
   const foiTocado = (chave: string, campo: CampoLinha) =>

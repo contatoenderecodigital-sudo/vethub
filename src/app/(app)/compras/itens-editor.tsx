@@ -54,7 +54,7 @@ function sanitizarNumero(texto: string, maxChars: number): string {
 
 /**
  * Editor dinâmico dos itens da nota de compra. Cada linha aponta (ou não)
- * para um produto do catálogo — é esse vínculo que faz a mercadoria entrar
+ * para um produto do catálogo. É esse vínculo que faz a mercadoria entrar
  * no estoque quando a compra é recebida. Mantém um input hidden
  * name="itens" com o JSON já normalizado para a server action.
  */
@@ -78,7 +78,7 @@ export function CompraItensEditor({
 
   const [linhas, setLinhas] = useState<Linha[]>(() => [novaLinha()]);
 
-  // Campos já tocados (blur) — erros só aparecem depois disso.
+  // Campos já tocados (blur): erros só aparecem depois disso.
   const [tocados, setTocados] = useState<Record<string, boolean>>({});
 
   const foiTocado = (chave: string, campo: CampoLinha) => !!tocados[`${chave}:${campo}`];
@@ -94,7 +94,7 @@ export function CompraItensEditor({
     );
   }
 
-  /** Ao escolher o produto, já preenche descrição e custo — só falta a quantidade. */
+  /** Ao escolher o produto, já preenche descrição e custo. Só falta a quantidade. */
   function escolherProduto(chave: string, itemId: string) {
     const produto = produtos.find((p) => p.id === itemId);
     setLinhas((atual) =>
@@ -161,14 +161,14 @@ export function CompraItensEditor({
               : null;
           const erroQuantidade = foiTocado(linha.chave, "quantidade")
             ? !Number.isFinite(qtd) || qtd <= 0
-              ? "Quantidade inválida — use um número maior que zero."
+              ? "Quantidade inválida. Use um número maior que zero."
               : qtd > QTD_MAX
                 ? `Quantidade máxima: ${QTD_MAX}.`
                 : null
             : null;
           const erroValor = foiTocado(linha.chave, "valor_unitario")
             ? !Number.isFinite(valor) || valor < 0
-              ? "Valor unitário inválido — use números, como 120 ou 89,90."
+              ? "Valor unitário inválido. Use números, como 120 ou 89,90."
               : valor > VALOR_MAX
                 ? "Valor unitário máximo: R$ 9.999.999,99."
                 : null
@@ -209,7 +209,7 @@ export function CompraItensEditor({
                     <option value="">Sem vínculo (não entra no estoque)</option>
                     {produtos.map((p) => (
                       <option key={p.id} value={p.id}>
-                        {p.codigo ? `${p.codigo} — ${p.nome}` : p.nome}
+                        {p.codigo ? `${p.codigo} · ${p.nome}` : p.nome}
                       </option>
                     ))}
                   </Select>
@@ -318,7 +318,7 @@ export function CompraItensEditor({
 
               {produto && !produto.controla_estoque && (
                 <p className="mt-2 text-xs text-ink-muted">
-                  “{produto.nome}” não controla estoque — a entrada só atualiza o
+                  “{produto.nome}” não controla estoque. A entrada só atualiza o
                   preço de custo.
                 </p>
               )}

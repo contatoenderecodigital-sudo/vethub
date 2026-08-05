@@ -7,14 +7,14 @@ import { NextResponse, type NextRequest } from "next/server";
  * aplica os cabeçalhos de segurança, incluindo CSP com nonce.
  */
 
-/** Domínio do Supabase deste projeto — usado no connect-src e img-src. */
+/** Domínio do Supabase deste projeto, usado no connect-src e img-src. */
 const SUPABASE = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 
 /**
  * Política de segurança de conteúdo.
  *
  * `strict-dynamic` faz o navegador confiar só nos scripts carregados a
- * partir de um script com nonce — isso cobre os bundles do Next e o SDK
+ * partir de um script com nonce. Isso cobre os bundles do Next e o SDK
  * da Meta (carregado pelo nosso código), sem precisar liberar domínio.
  * O Next lê este cabeçalho e repassa o nonce aos próprios scripts.
  *
@@ -94,15 +94,15 @@ export default async function proxy(request: NextRequest) {
     }
   );
 
-  // Importante: não colocar lógica entre createServerClient e getUser —
-  // renovar a sessão primeiro evita deslogar o usuário aleatoriamente.
+  // Importante: não colocar lógica entre createServerClient e getUser.
+  // Renovar a sessão primeiro evita deslogar o usuário aleatoriamente.
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   const path = request.nextUrl.pathname;
   const paginaDeAuth = path === "/login" || path === "/cadastro";
-  // Páginas legais públicas — precisam abrir sem login (exigência da Meta/LGPD)
+  // Páginas legais públicas: precisam abrir sem login (exigência da Meta/LGPD)
   // e continuar acessíveis para quem já está logado.
   const paginaPublica =
     path === "/politica-de-privacidade" ||

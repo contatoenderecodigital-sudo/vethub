@@ -34,7 +34,7 @@ export const movimentacaoSchema = z.object({
   tipo: z.enum(["entrada", "saida", "ajuste", "perda"], "Selecione o tipo."),
   quantidade: z
     .string()
-    .refine(quantidadeValida, "Quantidade inválida — use um número maior que zero."),
+    .refine(quantidadeValida, "Quantidade inválida. Use um número maior que zero."),
   valor_unitario: z.string().refine(valorValido, "Valor unitário inválido."),
   lote_codigo: z.string().trim().max(40, "Código do lote longo demais."),
   motivo: z.string().trim().max(200, "Motivo longo demais."),
@@ -47,7 +47,7 @@ export const loteSchema = z.object({
   validade: z.string().refine(validadeValida, "Validade inválida."),
   quantidade: z
     .string()
-    .refine(quantidadeValida, "Quantidade inválida — use um número maior que zero."),
+    .refine(quantidadeValida, "Quantidade inválida. Use um número maior que zero."),
 });
 export type LoteFormValores = z.infer<typeof loteSchema>;
 

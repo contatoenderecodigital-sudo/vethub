@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Check, Palette } from "lucide-react";
 
 /**
- * Troca a cor do sistema. A identidade da marca continua verde — isto é
+ * Troca a cor do sistema. A identidade da marca continua verde: isto é
  * a pele do app, escolha de cada clínica. A preferência fica no
  * localStorage e é aplicada no <html data-tema> antes da pintura
  * (script em layout.tsx), então não pisca ao recarregar.
@@ -26,7 +26,7 @@ export const CHAVE_TEMA = "vethub:tema";
 export function SeletorTema() {
   const [aberto, setAberto] = useState(false);
   // Começa do que o script do layout já aplicou no <html>. Como o menu
-  // nasce fechado, este valor não aparece no HTML inicial — sem risco de
+  // nasce fechado, este valor não aparece no HTML inicial, sem risco de
   // divergência entre servidor e navegador.
   const [atual, setAtual] = useState<string>(() =>
     typeof document === "undefined"
@@ -41,7 +41,7 @@ export function SeletorTema() {
     try {
       localStorage.setItem(CHAVE_TEMA, atual);
     } catch {
-      // navegador com armazenamento bloqueado — o tema vale só nesta aba
+      // navegador com armazenamento bloqueado: o tema vale só nesta aba
     }
   }, [atual]);
 

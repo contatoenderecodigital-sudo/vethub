@@ -42,7 +42,7 @@ function comErro(url: string, mensagem: string): string {
 
 /**
  * O caminho de retorno vem do formulário (para voltar com os filtros da
- * lista). Só aceitamos rotas internas do financeiro — nunca redirecionar
+ * lista). Só aceitamos rotas internas do financeiro, nunca redirecionar
  * para um endereço que o cliente escolheu.
  */
 function destinoSeguro(voltar: string | null | undefined): string {
@@ -181,7 +181,7 @@ export async function atualizarConta(id: string, formData: FormData) {
 
 /**
  * Dar baixa: registra QUANTO entrou/saiu agora. O valor informado é somado
- * ao que já havia sido pago — se o total alcançar o valor da conta ela vira
+ * ao que já havia sido pago. Se o total alcançar o valor da conta ela vira
  * 'paga'; se ficar abaixo, vira 'parcial'.
  */
 export async function darBaixa(id: string, voltarBruto: string, formData: FormData) {

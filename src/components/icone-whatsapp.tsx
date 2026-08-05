@@ -3,7 +3,7 @@ import type { SVGProps } from "react";
 /**
  * Logo do WhatsApp.
  *
- * A biblioteca de ícones do sistema (Lucide) não traz marcas — o que
+ * A biblioteca de ícones do sistema (Lucide) não traz marcas, o que
  * havia aqui era um balão de conversa genérico. Este é o glifo oficial,
  * desenhado em traçado único e pintado com `currentColor`, então segue
  * a cor do texto e do tema como qualquer outro ícone.

@@ -3,14 +3,14 @@ import { z } from "zod";
 /**
  * Validação e máscaras dos formulários do VetHub.
  * Regra de ouro: o front bloqueia/avisa cedo, MAS o servidor revalida
- * tudo com os mesmos schemas — nunca confiar só no front.
+ * tudo com os mesmos schemas, nunca confiar só no front.
  */
 
 export const soDigitos = (v: string | null | undefined) =>
   (v ?? "").replace(/\D/g, "");
 
 // ------------------------------------------------------------------
-// Máscaras (aplicadas no onChange — já cortam no limite de dígitos,
+// Máscaras (aplicadas no onChange, já cortam no limite de dígitos,
 // bloqueando a digitação além do permitido)
 // ------------------------------------------------------------------
 
@@ -97,7 +97,7 @@ const RE_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 export const emailValido = (v: string) => RE_EMAIL.test(v);
 
 // ------------------------------------------------------------------
-// Datas — o input nativo deixa digitar ano absurdo (ex.: 20100).
+// Datas: o input nativo deixa digitar ano absurdo (ex.: 20100).
 // Validação central: formato YYYY-MM-DD, data real de calendário e
 // intervalo sensato. Comparações sempre depois do regex (comparação
 // de texto com ano de 5 dígitos engana).
@@ -117,7 +117,7 @@ export function dataCalendarioValida(v: string): boolean {
   );
 }
 
-/** Hoje (America/Sao_Paulo) em YYYY-MM-DD — para limites de inputs. */
+/** Hoje (America/Sao_Paulo) em YYYY-MM-DD, para limites de inputs. */
 export function hojeISOValidacao(): string {
   return new Date().toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" });
 }
@@ -179,7 +179,7 @@ export function telefoneDoBanco(v: string | null | undefined): string {
 
 /**
  * Nome de pessoa: sempre sem espaços nas pontas (o `.trim()` vale também no
- * servidor — o banco nunca recebe " Ana ") e com teto de tamanho, para não
+ * servidor, o banco nunca recebe " Ana ") e com teto de tamanho, para não
  * gravar um texto colado sem querer.
  */
 export const schemaNome = z
@@ -192,14 +192,14 @@ export const schemaTelefoneObrigatorio = z
   .string()
   .refine(
     (v) => [10, 11].includes(soDigitos(v).length),
-    "Telefone incompleto — use DDD + número."
+    "Telefone incompleto. Informe DDD e número."
   );
 
 export const schemaTelefoneOpcional = z
   .string()
   .refine(
     (v) => soDigitos(v).length === 0 || [10, 11].includes(soDigitos(v).length),
-    "Telefone incompleto — use DDD + número."
+    "Telefone incompleto. Informe DDD e número."
   );
 
 export const schemaCPFOpcional = z
@@ -229,7 +229,7 @@ export const schemaSenhaForte = z
   .refine((v) => /[0-9]/.test(v), "A senha precisa conter números.");
 
 // ------------------------------------------------------------------
-// Endereço estruturado (CEP, rua, número…) — compartilhado por
+// Endereço estruturado (CEP, rua, número…), compartilhado por
 // tutor e clínica. Todos os campos são opcionais, mas CEP/UF
 // preenchidos precisam ser válidos.
 // ------------------------------------------------------------------

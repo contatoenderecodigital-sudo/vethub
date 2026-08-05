@@ -22,7 +22,7 @@ import {
   SELECT_CALENDARIO,
 } from "../calendario";
 
-export const metadata = { title: "Agenda — Mês" };
+export const metadata = { title: "Agenda · Mês" };
 
 /** Quantos compromissos cabem numa célula antes do "+N mais". */
 const MAX_POR_CELULA = 3;
@@ -80,7 +80,7 @@ export default async function AgendaMesPage({
 
   // Grade: começa no domingo da semana do dia 1 e termina no sábado da
   // semana do último dia. Os dias vizinhos entram só para fechar as
-  // semanas — como a consulta é do mês, eles aparecem sempre vazios.
+  // semanas. Como a consulta é do mês, eles aparecem sempre vazios.
   const diaDaSemanaDoPrimeiro = new Date(`${primeiroDia}T12:00:00`).getDay();
   const inicioGrade = deslocarDia(primeiroDia, -diaDaSemanaDoPrimeiro);
   const ultimoDia = deslocarDia(primeiroDoProximo, -1);

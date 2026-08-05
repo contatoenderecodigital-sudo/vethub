@@ -121,7 +121,7 @@ export function ContaForm({
           defaultValue={valoresIniciais.descricao}
           placeholder={
             tipo === "receber"
-              ? "Ex.: Cirurgia da Mel — parcela do tutor"
+              ? "Ex.: Cirurgia da Mel, parcela do tutor"
               : "Ex.: Aluguel da clínica"
           }
         />

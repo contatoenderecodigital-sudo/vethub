@@ -21,7 +21,7 @@ interface GrupoLinha {
 const rotuloTipo = (tipo: GrupoTipo) =>
   TIPOS_GRUPO.find((t) => t.valor === tipo)?.rotulo ?? tipo;
 
-/** Formulário de grupo — usado tanto para cadastrar quanto para editar. */
+/** Formulário de grupo, usado tanto para cadastrar quanto para editar. */
 function GrupoForm({
   grupo,
   pais,

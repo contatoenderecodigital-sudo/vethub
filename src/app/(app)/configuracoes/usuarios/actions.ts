@@ -33,7 +33,7 @@ export async function criarUsuario(formData: FormData) {
   const { nome, senha, papel } = resultado.data;
   const email = resultado.data.email.toLowerCase();
 
-  // Criar usuário no auth exige service_role — o chamador já foi validado como admin.
+  // Criar usuário no auth exige service_role. O chamador já foi validado como admin.
   const admin = createAdminClient();
   const { data: criado, error: erroAuth } = await admin.auth.admin.createUser({
     email,

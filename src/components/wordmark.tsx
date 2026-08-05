@@ -1,5 +1,5 @@
 /**
- * Wordmark VetHub — as duas partes juntas, sem espaço, em cores diferentes.
+ * Wordmark VetHub: as duas partes juntas, sem espaço, em cores diferentes.
  * Sobre fundo escuro/verde: Vet branco + Hub verde claro.
  * Sobre fundo claro: Vet quase-preto + Hub verde.
  */

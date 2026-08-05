@@ -27,7 +27,7 @@ export default async function WhatsappPage() {
   const { usuario } = await getSessao();
   if (usuario.papel !== "admin") redirect("/dashboard");
 
-  // Token fica em tabela sem policies — leitura só aqui, com service_role,
+  // Token fica em tabela sem policies: leitura só aqui, com service_role,
   // depois da checagem de admin acima (e sem nunca enviar o token à tela).
   const admin = createAdminClient();
   const { data: conexao } = await admin
@@ -138,7 +138,7 @@ export default async function WhatsappPage() {
               <li>
                 <span className="font-medium text-ink">Conta no Facebook</span>{" "}
                 com acesso ao negócio da clínica (ou disposição para criar o
-                Portfólio Empresarial durante o processo — o próprio fluxo guia).
+                Portfólio Empresarial durante o processo, o próprio fluxo guia).
               </li>
               <li>
                 <span className="font-medium text-ink">
@@ -169,7 +169,7 @@ export default async function WhatsappPage() {
               <li>Entre com o Facebook e escolha (ou crie) o negócio da clínica.</li>
               <li>Informe o número e confirme o código recebido por SMS/ligação.</li>
               <li>
-                Pronto — a janela fecha e o número aparece aqui como{" "}
+                Pronto. A janela fecha e o número aparece aqui como{" "}
                 <span className="font-medium text-ink">Conectado</span>.
               </li>
             </ol>
@@ -188,7 +188,7 @@ export default async function WhatsappPage() {
               A conexão usa o fluxo oficial da Meta (Embedded Signup). O VetHub
               nunca vê sua senha do Facebook, e as credenciais de acesso ficam
               guardadas apenas no servidor, jamais no navegador. Ao conectar, o
-              envio de mensagens segue as políticas do WhatsApp Business — os
+              envio de mensagens segue as políticas do WhatsApp Business: os
               tutores precisam ter aceitado receber mensagens da clínica.
             </p>
           </Card>
@@ -204,7 +204,7 @@ export default async function WhatsappPage() {
             A conexão oficial com o WhatsApp (Meta) está em fase final de
             homologação. Assim que o app for aprovado na análise da Meta, o
             botão de conexão aparece aqui e todo o processo leva cerca de 3
-            minutos — sem instalação, direto pelo navegador.
+            minutos, sem instalação, direto pelo navegador.
           </p>
         </Card>
       )}

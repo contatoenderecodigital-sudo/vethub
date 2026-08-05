@@ -3,7 +3,7 @@ import { Wordmark } from "@/components/wordmark";
 
 /**
  * Layout das páginas legais públicas (política de privacidade, termos de uso
- * e instruções de exclusão de dados). Acessível sem login — exigência da
+ * e instruções de exclusão de dados). Acessível sem login, exigência da
  * Meta (App Review do WhatsApp) e da LGPD.
  */
 export default function PublicoLayout({

@@ -19,7 +19,7 @@ export const VALOR_MAXIMO = 9_999_999.99;
 
 /**
  * Máscara de moeda: só dígitos → centavos → "1.234,56".
- * O sinal de menos (inclusive o "−" do teclado numérico) não entra — o valor
+ * O sinal de menos (inclusive o "−" do teclado numérico) não entra. O valor
  * da conta é sempre positivo, e o tipo (receber/pagar) é que dá o sentido.
  */
 export function mascaraMoeda(v: string): string {
@@ -39,7 +39,7 @@ export function valorParaNumero(texto: string): number {
   return Number.isFinite(n) ? n : NaN;
 }
 
-/** Arredonda para 2 casas — o banco é numeric(12,2), nunca mandar 3 casas. */
+/** Arredonda para 2 casas. O banco é numeric(12,2), nunca mandar 3 casas. */
 export function centavos(valor: number): number {
   return Math.round(valor * 100) / 100;
 }
@@ -63,7 +63,7 @@ export function valorCompacto(valor: number): string {
  *
  * O `Date` nativo estoura o mês: 31/01 + 1 mês vira 03/03 (ou 02/03), porque
  * 31/02 não existe e ele "transborda" para março. Numa conta mensal isso é
- * errado — o vencimento de fevereiro tem que ser 28/02 (ou 29/02 em ano
+ * errado: o vencimento de fevereiro tem que ser 28/02 (ou 29/02 em ano
  * bissexto). Então: calcula ano/mês alvo na mão e trava o dia no último dia
  * daquele mês (dia 0 do mês seguinte = último dia do mês alvo, em UTC para
  * não escorregar com fuso/horário de verão).

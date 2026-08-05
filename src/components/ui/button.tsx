@@ -4,9 +4,9 @@ import type { ComponentProps, ReactNode } from "react";
 type Variante = "primary" | "secondary" | "ghost" | "danger";
 type Tamanho = "sm" | "md" | "lg";
 
-// Botões usam verde chapado (#059669) — gradiente é só para a marca.
+// Botões usam verde chapado (#059669). Gradiente é só para a marca.
 // Sobre o degradê da marca: primário é BRANCO cheio (destaque máximo),
-// secundário é vidro translúcido — clássico de UI sobre fundo colorido.
+// secundário é vidro translúcido, clássico de UI sobre fundo colorido.
 const VARIANTES: Record<Variante, string> = {
   primary:
     "bg-white text-brand-dark font-semibold shadow-lg shadow-black/10 hover:bg-white/90",

@@ -31,7 +31,7 @@ const PAPEIS_ASSINATURA: Papel[] = ["admin", "recepcao"];
 /** Registrar o uso do benefício acontece no atendimento. */
 const PAPEIS_USO: Papel[] = ["admin", "recepcao", "veterinario"];
 
-/** Teto de linhas lidas por consulta — clínica normal fica bem abaixo disso. */
+/** Teto de linhas lidas por consulta: clínica normal fica bem abaixo disso. */
 const LIMITE = 500;
 
 const ROTA_PLANOS = "/planos";
@@ -404,7 +404,7 @@ interface AssinaturaCobranca {
  *    assinatura já encerrada (fim < vencimento) também não.
  *
  * Anti-duplicata: a descrição carrega o mês/ano ("Assinatura Banho Mensal
- * — 08/2026"). Antes de inserir, lemos as contas a receber daquele intervalo
+ * · 08/2026"). Antes de inserir, lemos as contas a receber daquele intervalo
  * de vencimento e comparamos por tutor + descrição.
  */
 export async function gerarCobrancasDoMes() {

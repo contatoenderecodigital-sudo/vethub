@@ -17,7 +17,7 @@ const INTERVALO = 30_000;
  * finalizado, mostra a duração fechada.
  *
  * O relógio é lido como fonte externa (useSyncExternalStore): no servidor
- * o retorno é null — por isso o "calculando…" no primeiro quadro — e no
+ * o retorno é null, por isso o "calculando…" no primeiro quadro, e no
  * navegador o instante é arredondado para blocos de 30 s, senão cada
  * leitura devolveria um valor novo e o React entraria em laço.
  */

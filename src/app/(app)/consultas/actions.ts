@@ -107,7 +107,7 @@ export async function atualizarConsulta(id: string, formData: FormData) {
   if ("erro" in validado) {
     redirect(`/consultas/${id}/editar?erro=${validado.erro}`);
   }
-  // O pet da consulta não muda na edição — só os demais campos.
+  // O pet da consulta não muda na edição, só os demais campos.
   const campos = { ...validado.dados };
   delete (campos as Partial<typeof campos>).pet_id;
 

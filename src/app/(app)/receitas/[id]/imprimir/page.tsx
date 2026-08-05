@@ -118,7 +118,7 @@ export default async function ImprimirReceitaPage({
     : "RECEITUÁRIO VETERINÁRIO";
   // Receita de controle especial vai em duas vias (farmácia e paciente).
   const vias = controlada
-    ? ["1ª via — Farmácia", "2ª via — Paciente"]
+    ? ["1ª via · Farmácia", "2ª via · Paciente"]
     : [null];
 
   /** Uma via completa do documento (repetida quando a receita é controlada). */
@@ -199,7 +199,7 @@ export default async function ImprimirReceitaPage({
                       <p className="font-bold text-zinc-900">
                         {grupo.inicio + indice + 1}. {item.medicamento}
                         {item.concentracao ? ` ${item.concentracao}` : ""}
-                        {forma ? ` — ${forma}` : ""}
+                        {forma ? ` · ${forma}` : ""}
                       </p>
                       {item.quantidade && (
                         <span className="shrink-0 font-semibold text-zinc-900">
@@ -249,7 +249,7 @@ export default async function ImprimirReceitaPage({
             {receita.veterinario?.nome ?? "Médico(a) veterinário(a) responsável"}
           </p>
           <p className="text-[10px] text-zinc-600">
-            Médico(a) veterinário(a) — CRMV ______________
+            Médico(a) veterinário(a) · CRMV ______________
           </p>
         </div>
         <p className="mt-8 text-center text-[10px] uppercase tracking-wide text-zinc-400">

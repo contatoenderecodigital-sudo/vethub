@@ -49,7 +49,7 @@ export function CartoesResumo({
 
 /**
  * Aviso de corte: toda consulta do módulo tem teto de linhas. Quando o
- * resultado bate no teto, os totais são parciais — e a clínica precisa saber.
+ * resultado bate no teto, os totais são parciais, e a clínica precisa saber.
  */
 export function AvisoLimite({
   quantidade,
@@ -66,7 +66,7 @@ export function AvisoLimite({
       <TriangleAlert className="mt-0.5 size-4 shrink-0" strokeWidth={1.8} aria-hidden />
       <span>
         Mostrando apenas as primeiras {limite.toLocaleString("pt-BR")} linhas do
-        filtro — os totais abaixo são parciais. {dica}
+        filtro. Os totais abaixo são parciais. {dica}
       </span>
     </p>
   );

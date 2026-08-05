@@ -11,7 +11,7 @@ const ERRO_ITENS =
 
 const STATUS_VALIDOS: OrcamentoStatus[] = ["aberto", "aprovado", "recusado"];
 
-// Schemas locais do módulo — o servidor SEMPRE revalida, nunca confia no front.
+// Schemas locais do módulo. O servidor SEMPRE revalida, nunca confia no front.
 const petIdSchema = z.string().min(1);
 
 const itemOrcamentoSchema = z.object({
@@ -50,7 +50,7 @@ function itensDoForm(formData: FormData): ItemEntrada[] | null {
         valor_unitario: Number(linha.valor_unitario),
       };
     })
-    .filter((candidato) => candidato.descricao !== ""); // linha vazia — ignora
+    .filter((candidato) => candidato.descricao !== ""); // linha vazia: ignora
 
   const resultado = itensOrcamentoSchema.safeParse(candidatos);
   return resultado.success ? resultado.data : null;
@@ -77,7 +77,7 @@ export async function criarOrcamento(formData: FormData) {
   }
   if (!itens) redirect(urlErro(ERRO_ITENS));
 
-  // valor_total é recalculado por trigger a partir dos itens — nunca escrever aqui.
+  // valor_total é recalculado por trigger a partir dos itens, nunca escrever aqui.
   const { data: orcamento, error } = await supabase
     .from("orcamento")
     .insert({ clinica_id: usuario.clinica_id, pet_id, consulta_id })

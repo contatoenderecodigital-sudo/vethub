@@ -19,7 +19,7 @@ export interface OpcaoPlano {
 
 /**
  * Formulário de nova assinatura. Escolher o plano sugere o valor mensal
- * (preço do plano no catálogo), mas o campo continua editável — clínica
+ * (preço do plano no catálogo), mas o campo continua editável: clínica
  * negocia valor com o cliente o tempo todo.
  */
 export function AssinaturaForm({
@@ -68,7 +68,7 @@ export function AssinaturaForm({
         <Campo
           rotulo="Pet"
           htmlFor="assinatura-pet"
-          dica="Opcional — planos por pet ficam mais fáceis de controlar"
+          dica="Opcional. Planos por pet ficam mais fáceis de controlar"
         >
           <BuscaCombobox
             id="assinatura-pet"
@@ -102,7 +102,7 @@ export function AssinaturaForm({
           rotulo="Valor mensal (R$)"
           htmlFor="valor_mensal"
           obrigatorio
-          dica="Sugerido pelo plano — pode ser ajustado"
+          dica="Sugerido pelo plano, pode ser ajustado"
         >
           <Input
             id="valor_mensal"

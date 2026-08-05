@@ -18,7 +18,7 @@ export interface OpcaoBeneficio {
 
 /**
  * Registro inline do consumo de um benefício. Fica recolhido até o usuário
- * pedir — o card mostra o saldo do mês sem ruído. O servidor revalida tudo
+ * pedir. O card mostra o saldo do mês sem ruído. O servidor revalida tudo
  * de novo (zod) em registrarUso.
  */
 export function RegistrarUsoForm({
@@ -81,7 +81,7 @@ export function RegistrarUsoForm({
             <option value="">Uso avulso (fora da franquia)</option>
             {beneficios.map((b) => (
               <option key={b.id} value={b.id}>
-                {b.descricao} — {b.usados} de {b.quantidade_mes} usados
+                {b.descricao} · {b.usados} de {b.quantidade_mes} usados
               </option>
             ))}
           </Select>

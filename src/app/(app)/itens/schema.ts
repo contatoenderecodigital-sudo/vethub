@@ -21,7 +21,7 @@ function numeroNoIntervalo(min: number, max: number) {
 
 /**
  * Valor negativo tem mensagem própria: a máscara descarta o "-" na digitação,
- * então quem manda número negativo veio por fora do formulário — e precisa
+ * então quem manda número negativo veio por fora do formulário, e precisa
  * ler o motivo exato da recusa, não um "intervalo inválido" genérico.
  */
 function naoNegativo(v: string) {
@@ -61,11 +61,11 @@ export const itemSchema = z
     preco_venda: z
       .string()
       .refine(naoNegativo, "O preço de venda não pode ser negativo.")
-      .refine(numeroNoIntervalo(0, VALOR_MAX), "Preço inválido — use de 0 a 9.999.999,99."),
+      .refine(numeroNoIntervalo(0, VALOR_MAX), "Preço inválido. Use de 0 a 9.999.999,99."),
     preco_custo: z
       .string()
       .refine(naoNegativo, "O preço de custo não pode ser negativo.")
-      .refine(numeroNoIntervalo(0, VALOR_MAX), "Preço inválido — use de 0 a 9.999.999,99."),
+      .refine(numeroNoIntervalo(0, VALOR_MAX), "Preço inválido. Use de 0 a 9.999.999,99."),
     comissao_percentual: z
       .string()
       .refine(naoNegativo, "A comissão não pode ser negativa.")
@@ -83,7 +83,7 @@ export const itemSchema = z
       if (!v.trim()) return true;
       const n = Number(v.trim());
       return Number.isInteger(n) && n > 0 && n <= 1440;
-    }, "Duração inválida — use de 1 a 1440 minutos."),
+    }, "Duração inválida. Use de 1 a 1440 minutos."),
     ativo: z.boolean(),
   })
   .refine(
@@ -98,7 +98,7 @@ export type ItemFormValores = z.infer<typeof itemSchema>;
 
 /**
  * Converte os valores validados para o formato do banco.
- * NUNCA devolve `estoque_atual` — quem mexe nesse campo é o trigger
+ * NUNCA devolve `estoque_atual`. Quem mexe nesse campo é o trigger
  * de movimentação.
  */
 export function itemParaBanco(v: ItemFormValores) {

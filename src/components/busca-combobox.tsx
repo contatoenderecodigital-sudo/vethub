@@ -9,11 +9,11 @@ export interface OpcaoBusca {
 }
 
 /**
- * Combobox com busca no servidor (paginada/limitada — nunca carrega tudo).
+ * Combobox com busca no servidor (paginada/limitada, nunca carrega tudo).
  * Guarda o id selecionado num input hidden para o form.
  *
- * Acessibilidade: segue o padrão ARIA de combobox com lista de sugestões —
- * o input anuncia estado e opção em foco, a lista é um listbox de verdade e
+ * Acessibilidade: segue o padrão ARIA de combobox com lista de sugestões.
+ * O input anuncia estado e opção em foco, a lista é um listbox de verdade e
  * o teclado navega com ↑/↓, escolhe com Enter e fecha com Esc.
  */
 export function BuscaCombobox({
@@ -26,7 +26,7 @@ export function BuscaCombobox({
   obrigatorio = false,
   aoSelecionar,
 }: {
-  /** Id do input — use o mesmo do `htmlFor` do Campo que envolve o combobox. */
+  /** Id do input. Use o mesmo do `htmlFor` do Campo que envolve o combobox. */
   id?: string;
   name: string;
   /** Nome do campo para leitores de tela quando não houver label externo. */

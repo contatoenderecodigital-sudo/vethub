@@ -21,7 +21,7 @@ import {
   SELECT_CALENDARIO,
 } from "../calendario";
 
-export const metadata = { title: "Agenda — Semana" };
+export const metadata = { title: "Agenda · Semana" };
 
 /** Faixa de horário desenhada na grade (ajuste aqui se a clínica mudar). */
 const HORA_INICIO = 7;
@@ -41,7 +41,7 @@ function linkSemana(data: string, vet?: string): string {
   return `/agenda/semana?data=${data}${vet ? `&vet=${vet}` : ""}`;
 }
 
-/** "4 a 10 de agosto de 2026" — encurta quando o mês/ano se repete. */
+/** "4 a 10 de agosto de 2026": encurta quando o mês/ano se repete. */
 function intervaloPorExtenso(inicio: string, fim: string): string {
   const d1 = new Date(`${inicio}T12:00:00`);
   const d2 = new Date(`${fim}T12:00:00`);
@@ -90,7 +90,7 @@ export default async function AgendaSemanaPage({
     .order("nome")
     .returns<Pick<Usuario, "id" | "nome">[]>();
 
-  // Um único select da semana inteira — janela em America/Sao_Paulo
+  // Um único select da semana inteira: janela em America/Sao_Paulo
   // (offset fixo -03:00), do domingo 00h ao domingo seguinte 00h.
   let query = supabase
     .from("agendamento")
@@ -115,7 +115,7 @@ export default async function AgendaSemanaPage({
 
   /**
    * Posiciona um agendamento na coluna do dia. A régua é fixa
-   * (1 hora = ALTURA_HORA rem), então basta converter minutos em rem —
+   * (1 hora = ALTURA_HORA rem), então basta converter minutos em rem,
    * mais simples e previsível que porcentagem sobre altura automática.
    * Compromissos fora da faixa desenhada são grudados na borda.
    */
@@ -222,7 +222,7 @@ export default async function AgendaSemanaPage({
         {/* A grade rola DENTRO do card (nunca empurra a página para os lados) */}
         <div className="overflow-x-auto">
           <div className="min-w-[44rem]">
-            {/* Cabeçalho dos dias — fica fora da área que rola na vertical */}
+            {/* Cabeçalho dos dias: fica fora da área que rola na vertical */}
             <div className="grid grid-cols-[3.25rem_repeat(7,minmax(0,1fr))] border-b border-edge">
               <div aria-hidden />
               {diasDaSemana.map((dia, i) => {

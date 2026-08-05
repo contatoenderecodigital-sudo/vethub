@@ -2,7 +2,7 @@ import { z } from "zod";
 import { FORMAS_PAGAMENTO_VENDA, type FormaPagamentoVenda } from "@/lib/types";
 
 /**
- * Schemas do PDV. O servidor SEMPRE revalida com estes schemas — o payload
+ * Schemas do PDV. O servidor SEMPRE revalida com estes schemas. O payload
  * chega do navegador em JSON e nada dele é confiável.
  */
 

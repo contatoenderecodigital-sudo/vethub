@@ -7,7 +7,7 @@ import { limitesDoMes } from "../schema";
  * Schemas e utilitários das comissões dos profissionais.
  *
  * Regra do módulo: nada que veio da URL entra numa consulta sem passar por
- * aqui — data só vale se for data de calendário de verdade, id só vale se
+ * aqui: data só vale se for data de calendário de verdade, id só vale se
  * tiver cara de UUID, e toda leitura tem teto de linhas.
  */
 
@@ -22,7 +22,7 @@ export const LIMITE_APURACAO = 2000;
 
 const DATA_MINIMA = "2015-01-01";
 
-/** Janela máxima da apuração — evita varrer anos de venda numa tacada só. */
+/** Janela máxima da apuração: evita varrer anos de venda numa tacada só. */
 export const DIAS_MAXIMO_APURACAO = 366;
 
 function dataMaxima(): string {
@@ -73,7 +73,7 @@ export function resolverPeriodo(de?: string, ate?: string): Periodo {
 /**
  * Bordas da janela em America/Sao_Paulo. O Brasil não tem mais horário de
  * verão, então o offset é fixo em -03:00 (mesmo padrão da agenda e do PDV).
- * `venda.data` é timestamptz — sem isso a venda das 22h cairia no dia errado.
+ * `venda.data` é timestamptz. Sem isso a venda das 22h cairia no dia errado.
  */
 export function inicioDoDia(iso: string): string {
   return `${iso}T00:00:00-03:00`;
@@ -144,7 +144,7 @@ export const idSchema = z
 // Números
 // ------------------------------------------------------------------
 
-/** Arredonda para 2 casas — o banco é numeric(12,2), nunca mandar 3 casas. */
+/** Arredonda para 2 casas. O banco é numeric(12,2), nunca mandar 3 casas. */
 export function centavos(valor: number): number {
   return Math.round(valor * 100) / 100;
 }

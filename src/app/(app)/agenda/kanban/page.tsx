@@ -14,8 +14,9 @@ import { Select } from "@/components/ui/form";
 import { AlternadorVisao } from "../alternador-visao";
 import { CartaoAgendamento, type CartaoDados } from "./cartao-agendamento";
 import { Coluna } from "./coluna";
+import { QuadroAgenda } from "./quadro-agenda";
 
-export const metadata = { title: "Agenda — Kanban" };
+export const metadata = { title: "Agenda · Kanban" };
 
 /** Linha do dia com os joins usados pelo kanban. */
 interface AgendamentoDoDia extends CartaoDados {
@@ -205,10 +206,11 @@ export default async function AgendaKanbanPage({
       </div>
 
       <p className="mb-3 text-xs text-ink-muted">
-        Arraste os cartões entre as colunas para mudar a situação do atendimento.
+        Arraste os cartões entre as colunas para mudar a situação do
+        atendimento. No celular, puxe pela alça ⠿ no topo do cartão.
       </p>
 
-      <div className="flex snap-x gap-3 overflow-x-auto pb-2">
+      <QuadroAgenda data={data}>
         {COLUNAS.map((coluna) => {
           const daColuna = lista.filter((a) => coluna.aceita.includes(a.status));
           return (
@@ -219,7 +221,6 @@ export default async function AgendaKanbanPage({
               corBorda={coluna.corBorda}
               corPonto={coluna.corPonto}
               contador={daColuna.length}
-              data={data}
             >
               {daColuna.map((a) => (
                 <CartaoAgendamento key={a.id} agendamento={a} />
@@ -227,7 +228,7 @@ export default async function AgendaKanbanPage({
             </Coluna>
           );
         })}
-      </div>
+      </QuadroAgenda>
     </div>
   );
 }

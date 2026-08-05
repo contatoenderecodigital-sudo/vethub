@@ -1,4 +1,4 @@
-# Peti9 — análise do concorrente
+# Peti9: análise do concorrente
 
 Registro do que a Peti9 entrega, extraído de capturas de tela do sistema.
 Serve de referência para o VetHub **igualar e superar**. Cada leva nova de
@@ -35,7 +35,7 @@ primária verde), sino de notificações, busca "Pesquisar por menu", chat
 - **4 tiles coloridos** no topo: Atendimentos Agendados para Hoje (azul),
   Atendimentos/Vendas Realizadas Hoje (amarelo), Ticket Médio de Hoje (roxo),
   Clientes Cadastrados no Mês (vermelho). Cada um com ícone à esquerda.
-- **Indicadores do Atendimento**: 6 medidores circulares (gauge) — Pets no
+- **Indicadores do Atendimento**: 6 medidores circulares (gauge). Pets no
   estabelecimento, Aguardando atendimento, Sendo atendidos, Aguardando
   check-out, Com check-out, Agendados.
 - **Periódicos**: lembretes de retorno/vacina dos próximos 7 dias.
@@ -43,7 +43,7 @@ primária verde), sino de notificações, busca "Pesquisar por menu", chat
 - **Produtos com estoque baixo ou sem estoque**.
 - **Aniversariantes**: abas PETS / CLIENTES, próximos 7 dias.
 
-## 3. Atendimento — 5 visualizações da mesma agenda
+## 3. Atendimento: 5 visualizações da mesma agenda
 
 Barra superior: Atualizar · seletor de mês · Hoje · calendário ·
 **Dia / Semana / Mês** · **Atendimentos | Kanban | Calendário | Atividades** ·
@@ -55,7 +55,7 @@ Filtros rápidos: Pet/Cliente, Profissional, Situação.
 Tabela agrupada por data ("01/07/2026 - quarta-feira (1)"), colunas:
 checkbox, Horário, Pet | Cliente, Detalhes (serviço + contador tipo "(1/2)"),
 Profissional, Valor, Situação. A **situação é um dropdown colorido na própria
-linha** (Check-out verde, Pronto roxo, Cancelado vermelho, Check-in azul) —
+linha** (Check-out verde, Pronto roxo, Cancelado vermelho, Check-in azul).
 muda o status sem sair da lista. Ícones de ação: localização (leva e traz),
 transferência, menu de três pontos.
 Marcações extras na linha: "Busca e Entrega", "Apenas Busca", avisos em
@@ -95,7 +95,7 @@ compartilhar…). Painel lateral direito com abas **Histórico · Vacinas ·
 Vermífugos · Antiparasitários** e o Histórico Clínico com registros por
 atendimento (Anamnese, Exame Físico Inicial etc.).
 
-## 5. IA "Nina" — o grande diferencial deles
+## 5. IA "Nina": o grande diferencial deles
 
 Mascote raposa laranja. Aparece em vários pontos:
 
@@ -103,7 +103,7 @@ Mascote raposa laranja. Aparece em vários pontos:
    pet (barra de progresso por atendimento + "Revisão final") e devolve, na
    ficha do pet, um painel por data com: **Recomendações da Nina** (com selo
    "Avalie com cautela" e links "detalhes"/"fonte"), Condições prévias
-   relevantes, **Riscos e alertas**, Sinais clínicos, Tratamentos — cada bloco
+   relevantes, **Riscos e alertas**, Sinais clínicos, Tratamentos, cada bloco
    com contador de registros.
 2. **Transcrição de consulta por IA**: enviar arquivo de áudio OU gravar a
    consulta ao vivo. Requer veterinário responsável com a função liberada.
@@ -113,11 +113,11 @@ Mascote raposa laranja. Aparece em vários pontos:
    Prognóstico, **Anotações sobre Sugestões e Alertas**, Avisos. Também há
    "Salvar TUDO no atendimento".
 3. **Análise de relatório**: dentro do visualizador de PDF de qualquer
-   relatório, um chat lateral ("Nina IA — Análise e insights do relatório")
+   relatório, um chat lateral ("Nina IA · Análise e insights do relatório")
    responde perguntas em linguagem natural sobre aquele relatório
    (ex.: "qual cliente com maior saldo devedor? qual o total da dívida?").
 4. Avisos de responsabilidade profissional antes de usar (checkbox
-   "Estou ciente") — cuidado jurídico que devemos copiar.
+   "Estou ciente"), cuidado jurídico que devemos copiar.
 
 Liberação por profissional: no cadastro do profissional há a seção
 **"Liberação da Assistente Veterinária"** com toggles (Transcrição por IA,
@@ -134,17 +134,17 @@ Vendedor, Banhista), **Perfil de Comissão**, **CRMV**, **Assinatura em imagem**
 
 ## 7. Configurações → Campos obrigatórios (muito bom)
 
-Tela "Campos obrigatórios — Defina quais campos são obrigatórios para cada tipo
+Tela "Campos obrigatórios · Defina quais campos são obrigatórios para cada tipo
 de cadastro", com abas: **CLIENTE (28 campos) · PET (13) · FORNECEDOR (24) ·
 PROFISSIONAL (32) · PRODUTO (30) · SERVIÇO (24) · PLANO (18)**.
 
-- Cada campo tem toggle **Obrigatório (completo)** e **Obrigatório (resumido)**
-  — dois níveis de exigência (cadastro rápido vs. completo).
+- Cada campo tem toggle **Obrigatório (completo)** e **Obrigatório (resumido)**,
+  dois níveis de exigência (cadastro rápido vs. completo).
 - Campos agrupados por seção (Identificação, Complementar, Endereço,
   Detalhes do Produto…).
 - **Renovação de cadastro em dias** por tipo (ex.: cliente 5, pet 90) com botão
   Atualizar ou "Não controlar renovação": o sistema avisa quando o cadastro
-  está velho e pede confirmação dos dados no atendimento — abre um painel
+  está velho e pede confirmação dos dados no atendimento. Abre um painel
   lateral "Atualizar Cadastro do Cliente" no meio do fluxo.
 
 ## 8. Relatórios
@@ -184,13 +184,13 @@ chat da Nina ao lado.
 
 ## 10. Onde o VetHub pode ser MELHOR
 
-- **WhatsApp nativo e oficial** (Embedded Signup já pronto) — a Peti9 não
+- **WhatsApp nativo e oficial** (Embedded Signup já pronto): a Peti9 não
   mostra automação de WhatsApp nos prints; nosso chatbot que agenda sozinho é
   diferencial de venda.
 - **Visual**: eles usam interface clara e densa, com tabelas cinza. Nosso
   glassmorphism sobre o degradê da marca é muito mais moderno.
 - **Mobile real**: os prints são todos desktop; nosso app é mobile-first com
-  dock de navegação — vet atende com o celular na mão.
+  dock de navegação. Vet atende com o celular na mão.
 - **IA além do prontuário**: além de transcrição e análise de histórico
   (que precisamos ter), dá para usar IA em triagem por WhatsApp, resumo do
   dia para o dono da clínica e sugestão de reagendamento.

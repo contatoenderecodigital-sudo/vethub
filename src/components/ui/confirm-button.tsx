@@ -7,12 +7,12 @@ import { Dialogo, DialogoConteudo } from "./dialogo";
 /**
  * Botão que pede confirmação antes de enviar o form pai.
  *
- * A janela é a do sistema (vidro), não o `window.confirm` do navegador —
+ * A janela é a do sistema (vidro), não o `window.confirm` do navegador,
  * que aparece no topo da tela, ignora o tema e assusta o usuário.
  *
  * Detalhe de implementação: o botão visível só abre a janela. Quem envia
  * de fato é um botão de submit escondido, que carrega o mesmo
- * `formAction` — assim continua funcionando em formulários com mais de
+ * `formAction`, assim continua funcionando em formulários com mais de
  * uma ação (as listas de marcas, unidades e categorias usam isso).
  */
 export function ConfirmButton({

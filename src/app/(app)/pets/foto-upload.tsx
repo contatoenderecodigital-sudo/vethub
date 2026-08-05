@@ -43,11 +43,11 @@ export function FotoUpload({
     setErro(null);
 
     if (!TIPOS_ACEITOS.includes(arquivo.type)) {
-      setErro("Formato não aceito — use JPG, PNG ou WebP.");
+      setErro("Formato não aceito. Use JPG, PNG ou WebP.");
       return;
     }
     if (arquivo.size > TAMANHO_MAX) {
-      setErro("Imagem muito grande — máximo 5 MB.");
+      setErro("Imagem muito grande. O máximo é 5 MB.");
       return;
     }
 

@@ -6,7 +6,7 @@ import { NextResponse, type NextRequest } from "next/server";
  * GET  → verificação do endpoint pela Meta (hub.challenge).
  * POST → eventos de mensagens/status. Na Fase 2 os eventos alimentam a
  *        automação (n8n): confirmação de agendamento, lembretes e chatbot.
- *        Por enquanto o endpoint aceita e confirma (200) — obrigatório
+ *        Por enquanto o endpoint aceita e confirma (200), obrigatório
  *        para a análise do app e para a Meta não desativar o webhook.
  */
 export async function GET(request: NextRequest) {
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
   try {
     await request.json(); // consome o corpo
   } catch {
-    // corpo inválido — ainda assim confirmamos para não acumular retries
+    // corpo inválido, ainda assim confirmamos para não acumular retries
   }
   return NextResponse.json({ ok: true });
 }

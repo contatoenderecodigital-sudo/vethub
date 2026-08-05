@@ -2,7 +2,7 @@ import { z } from "zod";
 import { schemaDataAgendamento } from "@/lib/validacao";
 
 /**
- * Validação do formulário de agendamento — compartilhada entre o client
+ * Validação do formulário de agendamento, compartilhada entre o client
  * (react-hook-form) e a server action (safeParse). Nunca confiar só no front.
  */
 

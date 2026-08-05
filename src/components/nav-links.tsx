@@ -45,7 +45,7 @@ import { IconeWhatsapp } from "@/components/icone-whatsapp";
 
 /**
  * O ícone pode vir do Lucide ou ser um SVG nosso (o logo do WhatsApp,
- * por exemplo — o Lucide não traz marcas).
+ * por exemplo, o Lucide não traz marcas).
  */
 type IconeDeMenu = LucideIcon | ComponentType<SVGProps<SVGSVGElement>>;
 
@@ -267,7 +267,7 @@ export function NavLateral({ ehAdmin }: { ehAdmin: boolean }) {
   );
 }
 
-/** Atalhos fixos da barra inferior — o 5º slot é o botão "Mais". */
+/** Atalhos fixos da barra inferior. O 5º slot é o botão "Mais". */
 const ITENS_MOBILE: Item[] = [
   { href: "/dashboard", rotulo: "Início", icone: LayoutDashboard },
   { href: "/agenda", rotulo: "Agenda", icone: CalendarDays },
@@ -277,7 +277,7 @@ const ITENS_MOBILE: Item[] = [
 
 /**
  * Navegação inferior (mobile). Quatro atalhos + "Mais", que abre um painel
- * de baixo para cima com TODAS as seções do menu lateral — sem ele o celular
+ * de baixo para cima com TODAS as seções do menu lateral. Sem ele o celular
  * não alcançaria Itens, Financeiro, Relatórios e Configurações.
  */
 export function NavInferior({ ehAdmin }: { ehAdmin: boolean }) {
@@ -388,7 +388,10 @@ export function NavInferior({ ehAdmin }: { ehAdmin: boolean }) {
         </div>
       )}
 
-      <nav className="glass-forte fixed inset-x-3 bottom-3 z-30 flex rounded-2xl pb-[env(safe-area-inset-bottom)] md:hidden">
+      <nav
+        data-guia="barra"
+        className="glass-forte fixed inset-x-3 bottom-3 z-30 flex rounded-2xl pb-[env(safe-area-inset-bottom)] md:hidden"
+      >
         {ITENS_MOBILE.map((item) => {
           const ativo = estaAtivo(pathname, item.href);
           return (

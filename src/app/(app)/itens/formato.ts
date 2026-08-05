@@ -2,11 +2,11 @@
  * Máscaras e conversões numéricas do módulo de itens e estoque.
  * Regra: o usuário digita no padrão pt-BR (1.234,56) e o banco recebe
  * número com ponto decimal. O servidor sempre reconverte com estas
- * mesmas funções — nunca confiar no que veio do front.
+ * mesmas funções, nunca confiar no que veio do front.
  */
 
 /**
- * Remove qualquer sinal negativo digitado ou colado — inclusive o "−" (U+2212)
+ * Remove qualquer sinal negativo digitado ou colado, inclusive o "−" (U+2212)
  * do teclado numérico e os travessões que vêm de planilha. Dinheiro e
  * quantidade no VetHub nunca são negativos: a máscara não deixa o sinal entrar
  * e o zod do servidor barra o que passar por fora do formulário.
@@ -46,7 +46,7 @@ export function paraNumero(texto: string): number | null {
 
 /**
  * Mantém só dígitos, vírgula e ponto (aplicada no onChange das quantidades).
- * O sinal de menos cai junto — quantidade negativa não existe por aqui.
+ * O sinal de menos cai junto: quantidade negativa não existe por aqui.
  */
 export function sanitizarNumero(texto: string, maxChars = 10): string {
   return semSinal(texto).replace(/[^\d.,]/g, "").slice(0, maxChars);
@@ -76,7 +76,7 @@ export function formatPercentual(valor: number | string | null | undefined): str
 }
 
 /**
- * Termo de busca seguro para o `.or()` do PostgREST — vírgula e
+ * Termo de busca seguro para o `.or()` do PostgREST: vírgula e
  * parênteses quebram a sintaxe do filtro, e `%`/`_` viram curinga.
  */
 export function sanitizarBusca(termo: string): string {

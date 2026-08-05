@@ -8,7 +8,7 @@ export interface ColunaRelatorio<T> {
   celula: (linha: T, indice: number) => ReactNode;
 }
 
-/** Bloco de linhas com título e subtotal — usado nos relatórios agrupados. */
+/** Bloco de linhas com título e subtotal, usado nos relatórios agrupados. */
 export interface SecaoRelatorio<T> {
   titulo?: string;
   detalhe?: string;
@@ -23,7 +23,7 @@ interface Props<T> {
   linhas?: T[];
   secoes?: SecaoRelatorio<T>[];
   chave: (linha: T, indice: number) => string;
-  /** Linha de TOTAL destacada — uma célula por coluna. */
+  /** Linha de TOTAL destacada, uma célula por coluna. */
   total?: (ReactNode | null)[];
   vazio?: string;
   legenda?: string;
@@ -34,7 +34,7 @@ interface Props<T> {
 /**
  * Tabela padrão dos relatórios: vidro, cabeçalho em caixa alta, linhas
  * separadas por fio branco e uma linha de TOTAL destacada no rodapé.
- * Sempre dentro de `overflow-x-auto` — no celular a tabela rola sozinha.
+ * Sempre dentro de `overflow-x-auto`: no celular a tabela rola sozinha.
  */
 export function TabelaRelatorio<T>({
   colunas,

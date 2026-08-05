@@ -172,7 +172,7 @@ export async function moverAgendamento(
 
   const agora = new Date().toISOString();
   const valores: Record<string, string> = { status: novoStatus };
-  // Carimbos de chegada/saída — o que alimenta o tempo de permanência.
+  // Carimbos de chegada/saída: o que alimenta o tempo de permanência.
   if (novoStatus === "check_in") valores.check_in_em = agora;
   if (novoStatus === "check_out") valores.check_out_em = agora;
 

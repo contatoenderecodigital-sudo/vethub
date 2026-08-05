@@ -73,7 +73,7 @@ export default async function AgendaPage({
   const data = dataParamOuHoje(dataParam?.trim());
   const { supabase } = await getSessao();
 
-  // Data por extenso — T12:00:00 evita bug de fuso na virada do dia.
+  // Data por extenso. T12:00:00 evita bug de fuso na virada do dia.
   const dataExtenso = new Date(`${data}T12:00:00`).toLocaleDateString("pt-BR", {
     weekday: "long",
     day: "numeric",
@@ -87,7 +87,7 @@ export default async function AgendaPage({
     .order("nome")
     .returns<Pick<Usuario, "id" | "nome">[]>();
 
-  // Janela do dia em America/Sao_Paulo — offset fixo -03:00 (sem horário
+  // Janela do dia em America/Sao_Paulo: offset fixo -03:00 (sem horário
   // de verão), para a comparação de timestamps bater com o dia local.
   let query = supabase
     .from("agendamento")

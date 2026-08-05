@@ -101,7 +101,7 @@ export default async function PlanosPage({
         <EmptyState
           icone={<ClipboardList className="size-7" strokeWidth={1.8} />}
           titulo="Nenhum plano cadastrado"
-          mensagem="Um plano é o 'plano de saúde pet' da clínica: o tutor paga um valor fixo todo mês e ganha uma franquia de serviços. Ex.: Plano Banho Mensal — 4 banhos + 1 tosa higiênica por R$ 189/mês."
+          mensagem="Um plano é o 'plano de saúde pet' da clínica: o tutor paga um valor fixo todo mês e ganha uma franquia de serviços. Ex.: Plano Banho Mensal: 4 banhos + 1 tosa higiênica por R$ 189/mês."
           acao={podeEditar ? novoPlano : undefined}
         />
       ) : (

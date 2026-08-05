@@ -205,7 +205,7 @@ export default async function EstoquePage({
             mensagem={
               filtroAtivo === "todos"
                 ? "Ative o controle de estoque nos produtos do catálogo."
-                : "Nenhum produto nessa situação — estoque em dia."
+                : "Nenhum produto nessa situação. Estoque em dia."
             }
           />
         ) : (

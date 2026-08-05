@@ -76,7 +76,7 @@ export default async function NovaAssinaturaPage({
           <EmptyState
             icone={<ClipboardList className="size-7" strokeWidth={1.8} />}
             titulo="Nenhum plano ativo"
-            mensagem="Cadastre um plano antes de criar assinaturas. Ex.: Plano Banho Mensal — 4 banhos + 1 tosa higiênica por R$ 189/mês."
+            mensagem="Cadastre um plano antes de criar assinaturas. Ex.: Plano Banho Mensal: 4 banhos + 1 tosa higiênica por R$ 189/mês."
             acao={
               usuario.papel === "admin" ? (
                 <ButtonLink href="/planos/novo">Cadastrar plano</ButtonLink>

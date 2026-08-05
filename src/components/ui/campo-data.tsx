@@ -12,12 +12,12 @@ import "react-day-picker/style.css";
  * Campo de data do VetHub.
  *
  * O <input type="date"> do navegador abre um calendário desenhado pelo
- * sistema operacional — caixa escura, fonte diferente, ignora o tema.
+ * sistema operacional: caixa escura, fonte diferente, ignora o tema.
  * Aqui o campo é um botão que abre um calendário nosso, em vidro, em
  * português e com a cor do tema ativo.
  *
  * Para o formulário, o valor viaja num <input type="hidden"> no formato
- * YYYY-MM-DD, igual ao que o input nativo enviava — então nada muda do
+ * YYYY-MM-DD, igual ao que o input nativo enviava, então nada muda do
  * lado do servidor.
  *
  * Datas são tratadas como texto YYYY-MM-DD e convertidas para Date com
@@ -52,7 +52,7 @@ export interface CampoDataProps {
   id?: string;
   /** Valor inicial em YYYY-MM-DD (modo não controlado). */
   defaultValue?: string;
-  /** Valor em YYYY-MM-DD (modo controlado — use com react-hook-form). */
+  /** Valor em YYYY-MM-DD (modo controlado, use com react-hook-form). */
   value?: string;
   onChange?: (iso: string) => void;
   min?: string;

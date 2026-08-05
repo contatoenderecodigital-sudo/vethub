@@ -88,7 +88,7 @@ const TEXTO: Record<ContaTipo, { titulo: string; pessoa: string; vazio: string }
 };
 
 /**
- * Lista de contas parametrizada pelo tipo — a mesma tela serve
+ * Lista de contas parametrizada pelo tipo. A mesma tela serve
  * "a receber" e "a pagar", mudando só os rótulos e o destino dos links.
  */
 export async function ListaContas({
@@ -183,7 +183,7 @@ export async function ListaContas({
 
   const paramsUrl = { status, de, ate, q: busca, categoria };
 
-  /** URL atual (com filtros e página) — as ações voltam exatamente para cá. */
+  /** URL atual (com filtros e página). As ações voltam exatamente para cá. */
   const voltar = (() => {
     const sp = new URLSearchParams();
     Object.entries({ ...paramsUrl, pagina: pagina > 1 ? String(pagina) : undefined })

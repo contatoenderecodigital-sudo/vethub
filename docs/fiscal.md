@@ -1,4 +1,4 @@
-# Módulo Fiscal — construir ou contratar
+# Módulo Fiscal: construir ou contratar
 
 Pesquisa de 04/08/2026. Preços verificados direto nos sites oficiais.
 
@@ -17,20 +17,20 @@ e reavaliar internalizar quando houver volume que pague o esforço.
 | Provedor | Piso **com API** | Nota extra | Municípios NFS-e | Setup | White label |
 |---|---|---|---|---|---|
 | **Focus NFe** | **R$ 89,90** (100 notas) | R$ 0,10 | **+3.000** | **R$ 0** | plano parceiro, sob consulta |
-| **Notaas** | R$ 0 (50 notas) · R$ 249 SaaS Pro | R$ 0,15 | **não publicado** | não mencionado | **✅ preço público** |
+| **Notaas** | R$ 0 (50 notas) · R$ 249 SaaS Pro | R$ 0,15 | **não publicado** | não mencionado | **sim, preço público** |
 | **NFE.io** | R$ 190 (250 notas) | não publicado | não publicado | R$ 0 | não mencionado |
 | **eNotas** | R$ 257 (Plus) | R$ 0,57 | limitado fora do Pro | **R$ 179 a R$ 347** | Nota Gateway, sob consulta |
 | **Webmania** | **R$ 499,90** (Business) | R$ 0,45 | Padrão Nacional | R$ 0 no PME | não publicado |
-| **PlugNotas/TecnoSpeed** | sob consulta | sob consulta | **+2.200, 153 padrões** | sob consulta | ✅ 4.100 software houses |
-| ~~Nuvem Fiscal~~ | 🔴 **DESATIVADA em 31/07/2026** | — | — | — | — |
+| **PlugNotas/TecnoSpeed** | sob consulta | sob consulta | **+2.200, 153 padrões** | sob consulta | sim, 4.100 software houses |
+| ~~Nuvem Fiscal~~ | **DESATIVADA em 31/07/2026** | — | — | — | — |
 
 ### Três achados que mudam a decisão
 
-1. **A Nuvem Fiscal encerrou o serviço em 31/07/2026** — quatro dias antes
+1. **A Nuvem Fiscal encerrou o serviço em 31/07/2026**, quatro dias antes
    desta pesquisa. Era a mais recomendada em fóruns de desenvolvedores
    brasileiros. Se aparecer em algum tutorial, ignore.
    Fonte: comunicado de 22/04/2026 em nuvemfiscal.com.br; `/precos` retorna 404.
-2. **A Webmania de R$ 199,90 não tem API** — é só painel. Para embutir no
+2. **A Webmania de R$ 199,90 não tem API**, é só painel. Para embutir no
    VetHub, o piso real dela é R$ 499,90. Cuidado com essa pegadinha.
 3. **Focus NFe é o melhor custo-benefício transparente**: R$ 89,90/mês,
    zero setup, sem contrato mínimo, 30 dias de teste, e a garantia contratual
@@ -41,7 +41,7 @@ e reavaliar internalizar quando houver volume que pague o esforço.
 
 ## O que é preciso para emitir por conta própria
 
-Não é um módulo — é um sistema:
+Não é um módulo, é um sistema:
 
 - **Certificado digital A1** (.pfx) de cada clínica, guardado com segurança
   em SaaS multi-tenant, com renovação anual. Responsabilidade jurídica pesada.
@@ -52,7 +52,7 @@ Não é um módulo — é um sistema:
   status do serviço, contingência quando cai.
 - **NFS-e é o pior problema**: cada município tem seu padrão (ABRASF 1.0/2.0x,
   DSF, ou proprietário). A TecnoSpeed sozinha mantém **153 padrões
-  proprietários** — isso dá a dimensão do trabalho.
+  proprietários**. Isso dá a dimensão do trabalho.
 - **Reforma Tributária (CBS/IBS)**, em transição de 2026 a 2033: novas notas
   técnicas mexendo no layout durante anos.
 - **Incompatível com a Vercel**: precisa de servidor com estado, certificado
@@ -77,26 +77,26 @@ Com a Focus NFe a R$ 89,90/mês e o plano Clínica do VetHub a R$ 329:
 | **Margem bruta** | **~R$ 166 (50%)** |
 
 O custo do emissor cai por clínica conforme a base cresce (os planos maiores
-diluem: o Growth a R$ 548 cobre 4.000 notas — se cada clínica emite 100
+diluem: o Growth a R$ 548 cobre 4.000 notas. Se cada clínica emite 100
 notas/mês, são 40 clínicas por R$ 13,70 cada).
 
 **Ponto de virada:** com ~100 clínicas emitindo, o gasto anual com emissor
-passa de R$ 16 mil. Aí sim internalizar começa a se pagar — e você já vai
+passa de R$ 16 mil. Aí sim internalizar começa a se pagar, e você já vai
 conhecer a dor do mercado por dentro, com faturamento entrando enquanto isso.
 
 ---
 
 ## Recomendação em fases
 
-**Fase 1 — agora:** integrar a **Focus NFe**. Deixo o código atrás de uma
-interface própria (`EmissorFiscal`), então trocar de fornecedor depois — ou
-apontar para o seu próprio emissor — é mudar uma implementação, não o sistema.
+**Fase 1, agora:** integrar a **Focus NFe**. Deixo o código atrás de uma
+interface própria (`EmissorFiscal`), então trocar de fornecedor depois, ou
+apontar para o seu próprio emissor, é mudar uma implementação, não o sistema.
 Prazo: 1 a 2 dias.
 
-**Fase 2 — com base formada:** avaliar o emissor próprio começando **só por
+**Fase 2, com base formada:** avaliar o emissor próprio começando **só por
 NF-e/NFC-e** (27 SEFAZ é finito) e mantendo NFS-e no fornecedor (milhares de
 prefeituras é o que não acaba). Bases open source maduras existem em PHP
-(`nfephp-org/sped-nfe`) e Python — em Node/TypeScript o ecossistema é mais
+(`nfephp-org/sped-nfe`) e Python. Em Node/TypeScript o ecossistema é mais
 fraco, então provavelmente seria um serviço em outra linguagem.
 
 **Sobre vender para contabilidade:** faz sentido como produto futuro, mas
@@ -118,4 +118,4 @@ diferencial claros; o emissor entraria numa briga de commodity.
 
 > Alerta: o site `enotass.com.br` (dois "s") não é oficial. E a Notaas é um
 > player pequeno e recente, sem CNPJ visível nem número de municípios
-> publicado — valide contrato e SLA antes de depender dela.
+> publicado. Valide contrato e SLA antes de depender dela.

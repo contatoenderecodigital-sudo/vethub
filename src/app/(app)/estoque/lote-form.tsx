@@ -11,7 +11,7 @@ import type { ProdutoOpcao } from "./movimentacao-form";
 
 /**
  * Cadastro de lote com validade. A quantidade inicial vira uma
- * movimentação de entrada — é ela que alimenta o saldo do lote e do
+ * movimentação de entrada. É ela que alimenta o saldo do lote e do
  * produto (o trigger do banco faz a conta).
  */
 export function LoteForm({

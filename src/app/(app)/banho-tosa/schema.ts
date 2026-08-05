@@ -3,7 +3,7 @@ import type { AgendamentoStatus } from "@/lib/types";
 
 /**
  * Listas fixas, tipos e schemas do módulo de Banho e tosa.
- * Compartilhados entre as telas e as server actions — o servidor SEMPRE
+ * Compartilhados entre as telas e as server actions. O servidor SEMPRE
  * revalida com estes mesmos schemas, nunca confiar no front.
  */
 
@@ -42,7 +42,7 @@ export interface ExecucaoBanhoTosa {
 // Listas fixas
 // ------------------------------------------------------------------
 
-/** Serviços do petshop — gravados em `execucao_banho_tosa.servicos` (text[]). */
+/** Serviços do petshop, gravados em `execucao_banho_tosa.servicos` (text[]). */
 export const SERVICOS_BANHO_TOSA = [
   "Banho",
   "Tosa higiênica",
@@ -66,7 +66,7 @@ export const TIPOS_TOSA: { valor: string; rotulo: string }[] = [
 ];
 
 /**
- * Temperamento do pet. `alerta` marca o que precisa de cuidado extra —
+ * Temperamento do pet. `alerta` marca o que precisa de cuidado extra:
  * vira badge âmbar no cartão do fluxo para o profissional ver antes de pegar
  * o animal.
  */
@@ -231,7 +231,7 @@ export const execucaoObservacoesSchema = z.object({
     .max(1000, "Use no máximo 1000 caracteres nas observações."),
 });
 
-/** Foto já enviada ao bucket público "fotos" — aqui só guardamos a URL. */
+/** Foto já enviada ao bucket público "fotos". Aqui só guardamos a URL. */
 export const fotoExecucaoSchema = z.object({
   campo: z.enum(["antes", "depois"], "Campo de foto inválido."),
   url: z

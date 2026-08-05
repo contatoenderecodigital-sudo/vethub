@@ -100,7 +100,7 @@ export default async function ComissoesPage({
 
   const periodo = resolverPeriodo(filtros.de, filtros.ate);
   const status = statusDaUrl(filtros.status);
-  // Veterinário só vê as próprias comissões — o filtro nem aparece para ele.
+  // Veterinário só vê as próprias comissões. O filtro nem aparece para ele.
   const profissional = ehVeterinario ? usuario.id : idDaUrl(filtros.prof);
   const pagina = Math.max(1, parseInt(filtros.pagina ?? "1", 10) || 1);
 
@@ -185,7 +185,7 @@ export default async function ComissoesPage({
     prof: ehVeterinario ? undefined : profissional,
   };
 
-  /** URL atual (com filtros e página) — as ações voltam exatamente para cá. */
+  /** URL atual (com filtros e página). As ações voltam exatamente para cá. */
   const voltar = (() => {
     const sp = new URLSearchParams();
     Object.entries({

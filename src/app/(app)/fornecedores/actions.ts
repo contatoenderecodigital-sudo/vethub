@@ -10,7 +10,7 @@ import {
   fornecedorSchema,
 } from "./schema";
 
-/** Excluir apaga histórico de compra — só o administrador. */
+/** Excluir apaga histórico de compra, só o administrador. */
 const PAPEIS_ADMIN: Papel[] = ["admin"];
 
 function comErro(destino: string, mensagem: string): never {

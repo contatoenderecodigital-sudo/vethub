@@ -1,4 +1,4 @@
-# VetFiscal — especificação para construir o emissor próprio
+# VetFiscal: especificação para construir o emissor próprio
 
 Documento de construção. Entregue este arquivo a um agente de código junto
 com acesso ao servidor. Escrito em 04/08/2026.
@@ -7,13 +7,13 @@ com acesso ao servidor. Escrito em 04/08/2026.
 NFS-e. O VetHub (e, no futuro, outros clientes) fala com ele por uma API
 REST simples e nunca precisa saber o que é XML, SEFAZ ou certificado.
 
-**Onde roda:** servidor próprio com aaPanel. Não roda na Vercel — precisa de
+**Onde roda:** servidor próprio com aaPanel. Não roda na Vercel, precisa de
 disco persistente para os certificados, conexões SOAP longas e execução sem
 limite de tempo.
 
 ---
 
-## 1. Decisão de stack — e por que
+## 1. Decisão de stack, e por que
 
 **PHP 8.3 + Laravel 11 + a biblioteca `nfephp-org/sped-nfe`.**
 
@@ -23,7 +23,7 @@ Motivos, sem romantismo:
   Resolve assinatura XMLDSig, comunicação SOAP com as 27 SEFAZ, contingência,
   cancelamento, inutilização, carta de correção e leitura de retorno. Licença
   permissiva. Escrever isso do zero em Node seria refazer anos de trabalho.
-- **aaPanel é nativamente PHP** — instala PHP, Nginx, MySQL, SSL e cron pelo
+- **aaPanel é nativamente PHP**: instala PHP, Nginx, MySQL, SSL e cron pelo
   painel, sem dor.
 - Node/TypeScript **não tem equivalente maduro** para NF-e. Insistir em Node
   significaria portar o `sped-nfe` inteiro.
@@ -36,7 +36,7 @@ composer require nfephp-org/sped-da       # DANFE (PDF) e DANFCE
 composer require nfephp-org/sped-common   # utilidades compartilhadas
 ```
 
-Para **NFS-e**, ver a seção 6 — a estratégia é diferente.
+Para **NFS-e**, ver a seção 6, a estratégia é diferente.
 
 ---
 
@@ -59,7 +59,7 @@ Regras de ouro:
 
 1. **A emissão é assíncrona.** O VetHub pede, recebe um `id` e um status
    `processando`. Um webhook avisa quando autoriza. A SEFAZ pode demorar ou
-   cair — nunca deixe o usuário esperando numa requisição HTTP.
+   cair. Nunca deixe o usuário esperando numa requisição HTTP.
 2. **O VetFiscal nunca conhece o VetHub.** Ele é genérico: recebe emitente,
    destinatário e itens. Isso é o que permite vender para contabilidades depois.
 3. **Toda emissão é auditável**: guarde o XML enviado, o XML de retorno e o
@@ -171,7 +171,7 @@ duplicada dá dor de cabeça fiscal séria.
 
 ---
 
-## 5. API REST — o contrato
+## 5. API REST: o contrato
 
 Autenticação: `Authorization: Bearer <token>`. Todas as respostas em JSON.
 
@@ -231,7 +231,7 @@ Baixa o PDF e o XML autorizado.
 Só até 24 h após a autorização (prazo da NF-e).
 
 ### `POST /v1/notas/{id}/carta-correcao`
-`{ "correcao": "texto" }` — não corrige valor, destinatário nem data.
+`{ "correcao": "texto" }`. Não corrige valor, destinatário nem data.
 
 ### `POST /v1/inutilizacoes`
 `{ "serie": 1, "numero_inicial": 10, "numero_final": 12, "justificativa": "..." }`
@@ -247,13 +247,13 @@ Reenvie com backoff (1 min, 5 min, 30 min, 2 h, 6 h) até receber 2xx.
 
 ---
 
-## 6. NFS-e — a parte difícil, e a boa notícia
+## 6. NFS-e: a parte difícil, e a boa notícia
 
-NF-e tem 27 destinos. NFS-e tinha milhares — **cada prefeitura com seu padrão**.
+NF-e tem 27 destinos. NFS-e tinha milhares, **cada prefeitura com seu padrão**.
 
 **A boa notícia:** existe o **Padrão Nacional da NFS-e** (gov.br), com API REST
 única e adesão crescente dos municípios. Onde o município aderiu, você emite
-por um endpoint só, com o mesmo XML — muda tudo de figura.
+por um endpoint só, com o mesmo XML, muda tudo de figura.
 
 **O plano:**
 
@@ -262,10 +262,10 @@ por um endpoint só, com o mesmo XML — muda tudo de figura.
    integrador. Verifique **antes** se as cidades dos seus primeiros clientes já
    aderiram (existe lista pública de municípios conveniados).
 2. **Para município não aderente**, implemente sob demanda:
-   - Primeiro os padrões **ABRASF 2.04 / 2.02 / 1.0** — cobrem boa parte dos
+   - Primeiro os padrões **ABRASF 2.04 / 2.02 / 1.0**, cobrem boa parte dos
      municípios com um único código parametrizado por URL e pequenas variações.
    - Padrão proprietário (São Paulo capital, Curitiba e outros) só quando um
-     cliente daquela cidade aparecer. **Não tente cobrir tudo de antemão** —
+     cliente daquela cidade aparecer. **Não tente cobrir tudo de antemão**,
      é assim que projetos assim morrem.
 3. Estruture como **driver**: uma interface `ProvedorNfse` com implementações
    `PadraoNacional`, `Abrasf204`, `Abrasf202`, `SaoPaulo`... e um mapa
@@ -276,7 +276,7 @@ Bibliotecas de apoio: `nfephp-org/sped-nfse-*` (há um pacote por padrão).
 
 ---
 
-## 7. Segurança — leve a sério, é certificado dos outros
+## 7. Segurança: leve a sério, é certificado dos outros
 
 - **Certificados fora do webroot**, `chmod 700`, dono do usuário do PHP.
 - **Senha do certificado criptografada** com a `APP_KEY` do Laravel
@@ -286,7 +286,7 @@ Bibliotecas de apoio: `nfephp-org/sped-nfse-*` (há um pacote por padrão).
   cliente só uma vez, na criação.
 - **Rate limit** por token (ex.: 60 requisições por minuto).
 - **Isolamento**: toda consulta filtra por `emitente_id` do token. Escreva um
-  teste que tenta ler nota de outro emitente e confirma que falha — igual ao
+  teste que tenta ler nota de outro emitente e confirma que falha, igual ao
   teste de isolamento do VetHub.
 - **Alerta de validade**: rotina diária que avisa emitentes com certificado
   vencendo em 30, 15 e 7 dias. Certificado vencido = clínica sem faturar.
@@ -297,29 +297,29 @@ Bibliotecas de apoio: `nfephp-org/sped-nfse-*` (há um pacote por padrão).
 
 ## 8. Ordem de construção (não pule etapas)
 
-**Fase 1 — fundação (1 a 2 semanas)**
+**Fase 1: fundação (1 a 2 semanas)**
 Laravel instalado, banco criado, autenticação por token, cadastro de emitente,
 upload e validação de certificado. Sem emitir nada ainda.
 
-**Fase 2 — NF-e em homologação (2 a 4 semanas)**
+**Fase 2: NF-e em homologação (2 a 4 semanas)**
 `sped-nfe` configurado, montagem do XML, assinatura, envio ao ambiente de
 **homologação** (`ambiente = 2`), tratamento do retorno, consulta de status.
 Emita dezenas de notas de teste até entender as rejeições comuns
 (NCM inválido, CFOP errado, destinatário sem IE, certificado vencido).
 
-**Fase 3 — DANFE e eventos (1 semana)**
+**Fase 3: DANFE e eventos (1 semana)**
 PDF com `sped-da`, cancelamento, carta de correção, inutilização.
 
-**Fase 4 — NFC-e (1 semana)**
+**Fase 4: NFC-e (1 semana)**
 Mesma base, mais CSC/QR Code e contingência offline.
 
-**Fase 5 — NFS-e Padrão Nacional (2 a 3 semanas)**
+**Fase 5: NFS-e Padrão Nacional (2 a 3 semanas)**
 Só depois que NF-e estiver sólida.
 
-**Fase 6 — produção (1 semana)**
+**Fase 6: produção (1 semana)**
 Trocar para `ambiente = 1`, monitoramento, alertas, fila com retry, webhook.
 
-**Fase 7 — integração com o VetHub**
+**Fase 7: integração com o VetHub**
 Eu implemento o cliente do lado do VetHub (seção 9).
 
 Realista: **2 a 4 meses** para NF-e + NFC-e + NFS-e nacional funcionando bem,
@@ -328,14 +328,14 @@ Reforma Tributária mexendo no layout até 2033).
 
 ---
 
-## 9. O lado do VetHub — o que eu faço aqui
+## 9. O lado do VetHub: o que eu faço aqui
 
 Quando o VetFiscal estiver de pé, eu crio no VetHub:
 
-- `src/lib/fiscal/emissor.ts` — interface `EmissorFiscal` com
+- `src/lib/fiscal/emissor.ts`: interface `EmissorFiscal` com
   `emitirNfe`, `emitirNfse`, `consultar`, `cancelar`
-- `src/lib/fiscal/vetfiscal.ts` — implementação que chama a sua API
-- `src/app/api/fiscal/webhook/route.ts` — recebe o aviso de autorização,
+- `src/lib/fiscal/vetfiscal.ts`: implementação que chama a sua API
+- `src/app/api/fiscal/webhook/route.ts`: recebe o aviso de autorização,
   valida o HMAC e atualiza a nota no banco
 - Migração com a tabela `nota_fiscal` (referência, status, chave, links)
 - Tela em Configurações para cadastrar certificado e dados fiscais da clínica

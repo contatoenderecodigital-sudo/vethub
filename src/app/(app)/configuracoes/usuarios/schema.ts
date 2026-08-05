@@ -7,7 +7,7 @@ import {
 
 /**
  * Schema do novo usuário da equipe. Usado pelo form (client) e
- * revalidado na server action criarUsuario — sempre o mesmo schema.
+ * revalidado na server action criarUsuario, sempre o mesmo schema.
  */
 export const novoUsuarioSchema = z.object({
   nome: schemaNome,

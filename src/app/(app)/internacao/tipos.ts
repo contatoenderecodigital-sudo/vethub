@@ -85,7 +85,7 @@ export interface EvolucaoLinha {
 }
 
 // ------------------------------------------------------------------
-// Helpers de data — a clínica opera em America/Sao_Paulo (UTC-3 fixo),
+// Helpers de data: a clínica opera em America/Sao_Paulo (UTC-3 fixo),
 // o mesmo offset usado no resto do projeto.
 // ------------------------------------------------------------------
 
@@ -118,7 +118,7 @@ export function diasInternado(entrada: string, saida: string | null): number {
   return Math.max(0, Math.floor(ms / 86_400_000));
 }
 
-/** "Hoje", "1 dia", "5 dias" — texto curto para o cartão do paciente. */
+/** "Hoje", "1 dia", "5 dias": texto curto para o cartão do paciente. */
 export function rotuloDiasInternado(entrada: string, saida: string | null): string {
   const dias = diasInternado(entrada, saida);
   if (dias === 0) return "Hoje";

@@ -7,7 +7,7 @@ import {
 } from "@/lib/validacao";
 
 /**
- * Validação do formulário de pet — compartilhada entre o client
+ * Validação do formulário de pet, compartilhada entre o client
  * (react-hook-form) e a server action (safeParse). Nunca confiar só no front.
  */
 
@@ -97,7 +97,7 @@ export const pesagemSchema = z.object({
   peso: z
     .string()
     .min(1, "Informe o peso.")
-    .refine(pesoNoIntervalo, "Peso inválido — use de 0,05 a 500 kg."),
+    .refine(pesoNoIntervalo, "Peso inválido. Use de 0,05 a 500 kg."),
   data: schemaDataPassada,
   observacao: z.string().max(200, "Observação longa demais."),
 });

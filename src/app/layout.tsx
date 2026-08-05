@@ -22,7 +22,7 @@ export const viewport: Viewport = {
 };
 
 /**
- * Aplica o tema salvo antes da primeira pintura — sem isso a tela
+ * Aplica o tema salvo antes da primeira pintura. Sem isso a tela
  * aparece verde por um instante e depois muda de cor.
  */
 const APLICAR_TEMA = `try{var t=localStorage.getItem("vethub:tema");if(t)document.documentElement.dataset.tema=t}catch(e){}`;

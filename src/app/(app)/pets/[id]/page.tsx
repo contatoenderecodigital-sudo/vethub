@@ -117,7 +117,7 @@ export default async function PetPage({
   const excluirComId = excluirPet.bind(null, id);
   const porte = rotuloPorte(pet.porte);
   const etiquetas = pet.etiquetas ?? [];
-  // filtro das abas de protocolo — só aceita valor conhecido
+  // filtro das abas de protocolo, só aceita valor conhecido
   const tipoAtivo = (TIPOS_PROTOCOLO.some((t) => t.valor === tipo)
     ? tipo
     : "") as TipoProtocolo | "";

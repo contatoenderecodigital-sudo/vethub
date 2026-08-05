@@ -59,7 +59,7 @@ export default async function FornecedoresPage({
   const termo = sanitizarBusca(q ?? "");
   if (termo) {
     const partes = [`nome.ilike.%${termo}%`, `razao_social.ilike.%${termo}%`];
-    // CNPJ é guardado só com dígitos — a busca também precisa ser em dígitos.
+    // CNPJ é guardado só com dígitos. A busca também precisa ser em dígitos.
     const digitos = soDigitos(termo);
     if (digitos) partes.push(`cnpj.ilike.%${digitos}%`);
     query = query.or(partes.join(","));

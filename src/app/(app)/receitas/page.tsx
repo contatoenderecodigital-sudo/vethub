@@ -60,7 +60,7 @@ export default async function ReceitasPage({
     .range((pagina - 1) * POR_PAGINA, pagina * POR_PAGINA - 1);
 
   if (q?.trim()) query = query.ilike("pet.nome", `%${q.trim()}%`);
-  // `data` é coluna date — comparação direta, sem fuso
+  // `data` é coluna date: comparação direta, sem fuso
   if (de) query = query.gte("data", de);
   if (ate) query = query.lte("data", ate);
 

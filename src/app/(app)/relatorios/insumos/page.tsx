@@ -162,7 +162,7 @@ export default async function RelatorioInsumosPage({
       };
     });
 
-  // Agrupamento por item — vale para o modo resumido e para os subtotais
+  // Agrupamento por item: vale para o modo resumido e para os subtotais
   // do modo detalhado.
   const mapa = new Map<string, Agrupado & { linhas: Consumo[] }>();
   for (const consumo of consumos) {

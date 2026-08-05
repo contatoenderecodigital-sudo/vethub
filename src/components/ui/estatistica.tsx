@@ -5,14 +5,14 @@ import { cn } from "@/lib/utils";
 /**
  * Cartão de número (KPI).
  *
- * Tudo centralizado — ícone, número e rótulo no eixo do cartão. Numa
+ * Tudo centralizado: ícone, número e rótulo no eixo do cartão. Numa
  * fileira de cartões, alinhar à esquerda faz cada bloco "cair" para um
  * lado e a linha perde o ritmo; centralizado, a leitura corre de cartão
  * em cartão.
  *
  * Os ícones são SEMPRE iguais (vidro branco sobre o tema): cor em ícone
  * de KPI não carrega informação e vira poluição. A única cor que
- * sobrevive é o vermelho de "crítico", porque ali ela É a informação —
+ * sobrevive é o vermelho de "crítico", porque ali ela É a informação:
  * dinheiro vencido precisa saltar aos olhos.
  */
 
@@ -120,7 +120,7 @@ export function Estatistica({
  * Grade de indicadores.
  *
  * As colunas se ajustam à quantidade de cartões (auto-fit): três cartões
- * ocupam a linha inteira em três colunas, dois em duas — nunca sobra
+ * ocupam a linha inteira em três colunas, dois em duas, nunca sobra
  * buraco à direita, que era o que acontecia com número fixo de colunas.
  * No celular são sempre duas colunas; uma só desperdiça tela.
  *

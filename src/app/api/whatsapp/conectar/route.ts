@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
   const { code, waba_id, phone_number_id } = corpo;
   if (!code || !waba_id || !phone_number_id) {
     return NextResponse.json(
-      { erro: "Conexão incompleta — tente novamente." },
+      { erro: "Conexão incompleta. Tente novamente." },
       { status: 400 }
     );
   }
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
   const inscrito = await inscreverAppNaWaba(waba_id, token);
   const numero = await detalhesDoNumero(phone_number_id, token);
 
-  // 5. Grava a conexão (service_role — tabela sem policies)
+  // 5. Grava a conexão (service_role, tabela sem policies)
   const admin = createAdminClient();
   const { error } = await admin.from("whatsapp_conexao").upsert(
     {

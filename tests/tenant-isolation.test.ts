@@ -185,6 +185,6 @@ describe.skipIf(!temEnv)("isolamento de tenant (RLS)", () => {
 
 if (!temEnv) {
   console.warn(
-    "⚠ Teste de isolamento pulado: configure NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY e SUPABASE_SERVICE_ROLE_KEY em .env.local"
+    "Teste de isolamento pulado: configure NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY e SUPABASE_SERVICE_ROLE_KEY em .env.local"
   );
 }

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { Clock, Stethoscope, User } from "lucide-react";
 import { formatHora } from "@/lib/format";
 import { IconeEspecie } from "@/components/icone-especie";
+import { CartaoArrastavel } from "@/components/quadro";
 
 /** Linha do agendamento usada pelo cartão do kanban. */
 export interface CartaoDados {
@@ -35,30 +35,21 @@ function dataCurta(iso: string): string {
 }
 
 /**
- * Cartão arrastável do kanban. Usa drag and drop nativo do HTML5:
- * o id do agendamento viaja no dataTransfer e a coluna de destino
- * lê esse id no onDrop.
+ * Cartão do kanban. O arrasto (mouse, caneta e dedo) vem do
+ * `<CartaoArrastavel>`, que também traz a alça ⠿ do topo. No celular é por
+ * ela que o cartão sai do lugar.
  */
 export function CartaoAgendamento({ agendamento }: { agendamento: CartaoDados }) {
-  const [arrastando, setArrastando] = useState(false);
   const { pet, veterinario } = agendamento;
   const etiquetas = agendamento.etiquetas ?? [];
 
   const especieRaca = [pet?.especie, pet?.raca].filter(Boolean).join(" · ");
 
   return (
-    <article
-      draggable
-      onDragStart={(e) => {
-        e.dataTransfer.setData("text/plain", agendamento.id);
-        e.dataTransfer.effectAllowed = "move";
-        setArrastando(true);
-      }}
-      onDragEnd={() => setArrastando(false)}
-      className={`glass cursor-grab rounded-xl p-3 transition-opacity active:cursor-grabbing ${
-        arrastando ? "opacity-50" : "opacity-100"
-      }`}
-      aria-label={`Agendamento ${numeroCurto(agendamento.id)} — ${pet?.nome ?? "Pet"}`}
+    <CartaoArrastavel
+      id={agendamento.id}
+      rotulo={`agendamento ${numeroCurto(agendamento.id)} de ${pet?.nome ?? "Pet"}`}
+      className="glass rounded-xl p-3 transition-opacity"
     >
       <header className="flex items-center justify-between gap-2">
         <span className="font-mono text-xs font-semibold tracking-wide text-white/80">
@@ -118,6 +109,6 @@ export function CartaoAgendamento({ agendamento }: { agendamento: CartaoDados })
           ))}
         </ul>
       )}
-    </article>
+    </CartaoArrastavel>
   );
 }

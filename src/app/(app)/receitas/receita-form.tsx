@@ -23,7 +23,7 @@ const DATA_MAX = `${new Date().getFullYear() + 5}-12-31`;
 /**
  * Formulário compartilhado entre criar e editar receita. Os campos
  * obrigatórios usam validação nativa (required) e a server action revalida
- * tudo com o schema zod — inclusive o JSON dos medicamentos.
+ * tudo com o schema zod, inclusive o JSON dos medicamentos.
  */
 export function ReceitaForm({
   action,
@@ -73,7 +73,7 @@ export function ReceitaForm({
         <Campo
           rotulo="Veterinário"
           htmlFor="veterinario_id"
-          dica="O CRMV ainda não é cadastrado no VetHub — no documento impresso a linha do carimbo fica em branco para o preenchimento manual."
+          dica="O CRMV ainda não é cadastrado no VetHub. No documento impresso a linha do carimbo fica em branco para o preenchimento manual."
         >
           <Select
             id="veterinario_id"
@@ -93,7 +93,7 @@ export function ReceitaForm({
           <Select id="tipo" name="tipo" defaultValue={receita?.tipo ?? "simples"}>
             {TIPOS_RECEITA.map((t) => (
               <option key={t.valor} value={t.valor}>
-                {t.rotulo} — {t.dica}
+                {t.rotulo} · {t.dica}
               </option>
             ))}
           </Select>
@@ -121,7 +121,7 @@ export function ReceitaForm({
       <Campo
         rotulo="Orientações gerais"
         htmlFor="orientacoes"
-        dica="Cuidados, alimentação, sinais de alerta — sai impresso abaixo dos medicamentos."
+        dica="Cuidados, alimentação, sinais de alerta. Sai impresso abaixo dos medicamentos."
       >
         <Textarea
           id="orientacoes"

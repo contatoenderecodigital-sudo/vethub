@@ -2,7 +2,7 @@ import { z } from "zod";
 import { schemaDataAgendamento } from "@/lib/validacao";
 
 /**
- * Schemas do módulo de Internação — compartilhados entre os formulários
+ * Schemas do módulo de Internação, compartilhados entre os formulários
  * (react-hook-form no client) e as server actions (safeParse no servidor).
  * O servidor SEMPRE revalida com estes mesmos schemas: nunca confiar no front.
  */

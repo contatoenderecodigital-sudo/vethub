@@ -22,7 +22,7 @@ function tipoDoArquivo(arquivo: File): AnexoTipo {
 
 /**
  * Zona única de anexos: clica em qualquer lugar OU arrasta os arquivos
- * para cima dela e o envio começa na hora — vários de uma vez, sem
+ * para cima dela e o envio começa na hora, vários de uma vez, sem
  * escolher tipo nem apertar botão. Upload direto do navegador para o
  * bucket privado "anexos" (chave anon + RLS).
  */

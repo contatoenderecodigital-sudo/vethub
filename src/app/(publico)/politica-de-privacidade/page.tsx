@@ -23,14 +23,14 @@ export default function PoliticaDePrivacidadePage() {
         Esta Política de Privacidade explica como o <strong className="text-ink">VetHub</strong>{" "}
         coleta, utiliza, armazena, compartilha e protege dados pessoais no
         contexto da prestação dos seus serviços, em conformidade com a Lei
-        Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018 — LGPD). Ao
+        Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018, LGPD). Ao
         utilizar o VetHub, você declara ter lido e compreendido esta política.
       </p>
 
       <h2 className="mb-2 mt-8 text-lg font-semibold text-ink">1. Quem somos</h2>
       <p className="text-sm leading-relaxed text-ink-muted">
         O VetHub é um sistema web de gestão para clínicas veterinárias
-        (software como serviço — SaaS), que reúne em um só lugar agenda de
+        (software como serviço, SaaS), que reúne em um só lugar agenda de
         atendimentos, prontuário eletrônico, orçamentos e o cadastro de
         tutores (donos) e seus pets. O serviço é oferecido no modelo
         multi-tenant: cada clínica cliente possui um ambiente próprio, com
@@ -48,7 +48,7 @@ export default function PoliticaDePrivacidadePage() {
       <ul className="mt-2 list-disc space-y-1 pl-5 text-sm leading-relaxed text-ink-muted">
         <li>
           <strong className="text-ink">Dados de tutores e pets:</strong> a clínica veterinária
-          cliente é a <strong className="text-ink">controladora</strong> desses dados — é ela quem
+          cliente é a <strong className="text-ink">controladora</strong> desses dados. É ela quem
           os coleta e decide como usá-los no atendimento. O VetHub atua como{" "}
           <strong className="text-ink">operador</strong>, tratando esses dados exclusivamente
           conforme as instruções da clínica e para viabilizar o funcionamento
@@ -112,7 +112,7 @@ export default function PoliticaDePrivacidadePage() {
       <ul className="mt-2 list-disc space-y-1 pl-5 text-sm leading-relaxed text-ink-muted">
         <li>
           <strong className="text-ink">Execução de contrato</strong> (art. 7º, V): prestar o
-          serviço contratado pela clínica — manter cadastros, agenda,
+          serviço contratado pela clínica: manter cadastros, agenda,
           prontuários, orçamentos e anexos; autenticar usuários e operar a
           plataforma.
         </li>
@@ -215,7 +215,7 @@ export default function PoliticaDePrivacidadePage() {
       <ul className="mt-2 list-disc space-y-1 pl-5 text-sm leading-relaxed text-ink-muted">
         <li>
           Isolamento dos dados por clínica no banco de dados (Row Level
-          Security — RLS), impedindo que uma clínica acesse dados de outra;
+          Security, RLS), impedindo que uma clínica acesse dados de outra;
         </li>
         <li>Criptografia em trânsito (TLS) em todas as comunicações;</li>
         <li>Exigência de senha forte e armazenamento seguro de credenciais;</li>
@@ -296,9 +296,9 @@ export default function PoliticaDePrivacidadePage() {
       </h2>
       <p className="text-sm leading-relaxed text-ink-muted">
         O banco de dados principal é hospedado no Brasil (região São
-        Paulo). Contudo, alguns prestadores de infraestrutura — como a
+        Paulo). Contudo, alguns prestadores de infraestrutura, como a
         Vercel (hospedagem da aplicação) e a Meta Platforms (WhatsApp
-        Business Platform) — podem processar dados fora do Brasil. Nesses
+        Business Platform), podem processar dados fora do Brasil. Nesses
         casos, a transferência ocorre com salvaguardas adequadas, com base
         nos mecanismos previstos nos arts. 33 e seguintes da LGPD e nos
         compromissos contratuais de proteção de dados assumidos por esses

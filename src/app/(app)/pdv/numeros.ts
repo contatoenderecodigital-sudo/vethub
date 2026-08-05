@@ -47,12 +47,12 @@ export function textoQuantidade(n: number): string {
   return n.toLocaleString("pt-BR", { maximumFractionDigits: 3 });
 }
 
-/** Arredonda para 2 casas — o banco é numeric(12,2). */
+/** Arredonda para 2 casas. O banco é numeric(12,2). */
 export function centavos(n: number): number {
   return Math.round(n * 100) / 100;
 }
 
-/** Arredonda para 3 casas — quantidade é numeric(12,3). */
+/** Arredonda para 3 casas. Quantidade é numeric(12,3). */
 export function milesimos(n: number): number {
   return Math.round(n * 1000) / 1000;
 }

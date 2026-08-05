@@ -105,7 +105,7 @@ export async function fecharCaixa(caixaId: string, formData: FormData) {
 }
 
 // ==================================================================
-// Catálogo — o PDV nunca confia no preço que vem do navegador
+// Catálogo: o PDV nunca confia no preço que vem do navegador
 // ==================================================================
 
 const CAMPOS_ITEM = "id, nome, preco_venda, controla_estoque, estoque_atual";
@@ -156,7 +156,7 @@ export type ResultadoVenda =
 /**
  * Fecha a venda: grava venda + itens + pagamentos, dá baixa no estoque e,
  * quando há fiado, lança o débito no extrato do tutor e abre a conta a
- * receber. Todos os totais são recalculados AQUI — o payload do navegador
+ * receber. Todos os totais são recalculados AQUI. O payload do navegador
  * serve só para dizer o que foi vendido, nunca por quanto ficou.
  */
 export async function finalizarVenda(payload: string): Promise<ResultadoVenda> {
@@ -227,7 +227,7 @@ export async function finalizarVenda(payload: string): Promise<ResultadoVenda> {
     return { erro: `Faltam ${formatBRL(centavos(total - pago))} para fechar a venda.` };
   }
 
-  // O que passou do total é troco — e troco só sai do dinheiro. Guardamos
+  // O que passou do total é troco, e troco só sai do dinheiro. Guardamos
   // apenas o valor que FICA no caixa, senão o fechamento nunca bate.
   const troco = centavos(pago - total);
   let restaAbater = troco;
@@ -349,7 +349,7 @@ type UsuarioSessao = Awaited<ReturnType<typeof getSessao>>["usuario"];
 
 /**
  * Saída de estoque dos produtos vendidos. O trigger do banco recalcula o
- * estoque_atual a partir das movimentações — aqui só registramos o fato.
+ * estoque_atual a partir das movimentações. Aqui só registramos o fato.
  * O mesmo item repetido no carrinho vira uma movimentação só.
  */
 async function baixarEstoque(

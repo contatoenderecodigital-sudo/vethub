@@ -27,7 +27,7 @@ import { diasEntre, primeiro, proximaCobranca } from "../schema";
 
 export const metadata = { title: "Assinaturas" };
 
-/** Teto de linhas lidas — clínica normal fica bem abaixo disso. */
+/** Teto de linhas lidas: clínica normal fica bem abaixo disso. */
 const LIMITE = 500;
 
 /** Janela do card "cobranças a vencer". */
@@ -88,7 +88,7 @@ export default async function AssinaturasPage({
   const hoje = hojeISO();
 
   // Cards de resumo: sempre sobre TODAS as ativas, independentes dos filtros
-  // da lista — o MRR da clínica não muda porque alguém buscou por um tutor.
+  // da lista: o MRR da clínica não muda porque alguém buscou por um tutor.
   const ativas = todas.filter((a) => a.status === "ativa");
   const mrr = ativas.reduce((soma, a) => soma + Number(a.valor_mensal), 0);
   const vencendo = ativas.filter((a) => {

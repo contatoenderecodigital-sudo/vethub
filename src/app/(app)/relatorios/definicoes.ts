@@ -165,7 +165,7 @@ export function fimDoDia(iso: string): string {
   return `${iso}T23:59:59.999-03:00`;
 }
 
-/** "01/07/2026 a 30/07/2026" — usado no cabeçalho de impressão. */
+/** "01/07/2026 a 30/07/2026", usado no cabeçalho de impressão. */
 export function descricaoPeriodo(periodo: Periodo): string {
   return `${formatDataISO(periodo.de)} a ${formatDataISO(periodo.ate)}`;
 }
@@ -233,7 +233,7 @@ export function formatQuantidade(valor: number | string | null | undefined): str
   return n.toLocaleString("pt-BR", { maximumFractionDigits: 3 });
 }
 
-/** Arredonda para 2 casas — evita 0,30000000000000004 nos totais. */
+/** Arredonda para 2 casas. Evita 0,30000000000000004 nos totais. */
 export function centavos(valor: number): number {
   return Math.round(valor * 100) / 100;
 }
@@ -253,7 +253,7 @@ export const DIAS_ATE_AGRUPAR_POR_MES = 62;
 
 /**
  * Teto de barras desenhadas. Por dia o próprio agrupamento já limita em 62;
- * por mês, um período de vários anos mostra só os 36 meses finais — mais que
+ * por mês, um período de vários anos mostra só os 36 meses finais, mais que
  * isso vira um borrão de barras de 2 pixels.
  */
 const MAXIMO_BARRAS: Record<Agrupamento, number> = {
@@ -282,7 +282,7 @@ export function agrupamentoDoPeriodo(periodo: Periodo): Agrupamento {
 /**
  * Dia da clínica (YYYY-MM-DD) de um instante gravado no banco. O Brasil não
  * tem mais horário de verão, mas `toLocaleDateString` com o fuso resolve
- * qualquer caso — é a mesma conta de `hojeISO()`.
+ * qualquer caso, é a mesma conta de `hojeISO()`.
  */
 export function diaDaClinica(iso: string): string {
   return new Date(iso).toLocaleDateString("en-CA", {
@@ -324,7 +324,7 @@ function chavesDoPeriodo(periodo: Periodo, agrupamento: Agrupamento): string[] {
 /**
  * Soma os itens do período em uma série pronta para o gráfico de barras.
  * `quando` é o instante do lançamento (timestamptz do banco) e `valor` é o
- * que deve ser somado — 1 para contagem, o valor em reais para dinheiro.
+ * que deve ser somado: 1 para contagem, o valor em reais para dinheiro.
  */
 export function serieDoPeriodo(
   periodo: Periodo,

@@ -287,7 +287,7 @@ export default async function PacienteInternadoPage({
         {/* ---------------- Checklist de medicação ---------------- */}
         <Card className="lg:col-span-2">
           <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-            <CardTitulo className="mb-0">Checklist de medicação — hoje</CardTitulo>
+            <CardTitulo className="mb-0">Checklist de medicação · hoje</CardTitulo>
             <span className="text-xs text-ink-muted tabular-nums">
               {pendentes.length} pendente{pendentes.length === 1 ? "" : "s"} de{" "}
               {(administracoes ?? []).length}

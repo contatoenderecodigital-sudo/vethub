@@ -48,7 +48,7 @@ export function ConectarWhatsapp({
 
   // Carrega o SDK do Facebook uma única vez
   useEffect(() => {
-    if (window.FB) return; // já carregado — `pronto` veio true do initializer
+    if (window.FB) return; // já carregado, `pronto` veio true do initializer
     window.fbAsyncInit = () => {
       window.FB?.init({
         appId,
@@ -84,7 +84,7 @@ export function ConectarWhatsapp({
           };
         }
       } catch {
-        // mensagens de outros scripts — ignorar
+        // mensagens de outros scripts: ignorar
       }
     }
     window.addEventListener("message", aoReceberMensagem);

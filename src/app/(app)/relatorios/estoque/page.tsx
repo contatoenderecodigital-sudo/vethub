@@ -78,7 +78,7 @@ export default async function RelatorioEstoquePage({
       .returns<OpcaoSimples[]>(),
   ]);
 
-  // "Abaixo do mínimo" compara duas colunas — o PostgREST não faz isso
+  // "Abaixo do mínimo" compara duas colunas. O PostgREST não faz isso
   // direto, então o corte fica aqui (a consulta já veio filtrada pelo grupo).
   const todos = data ?? [];
   const itens =

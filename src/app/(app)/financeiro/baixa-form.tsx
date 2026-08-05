@@ -13,7 +13,7 @@ import { mascaraMoeda } from "./schema";
 
 /**
  * Baixa rápida direto na lista: abre embaixo da linha já com o saldo restante
- * preenchido e a data de hoje — o caso comum é um clique e "Confirmar".
+ * preenchido e a data de hoje. O caso comum é um clique e "Confirmar".
  * O servidor revalida tudo (zod) e decide entre 'parcial' e 'paga'.
  */
 export function BaixaForm({

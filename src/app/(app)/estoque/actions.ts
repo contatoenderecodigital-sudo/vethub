@@ -131,7 +131,7 @@ export async function registrarMovimentacao(formData: FormData) {
 }
 
 // ------------------------------------------------------------------
-// Lote com validade — o saldo inicial entra como movimentação
+// Lote com validade: o saldo inicial entra como movimentação
 // ------------------------------------------------------------------
 
 export async function cadastrarLote(formData: FormData) {
@@ -189,7 +189,7 @@ export async function cadastrarLote(formData: FormData) {
   });
 
   if (erroMov) {
-    // Sem a entrada o lote ficaria zerado e confuso — desfaz o cadastro.
+    // Sem a entrada o lote ficaria zerado e confuso. Desfaz o cadastro.
     await supabase.from("lote").delete().eq("id", lote.id);
     comErro(destino, "Não foi possível registrar a entrada do lote.");
   }

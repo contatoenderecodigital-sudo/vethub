@@ -88,7 +88,7 @@ export async function excluirPet(id: string) {
 }
 
 // ------------------------------------------------------------------
-// Foto do pet — o upload acontece no navegador (bucket público
+// Foto do pet: o upload acontece no navegador (bucket público
 // "fotos"); aqui só guardamos a URL já pronta.
 // ------------------------------------------------------------------
 
@@ -126,7 +126,7 @@ export async function atualizarFoto(
 }
 
 // ------------------------------------------------------------------
-// Histórico de peso — um trigger no banco mantém pet.peso igual à
+// Histórico de peso: um trigger no banco mantém pet.peso igual à
 // pesagem mais recente, então aqui só inserimos/removemos.
 // ------------------------------------------------------------------
 

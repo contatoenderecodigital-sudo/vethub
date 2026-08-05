@@ -77,7 +77,7 @@ export function ItensEditor({
       : [novaLinha()]
   );
 
-  // Campos já tocados (blur) — erros só aparecem depois disso, nunca no
+  // Campos já tocados (blur): erros só aparecem depois disso, nunca no
   // primeiro render.
   const [tocados, setTocados] = useState<Record<string, boolean>>({});
 
@@ -125,7 +125,7 @@ export function ItensEditor({
     <div className="space-y-3">
       <input type="hidden" name="itens" value={itensJson} />
 
-      {/* Cabeçalho das colunas (só em telas maiores) — MESMA grade das linhas,
+      {/* Cabeçalho das colunas (só em telas maiores): MESMA grade das linhas,
           para os títulos ficarem exatamente em cima dos campos */}
       <div className="hidden text-xs font-medium text-ink-muted sm:grid sm:grid-cols-[minmax(0,1fr)_5.5rem_8rem_6.5rem_2rem] sm:gap-2">
         <span>Descrição</span>
@@ -146,14 +146,14 @@ export function ItensEditor({
               : null;
           const erroQuantidade = foiTocado(linha.chave, "quantidade")
             ? !Number.isFinite(qtd) || qtd <= 0
-              ? "Quantidade inválida — use um número maior que zero."
+              ? "Quantidade inválida. Use um número maior que zero."
               : qtd > QTD_MAX
                 ? `Quantidade máxima: ${QTD_MAX}.`
                 : null
             : null;
           const erroValor = foiTocado(linha.chave, "valor_unitario")
             ? !Number.isFinite(valor) || valor < 0
-              ? "Valor unitário inválido — use números, como 120 ou 89,90."
+              ? "Valor unitário inválido. Use números, como 120 ou 89,90."
               : valor > VALOR_MAX
                 ? "Valor unitário máximo: R$ 999.999,00."
                 : null

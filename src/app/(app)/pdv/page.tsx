@@ -24,7 +24,7 @@ interface CaixaFechado {
   usuario: { nome: string } | { nome: string }[] | null;
 }
 
-/** O embed do Supabase pode vir como objeto ou array — normaliza. */
+/** O embed do Supabase pode vir como objeto ou array: normaliza. */
 function nomeDe(
   relacao: { nome: string } | { nome: string }[] | null | undefined
 ): string | null {
@@ -109,7 +109,7 @@ export default async function PdvPage({
                 id="observacao"
                 name="observacao"
                 maxLength={300}
-                placeholder="Opcional — ex.: turno da manhã"
+                placeholder="Opcional. Ex.: turno da manhã"
               />
             </Campo>
 

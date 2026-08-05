@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { EllipsisVertical } from "lucide-react";
 
 /**
- * Menu "Mais ações" — usado no cabeçalho das páginas que têm 3 ou mais
+ * Menu "Mais ações", usado no cabeçalho das páginas que têm 3 ou mais
  * botões. Só a ação principal fica visível; o resto entra aqui e para de
  * brigar com o título em telas estreitas.
  *

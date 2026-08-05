@@ -38,7 +38,7 @@ export function FiltrosRelatorio({
 }: {
   base: string;
   periodo?: Periodo;
-  /** Filtros atuais da URL — mantêm-se ao clicar num atalho de período. */
+  /** Filtros atuais da URL, mantêm-se ao clicar num atalho de período. */
   params: Record<string, string | undefined>;
   children?: ReactNode;
   /** Relatórios de posição (estoque, vacinas) não usam janela de datas. */

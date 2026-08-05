@@ -2,7 +2,7 @@ import { z } from "zod";
 
 /**
  * Schema da consulta, compartilhado entre o formulário (client) e as
- * server actions do módulo — o servidor SEMPRE revalida com este mesmo
+ * server actions do módulo. O servidor SEMPRE revalida com este mesmo
  * schema (nunca confiar só no front).
  */
 

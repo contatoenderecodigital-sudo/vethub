@@ -16,7 +16,7 @@ import type { Fornecedor } from "@/lib/types";
 
 /**
  * Validação do cadastro de fornecedor. O MESMO schema roda no formulário
- * (react-hook-form) e na server action — o servidor nunca confia no front.
+ * (react-hook-form) e na server action. O servidor nunca confia no front.
  */
 export const fornecedorSchema = z.object({
   nome: z.string().trim().min(2, "Informe o nome do fornecedor."),

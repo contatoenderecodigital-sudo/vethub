@@ -103,7 +103,7 @@ export function BeneficiosEditor({
     <div className="space-y-3">
       <input type="hidden" name="beneficios" value={beneficiosJson} />
 
-      {/* Cabeçalho das colunas (desktop) — mesma grade das linhas */}
+      {/* Cabeçalho das colunas (desktop): mesma grade das linhas */}
       <div className="hidden text-xs font-medium text-ink-muted sm:grid sm:grid-cols-[14rem_minmax(0,1fr)_6rem_6rem_2rem] sm:gap-2">
         <span>Serviço ou produto</span>
         <span>Descrição do benefício</span>

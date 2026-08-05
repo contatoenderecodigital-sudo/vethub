@@ -9,7 +9,7 @@ import { mascaraCEP, soDigitos, UFS, type EnderecoValores } from "@/lib/validaca
 /**
  * Bloco de endereço completo (CEP → rua, número, complemento, bairro,
  * cidade, UF) para formulários react-hook-form. Ao completar o CEP,
- * busca no ViaCEP e preenche tudo sozinho — a pessoa só digita o número.
+ * busca no ViaCEP e preenche tudo sozinho. A pessoa só digita o número.
  *
  * Uso: dentro de um <FormProvider {...form}> cujo schema inclua
  * os campos de `camposEndereco` (lib/validacao.ts).
@@ -51,7 +51,7 @@ export function EnderecoCampos<T extends FieldValues & EnderecoValores>() {
         uf?: string;
       };
       if (dados.erro) {
-        setAvisoCep("CEP não encontrado — confira ou preencha manualmente.");
+        setAvisoCep("CEP não encontrado. Confira ou preencha manualmente.");
         return;
       }
       definir("logradouro", dados.logradouro ?? "");
@@ -60,7 +60,7 @@ export function EnderecoCampos<T extends FieldValues & EnderecoValores>() {
       definir("uf", dados.uf ?? "");
       setFocus(campo("numero")); // só falta o número!
     } catch {
-      setAvisoCep("Não foi possível buscar o CEP agora — preencha manualmente.");
+      setAvisoCep("Não foi possível buscar o CEP agora. Preencha manualmente.");
     } finally {
       setBuscando(false);
     }

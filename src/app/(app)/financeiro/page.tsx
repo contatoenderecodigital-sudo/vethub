@@ -26,7 +26,7 @@ import { limitesDoMes, rotuloMes, ultimosMeses } from "./schema";
 
 export const metadata = { title: "Painel financeiro" };
 
-/** Teto de linhas lidas por consulta — clínica normal fica bem abaixo disso. */
+/** Teto de linhas lidas por consulta: clínica normal fica bem abaixo disso. */
 const LIMITE = 500;
 const MESES_GRAFICO = 6;
 const NO_RESUMO = 5;

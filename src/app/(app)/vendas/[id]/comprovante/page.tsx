@@ -48,7 +48,7 @@ function primeiro<T>(valor: T | T[] | null | undefined): T | null {
 /**
  * Regras de impressão: o cupom é a ÚNICA coisa no papel. O cabeçalho, a
  * navegação lateral e a barra inferior do app somem, e o fundo colorido do
- * body (::before) também — bobina térmica é preto sobre branco.
+ * body (::before) também: bobina térmica é preto sobre branco.
  */
 const CSS_IMPRESSAO = `
 @page { size: 80mm auto; margin: 4mm; }
@@ -129,7 +129,7 @@ export default async function ComprovantePage({
         <BotaoImprimir />
       </div>
 
-      {/* Cupom: fundo branco, texto preto — igual sai na bobina */}
+      {/* Cupom: fundo branco, texto preto, igual sai na bobina */}
       <div className="cupom mx-auto max-w-[80mm] rounded-lg bg-white p-4 font-mono text-[11px] leading-snug text-black shadow-xl">
         <header className="text-center">
           <h1 className="text-sm font-bold uppercase">{clinica?.nome ?? "Clínica"}</h1>
@@ -240,7 +240,7 @@ export default async function ComprovantePage({
         <p className="mt-3 border-t border-dashed border-black pt-2 text-center font-bold uppercase">
           Obrigado pela preferência
         </p>
-        <p className="text-center">Volte sempre — a saúde do seu pet agradece.</p>
+        <p className="text-center">Volte sempre. A saúde do seu pet agradece.</p>
       </div>
     </div>
   );

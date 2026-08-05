@@ -173,7 +173,7 @@ export function FornecedorForm({
             {...register("ativo")}
           />
           <span>
-            Fornecedor ativo — aparece na lista de seleção ao lançar uma compra.
+            Fornecedor ativo. Aparece na lista de seleção ao lançar uma compra.
           </span>
         </label>
 

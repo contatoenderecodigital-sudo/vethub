@@ -4,7 +4,7 @@ import { dataCalendarioValida } from "@/lib/validacao";
 /**
  * Schemas e utilitários dos planos e assinaturas.
  * O formulário (client) reusa as máscaras daqui; a server action SEMPRE
- * revalida com os mesmos schemas — nunca confiar no que veio do front.
+ * revalida com os mesmos schemas, nunca confiar no que veio do front.
  */
 
 export const VALOR_MAXIMO = 9_999_999.99;
@@ -17,7 +17,7 @@ export const QUANTIDADE_MAXIMA = 999;
 
 /**
  * Máscara de moeda: só dígitos → centavos → "1.234,56".
- * O sinal de menos (inclusive o "−" do teclado numérico) não entra — o zod
+ * O sinal de menos (inclusive o "−" do teclado numérico) não entra. O zod
  * do servidor também barra qualquer valor abaixo de zero.
  */
 export function mascaraMoeda(v: string): string {
@@ -45,7 +45,7 @@ export function valorParaNumero(texto: string): number {
   return Number.isFinite(n) ? n : NaN;
 }
 
-/** Arredonda para 2 casas — as colunas são numeric(12,2). */
+/** Arredonda para 2 casas. As colunas são numeric(12,2). */
 export function centavos(valor: number): number {
   return Math.round(valor * 100) / 100;
 }
@@ -65,12 +65,12 @@ const p2 = (n: number) => String(n).padStart(2, "0");
  * Próxima data de cobrança (YYYY-MM-DD) de uma assinatura.
  *
  * O banco limita `dia_cobranca` de 1 a 28 justamente para o dia SEMPRE
- * existir em qualquer mês (inclusive fevereiro) — por isso não há
+ * existir em qualquer mês (inclusive fevereiro), por isso não há
  * tratamento de "fim de mês curto" aqui.
  *
  * Regra: se o dia ainda não passou no mês corrente, a cobrança é deste
  * mês; se já passou, cai no mês seguinte (virando o ano em dezembro).
- * O próprio dia de hoje conta como "ainda não passou" — quem gera a
+ * O próprio dia de hoje conta como "ainda não passou". Quem gera a
  * cobrança hoje quer o vencimento de hoje, não o do mês que vem.
  */
 export function proximaCobranca(diaCobranca: number, hojeIso: string): string {
@@ -116,7 +116,7 @@ export function diasEntre(deIso: string, ateIso: string): number {
 
 /** Descrição padronizada da cobrança mensal (também serve de chave anti-duplicata). */
 export function descricaoCobranca(planoNome: string, vencimento: string): string {
-  return `Assinatura ${planoNome} — ${rotuloMesAno(vencimento)}`;
+  return `Assinatura ${planoNome} · ${rotuloMesAno(vencimento)}`;
 }
 
 // ------------------------------------------------------------------
@@ -200,7 +200,7 @@ export const usoSchema = z.object({
 
 /**
  * O editor de benefícios manda um input hidden com JSON. Aqui só garantimos
- * que virou array — cada linha ainda passa pelo zod na action.
+ * que virou array: cada linha ainda passa pelo zod na action.
  */
 export function beneficiosDoJson(bruto: string): unknown[] {
   try {

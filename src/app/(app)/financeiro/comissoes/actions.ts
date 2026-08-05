@@ -38,7 +38,7 @@ function comErro(url: string, mensagem: string): string {
 
 /**
  * O caminho de retorno vem do formulário (para voltar com os filtros da
- * lista). Só aceitamos a própria rota de comissões — nunca redirecionar
+ * lista). Só aceitamos a própria rota de comissões, nunca redirecionar
  * para um endereço que o cliente escolheu.
  */
 function destinoSeguro(voltar: string | null | undefined): string {
@@ -93,7 +93,7 @@ export async function apurarComissoes(de: string, ate: string) {
   }
 
   const janela = periodo.data;
-  // Volta para o mesmo período — com as datas já validadas, nunca as cruas.
+  // Volta para o mesmo período, com as datas já validadas, nunca as cruas.
   const voltar = `${ROTA}?de=${janela.de}&ate=${janela.ate}`;
 
   // 1. Vendas efetivamente pagas dentro da janela (venda.data é timestamptz).

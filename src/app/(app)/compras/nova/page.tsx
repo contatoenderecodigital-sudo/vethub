@@ -11,7 +11,7 @@ import { criarCompra } from "../actions";
 
 export const metadata = { title: "Nova compra" };
 
-/** Teto dos selects — a clínica não tem catálogo maior que isso na prática. */
+/** Teto dos selects: a clínica não tem catálogo maior que isso na prática. */
 const LIMITE_OPCOES = 500;
 
 export default async function NovaCompraPage({

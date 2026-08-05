@@ -16,7 +16,7 @@ export interface ProdutoOpcao {
 }
 
 /**
- * Movimentação manual de estoque. A quantidade sempre entra positiva —
+ * Movimentação manual de estoque. A quantidade sempre entra positiva:
  * é o tipo que decide se soma ou subtrai. O saldo em si é recalculado
  * por um trigger no banco, nunca por este formulário.
  */
@@ -60,7 +60,7 @@ export function MovimentacaoForm({
           <Select id="mov-tipo" name="tipo" defaultValue="entrada" required>
             {TIPOS_MOVIMENTACAO.map((t) => (
               <option key={t.valor} value={t.valor}>
-                {t.rotulo} — {t.dica}
+                {t.rotulo} · {t.dica}
               </option>
             ))}
           </Select>
@@ -70,7 +70,7 @@ export function MovimentacaoForm({
           rotulo="Quantidade"
           htmlFor="mov-quantidade"
           obrigatorio
-          dica="Sempre positiva — o tipo define se soma ou subtrai."
+          dica="Sempre positiva. O tipo define se soma ou subtrai."
         >
           <Input
             id="mov-quantidade"
@@ -87,7 +87,7 @@ export function MovimentacaoForm({
         <Campo
           rotulo="Valor unitário (R$)"
           htmlFor="mov-valor"
-          dica="Opcional — útil nas entradas de compra."
+          dica="Opcional. Útil nas entradas de compra."
         >
           <Input
             id="mov-valor"

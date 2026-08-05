@@ -7,7 +7,7 @@ import {
 
 /**
  * Schema dos dados da clínica. Usado pelo form (client) e revalidado
- * na server action atualizarClinica — sempre o mesmo schema.
+ * na server action atualizarClinica, sempre o mesmo schema.
  * Telefone da clínica vai ao banco só com dígitos, SEM DDI 55
  * (clínica não é alvo de WhatsApp).
  */

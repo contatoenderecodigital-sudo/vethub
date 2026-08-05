@@ -126,13 +126,13 @@ export default async function ExecucaoBanhoTosaPage({
   const servicosMarcados = new Set(execucao?.servicos ?? []);
   const destino = `/banho-tosa/${agendamentoId}`;
 
-  // Dia do atendimento no fuso da clínica — leva de volta ao painel certo.
+  // Dia do atendimento no fuso da clínica: leva de volta ao painel certo.
   const diaDoPainel = new Date(agendamento.data_hora).toLocaleDateString("en-CA", {
     timeZone: "America/Sao_Paulo",
   });
 
   // Mensagem pronta de retirada. O envio automático chega junto com a
-  // integração oficial do WhatsApp (Cloud API) — por enquanto abrimos o
+  // integração oficial do WhatsApp (Cloud API). Por enquanto abrimos o
   // aplicativo com o texto preenchido.
   const linkWhatsapp = tutor
     ? `https://wa.me/${soDigitos(tutor.telefone)}?text=${encodeURIComponent(
@@ -412,7 +412,7 @@ export default async function ExecucaoBanhoTosaPage({
             )}
             <p className="text-xs text-ink-muted">
               Abre a conversa com o aviso de retirada já escrito. Anexe a foto do
-              depois na hora do envio — o envio automático da imagem chega com a
+              depois na hora do envio. O envio automático da imagem chega com a
               integração oficial do WhatsApp.
             </p>
           </div>

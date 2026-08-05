@@ -45,11 +45,11 @@ export function FotoExecucao({
     setErro(null);
 
     if (!TIPOS_ACEITOS.includes(arquivo.type)) {
-      setErro("Formato não aceito — use JPG, PNG ou WebP.");
+      setErro("Formato não aceito. Use JPG, PNG ou WebP.");
       return;
     }
     if (arquivo.size > TAMANHO_MAX) {
-      setErro("Imagem muito grande — máximo 5 MB.");
+      setErro("Imagem muito grande. O máximo é 5 MB.");
       return;
     }
 
@@ -106,7 +106,7 @@ export function FotoExecucao({
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
             src={url}
-            alt={`${petNome} — ${rotulo.toLowerCase()}`}
+            alt={`${petNome} · ${rotulo.toLowerCase()}`}
             className="size-full object-cover"
           />
         ) : (

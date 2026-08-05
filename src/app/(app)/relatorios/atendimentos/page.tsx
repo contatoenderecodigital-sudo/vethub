@@ -86,7 +86,7 @@ interface ConsultaLinha {
   veterinario: { nome: string } | null;
 }
 
-/** Linha única do relatório — agenda e consulta avulsa no mesmo formato. */
+/** Linha única do relatório: agenda e consulta avulsa no mesmo formato. */
 interface Atendimento {
   id: string;
   quando: string;
@@ -121,7 +121,7 @@ export default async function RelatorioAtendimentosPage({
   const fim = fimDoDia(periodo.ate);
 
   // A consulta avulsa (sem agendamento) sempre entra como tipo "consulta"
-  // já atendida — só faz sentido buscá-la se os filtros aceitarem isso.
+  // já atendida, só faz sentido buscá-la se os filtros aceitarem isso.
   const incluiAvulsas =
     (!tipo || tipo === "consulta") && (!status || status === "atendido");
 
@@ -220,7 +220,7 @@ export default async function RelatorioAtendimentosPage({
   );
 
   // Barras por dia até 62 dias de período; acima disso o agrupamento vira
-  // mensal (ver `agrupamentoDoPeriodo`) — barras diárias de um trimestre
+  // mensal (ver `agrupamentoDoPeriodo`): barras diárias de um trimestre
   // inteiro não cabem na largura de um celular.
   const agrupamento = agrupamentoDoPeriodo(periodo);
   const serieAtendimentos = serieDoPeriodo(

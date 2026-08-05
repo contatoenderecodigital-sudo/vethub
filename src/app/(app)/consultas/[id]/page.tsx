@@ -137,7 +137,7 @@ export default async function ConsultaPage({
   return (
     <div>
       <PageHeader
-        titulo={`Consulta — ${pet.nome}`}
+        titulo={`Consulta · ${pet.nome}`}
         subtitulo={`${formatDataHora(consulta.data)}${
           consulta.veterinario ? ` · ${consulta.veterinario.nome}` : ""
         }`}

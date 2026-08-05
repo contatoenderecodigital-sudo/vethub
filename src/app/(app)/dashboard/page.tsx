@@ -35,7 +35,7 @@ export const metadata = { title: "Início" };
 /** Dias no gráfico de atendimentos. */
 const DIAS_GRAFICO = 7;
 
-/** Soma dias a uma data ISO em UTC — não escorrega no fuso. */
+/** Soma dias a uma data ISO em UTC, não escorrega no fuso. */
 function deslocarDia(data: string, dias: number): string {
   const [ano, mes, dia] = data.split("-").map(Number);
   return new Date(Date.UTC(ano, mes - 1, dia + dias)).toISOString().slice(0, 10);
@@ -101,7 +101,7 @@ export default async function DashboardPage() {
         .returns<
           Pick<Conta, "tipo" | "valor" | "valor_pago" | "vencimento">[]
         >(),
-      // Só a data/hora dos agendamentos da semana — o resto vem dos contadores.
+      // Só a data/hora dos agendamentos da semana. O resto vem dos contadores.
       // Teto alto de propósito: 7 dias de agenda cabem folgado nele.
       supabase
         .from("agendamento")

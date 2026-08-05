@@ -600,7 +600,7 @@ export interface Receita {
   consulta_id: string | null;
   veterinario_id: string | null;
   tipo: ReceitaTipo;
-  /** Coluna `date` — sempre YYYY-MM-DD (formatar com formatDataISO). */
+  /** Coluna `date`: sempre YYYY-MM-DD (formatar com formatDataISO). */
   data: string;
   orientacoes: string | null;
   retorno_em: string | null;
@@ -634,7 +634,7 @@ export const TIPOS_RECEITA: {
   {
     valor: "controlada",
     rotulo: "Controlada",
-    dica: "Controle especial — impressa em duas vias",
+    dica: "Controle especial, impressa em duas vias",
   },
   { valor: "manipulada", rotulo: "Manipulada", dica: "Fórmula manipulada" },
 ];
@@ -727,7 +727,7 @@ export interface Compra {
   clinica_id: string;
   fornecedor_id: string | null;
   numero_nota: string | null;
-  /** Coluna `date` — sempre YYYY-MM-DD (formatar com formatDataISO). */
+  /** Coluna `date`: sempre YYYY-MM-DD (formatar com formatDataISO). */
   data: string;
   /** Somente leitura: um trigger recalcula a partir dos itens + frete. */
   valor_total: number;
@@ -773,7 +773,7 @@ export interface Comissao {
   base_calculo: number;
   percentual: number;
   valor: number;
-  /** Coluna `date` — sempre YYYY-MM-DD. */
+  /** Coluna `date`: sempre YYYY-MM-DD. */
   data: string;
   pago: boolean;
   pago_em: string | null;
@@ -790,7 +790,7 @@ export type AssinaturaStatus = "ativa" | "suspensa" | "cancelada";
 
 /**
  * Um benefício incluído no plano. `item_id` aponta para o serviço/produto
- * do catálogo (opcional — o benefício pode ser só texto livre).
+ * do catálogo (opcional: o benefício pode ser só texto livre).
  * `desconto_percentual` vale para o que passar da franquia do mês.
  */
 export interface PlanoBeneficio {
@@ -814,7 +814,7 @@ export interface Assinatura {
   pet_id: string | null;
   plano_item_id: string;
   valor_mensal: number;
-  /** Dia do mês da cobrança — o banco limita de 1 a 28. */
+  /** Dia do mês da cobrança. O banco limita de 1 a 28. */
   dia_cobranca: number;
   inicio: string;
   fim: string | null;

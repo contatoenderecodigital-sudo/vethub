@@ -6,7 +6,7 @@ import { BotaoImprimir } from "./botao-imprimir";
 
 /**
  * CSS de impressão do módulo. Não existe rota de impressão: a própria
- * página vira papel — o vidro fica branco, o texto fica preto e filtros,
+ * página vira papel: o vidro fica branco, o texto fica preto e filtros,
  * navegação e botões somem.
  */
 const CSS_IMPRESSAO = `

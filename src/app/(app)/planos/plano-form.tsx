@@ -86,7 +86,7 @@ export function PlanoForm({
       <Campo
         rotulo="Descrição"
         htmlFor="descricao"
-        dica="O que o tutor ganha ao assinar — aparece na proposta e na ficha do plano."
+        dica="O que o tutor ganha ao assinar. Aparece na proposta e na ficha do plano."
       >
         <Textarea
           id="descricao"

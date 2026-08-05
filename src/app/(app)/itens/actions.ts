@@ -14,7 +14,7 @@ import {
 
 /**
  * Sessão para operações de catálogo. Recepção pode consultar, mas não
- * cadastrar nem alterar — o botão some na tela e a action barra aqui.
+ * cadastrar nem alterar. O botão some na tela e a action barra aqui.
  */
 async function sessaoCatalogo(destino: string) {
   const sessao = await getSessao();
@@ -88,7 +88,7 @@ export async function excluirItem(id: string) {
   if (error) {
     comErro(
       `/itens/${id}`,
-      "Não foi possível excluir — o item já tem movimentação registrada."
+      "Não foi possível excluir. O item já tem movimentação registrada."
     );
   }
 

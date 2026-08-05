@@ -81,7 +81,7 @@ export async function atualizarInternacao(id: string, formData: FormData) {
     redirect(`/internacao/${id}/editar?erro=${encodeURIComponent(mensagem)}`);
   }
 
-  // O pet da internação não muda na edição — só os demais campos.
+  // O pet da internação não muda na edição, só os demais campos.
   const campos = internacaoParaBanco(resultado.data);
   delete (campos as Partial<typeof campos>).pet_id;
 
@@ -159,7 +159,7 @@ const JANELA_MS = 48 * 60 * 60 * 1000; // 48 horas
  * Regras:
  *  - para cada horário do array `horarios` (ex.: 08:00, 16:00, 00:00) montamos
  *    um timestamp com o offset FIXO -03:00 (America/Sao_Paulo, sem horário de
- *    verão) — igual ao resto do projeto — para que o instante gravado seja
+ *    verão), igual ao resto do projeto, para que o instante gravado seja
  *    exatamente o horário local da clínica, independente do fuso do servidor;
  *  - varremos o dia de início e os 2 dias seguintes: isso cobre toda a janela
  *    de 48 h, mesmo quando a prescrição começa no fim da tarde;

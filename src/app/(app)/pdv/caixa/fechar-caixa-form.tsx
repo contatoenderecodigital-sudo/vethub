@@ -71,7 +71,7 @@ export function FecharCaixaForm({
           id="observacao"
           name="observacao"
           maxLength={300}
-          placeholder="Opcional — ex.: sangria de R$ 200 às 15h"
+          placeholder="Opcional. Ex.: sangria de R$ 200 às 15h"
         />
       </Campo>
 

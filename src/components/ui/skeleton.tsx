@@ -9,7 +9,7 @@ export function Skeleton({ className = "" }: { className?: string }) {
   );
 }
 
-/** Cabeçalho de página + lista — cobre a maioria das telas. */
+/** Cabeçalho de página + lista, cobre a maioria das telas. */
 export function SkeletonPagina() {
   return (
     <div>

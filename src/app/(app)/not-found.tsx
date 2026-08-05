@@ -5,7 +5,7 @@ export const metadata = { title: "Página não encontrada" };
 
 /**
  * 404 de dentro do sistema (registro que não existe ou é de outra clínica).
- * Renderiza no layout do app, então mantém menu e cabeçalho no lugar — por
+ * Renderiza no layout do app, então mantém menu e cabeçalho no lugar, por
  * isso não repete o Wordmark, que já aparece no topo.
  */
 export default function NaoEncontradoApp() {

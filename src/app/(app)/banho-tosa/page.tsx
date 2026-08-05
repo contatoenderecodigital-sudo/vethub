@@ -18,7 +18,9 @@ import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { IconeEspecie } from "@/components/icone-especie";
+import { CartaoArrastavel, Zona } from "@/components/quadro";
 import { BotaoEtapa } from "./botao-etapa";
+import { QuadroFluxo } from "./quadro-fluxo";
 import { ETAPAS_BANHO_TOSA, temperamentoInfo } from "./schema";
 
 export const metadata = { title: "Banho e tosa" };
@@ -80,7 +82,7 @@ export default async function BanhoTosaPage({
     month: "long",
   });
 
-  // Janela do dia em America/Sao_Paulo — offset fixo -03:00 (sem horário de
+  // Janela do dia em America/Sao_Paulo: offset fixo -03:00 (sem horário de
   // verão), igual ao resto do projeto.
   const { data: agendamentos } = await supabase
     .from("agendamento")
@@ -94,7 +96,7 @@ export default async function BanhoTosaPage({
     .order("data_hora")
     .returns<AgendamentoFluxo[]>();
 
-  // Cancelados saem do fluxo — o painel mostra só quem está no petshop.
+  // Cancelados saem do fluxo. O painel mostra só quem está no petshop.
   const lista = (agendamentos ?? []).filter((a) => a.status !== "cancelado");
 
   // Avisos da ficha e serviços já marcados, em duas consultas simples.
@@ -182,6 +184,13 @@ export default async function BanhoTosaPage({
         </span>
       </div>
 
+      {lista.length > 0 && (
+        <p className="mb-3 text-xs text-ink-muted">
+          Arraste o pet entre as etapas para mudar a situação, ou use o botão
+          do cartão. No celular, puxe pela alça ⠿ no topo.
+        </p>
+      )}
+
       {lista.length === 0 ? (
         <EmptyState
           icone={<Bath className="size-7" strokeWidth={1.8} />}
@@ -195,13 +204,14 @@ export default async function BanhoTosaPage({
           }
         />
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+        <QuadroFluxo>
           {ETAPAS_BANHO_TOSA.map((etapa) => {
             const daEtapa = lista.filter((a) => a.status === etapa.status);
             return (
-              <section
+              <Zona
                 key={etapa.status}
-                aria-label={etapa.titulo}
+                id={etapa.status}
+                rotulo={etapa.titulo}
                 className={`glass rounded-2xl border-t-4 p-3 ${etapa.corBorda}`}
               >
                 <div className="mb-3 flex items-center gap-2">
@@ -231,10 +241,12 @@ export default async function BanhoTosaPage({
                       const porte = rotuloPorte(pet?.porte);
 
                       return (
-                        <li
-                          key={a.id}
-                          className="rounded-xl border border-white/25 bg-white/10 p-3"
-                        >
+                        <li key={a.id}>
+                          <CartaoArrastavel
+                            id={a.id}
+                            rotulo={`${pet?.nome ?? "pet"} das ${formatHora(a.data_hora)}`}
+                            className="rounded-xl border border-white/25 bg-white/10 p-3"
+                          >
                           <Link
                             href={`/banho-tosa/${a.id}`}
                             className="-m-1 block rounded-lg p-1 transition-colors hover:bg-white/10"
@@ -328,15 +340,16 @@ export default async function BanhoTosaPage({
                               className="mt-3"
                             />
                           )}
+                          </CartaoArrastavel>
                         </li>
                       );
                     })}
                   </ul>
                 )}
-              </section>
+              </Zona>
             );
           })}
-        </div>
+        </QuadroFluxo>
       )}
     </div>
   );

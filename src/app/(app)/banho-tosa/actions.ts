@@ -17,7 +17,7 @@ import {
  * Server actions do módulo Banho e tosa.
  * Todas passam por getSessao() (sessão válida + clinica_id), filtram pela
  * clínica do usuário e revalidam a entrada com zod. Todos os papéis podem
- * operar o banho e tosa — é o balcão do petshop.
+ * operar o banho e tosa. É o balcão do petshop.
  */
 
 type Supabase = Awaited<ReturnType<typeof getSessao>>["supabase"];
@@ -34,7 +34,7 @@ function erroNoDestino(destino: string, mensagem: string): never {
 
 /**
  * Só aceita caminho interno do próprio app como destino de redirect
- * (o valor vem de um input escondido — nunca confiar nele para sair do site).
+ * (o valor vem de um input escondido, nunca confiar nele para sair do site).
  */
 function destinoSeguro(valor: string, padrao: string): string {
   return /^\/[A-Za-z0-9\-_/]*$/.test(valor) ? valor : padrao;
@@ -112,7 +112,7 @@ interface ExecucaoBase {
 /**
  * Devolve a execução do agendamento, criando a linha na primeira vez.
  * Assim os cards (serviços, fotos, tempo) sempre têm onde gravar.
- * `assinatura_id` fica de fora aqui — quem cuida dos planos recorrentes é
+ * `assinatura_id` fica de fora aqui. Quem cuida dos planos recorrentes é
  * outro módulo; a coluna existe e pode ser preenchida por ele.
  */
 async function garantirExecucao(
@@ -191,7 +191,7 @@ export async function iniciarExecucao(
 
 /**
  * Carimba o fim do serviço. Chamada de novo (com o serviço já finalizado)
- * só atualiza as observações — o horário original é preservado.
+ * só atualiza as observações. O horário original é preservado.
  */
 export async function finalizarExecucao(
   agendamentoId: string,
@@ -321,7 +321,7 @@ export async function avancarEtapa(
     return { erro: resultado.error.issues[0]?.message ?? "Etapa inválida." };
   }
 
-  // Carimbos de chegada/saída — os mesmos da agenda geral.
+  // Carimbos de chegada/saída: os mesmos da agenda geral.
   const agora = new Date().toISOString();
   const valores: Record<string, string> = { status: resultado.data.status };
   if (resultado.data.status === "check_in") valores.check_in_em = agora;

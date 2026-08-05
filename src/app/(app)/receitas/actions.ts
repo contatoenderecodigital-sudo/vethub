@@ -26,7 +26,7 @@ function validarForm(
     return { erro: "Não foi possível ler os medicamentos da receita." };
   }
   // Linhas totalmente em branco (sem nome do medicamento) são descartadas
-  // antes do parse — o zod cuida do resto.
+  // antes do parse, o zod cuida do resto.
   if (Array.isArray(medicamentos)) {
     medicamentos = medicamentos.filter((bruto) => {
       const linha = (typeof bruto === "object" && bruto !== null ? bruto : {}) as {
@@ -119,7 +119,7 @@ export async function criarReceita(formData: FormData) {
     .insert(itensParaBanco(validado.dados, receita.id));
 
   if (erroItens) {
-    // Sem os medicamentos a receita não existe — desfaz o cabeçalho.
+    // Sem os medicamentos a receita não existe. Desfaz o cabeçalho.
     await supabase.from("receita").delete().eq("id", receita.id);
     redirect(urlErro("Não foi possível salvar os medicamentos."));
   }
@@ -171,7 +171,7 @@ export async function excluirReceita(id: string, petId: string) {
   const { supabase, usuario } = await getSessao();
   if (usuario.papel === "recepcao") redirect(`/receitas/${id}?erro=${ERRO_PERMISSAO}`);
 
-  // receita_item tem ON DELETE CASCADE — some junto com o cabeçalho.
+  // receita_item tem ON DELETE CASCADE: some junto com o cabeçalho.
   const { error } = await supabase.from("receita").delete().eq("id", id);
   if (error) redirect(`/receitas/${id}?erro=Não foi possível excluir.`);
 

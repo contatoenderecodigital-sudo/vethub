@@ -1,4 +1,4 @@
-# As 8 dores do mercado — onde os concorrentes falham
+# As 8 dores do mercado: onde os concorrentes falham
 
 Levantamento de reclamações públicas (Reclame Aqui), avaliações e **cláusulas
 contratuais** dos concorrentes. Pesquisa de 04/08/2026.
@@ -43,7 +43,7 @@ da compensação bancária ("pode levar até 3 dias úteis").
 **→ Decisão VetHub:** inadimplência **nunca** corta o acesso ao prontuário.
 Modo somente-leitura de emergência + desbloqueio instantâneo por PIX.
 É posicionamento ético e legal (a Resolução CFMV 1.653/2025 obriga o
-veterinário a guardar e entregar prontuário — ele não pode depender do boleto).
+veterinário a guardar e entregar prontuário, ele não pode depender do boleto).
 
 ### 2. Suporte só em horário comercial, para negócios que funcionam 24h
 Vetsoft, Vetus e SimplesVet: **todos** seg-sex 8h-18h.
@@ -52,7 +52,7 @@ Vetsoft, Vetus e SimplesVet: **todos** seg-sex 8h-18h.
 > de semana. Como pode uma empresa que vende sistema [para saúde]..."*
 
 **→ Decisão VetHub:** plantão real de incidente fora do horário comercial
-(nem precisa ser humano 24/7 no início — basta alguém de sobreaviso para
+(nem precisa ser humano 24/7 no início, basta alguém de sobreaviso para
 queda de sistema). Nenhum concorrente oferece.
 
 ### 3. Instabilidade com impacto clínico e sem nenhum SLA
@@ -64,7 +64,7 @@ explicitamente** de qualquer responsabilidade por indisponibilidade.
 **→ Decisão VetHub:** status page pública + SLA de uptime contratual com
 crédito na fatura. Inédito no segmento.
 
-### 4. Módulo fiscal vendido à parte — e que quebra
+### 4. Módulo fiscal vendido à parte, e que quebra
 Preço do add-on fiscal: SimplesVet **+R$ 153/mês**, Vetus **+R$ 149,90/mês**,
 Vetsoft **+R$ 97/mês por tipo de nota** (NFC-e + NFS-e = R$ 194).
 
@@ -99,12 +99,12 @@ da própria Reclame Aqui).
 Na saída: a Vetus **apaga tudo em 60 dias** e entrega um dump PostgreSQL
 ("SCHEMA") que nenhum veterinário consegue ler. A SimplesVet entrega CSV só
 sob solicitação. E a **Resolução CFMV 1.653/2025** exige guarda de 5 anos e
-entrega de cópia do prontuário ao tutor em até 5 dias úteis — a
+entrega de cópia do prontuário ao tutor em até 5 dias úteis. A
 responsabilidade é do veterinário, mas os dados estão presos no fornecedor.
 
 **→ Decisão VetHub:** botão de **exportar tudo, self-service, a qualquer
 momento**, em PDF (prontuário legível) e CSV/JSON (dados). É a promessa
-anti-lock-in mais forte possível nesse mercado — e vira feature de marketing:
+anti-lock-in mais forte possível nesse mercado, e vira feature de marketing:
 *"seus dados são seus, e você baixa quando quiser, inclusive no dia que for
 embora."*
 
@@ -121,7 +121,7 @@ validação antes de confirmar. Fosso competitivo real: é o que impede a clíni
 de trocar de sistema hoje.
 
 ### 8. Conflito de interesse da consolidação Petlove
-Um grupo só controla **SimplesVet + Vetus + Vet Smart** — e vende plano de
+Um grupo só controla **SimplesVet + Vetus + Vet Smart**, e vende plano de
 saúde pet, e-commerce e maquininha para os mesmos clientes.
 
 > *"Desvio de Recebíveis para Conta da Petlove sem Consentimento"*
@@ -129,7 +129,7 @@ saúde pet, e-commerce e maquininha para os mesmos clientes.
 > outras máquinas de cartão"*
 
 **→ Decisão VetHub:** neutralidade. Não competimos com o cliente, não
-monetizamos os dados dele, TEF aberto. **Nenhum líder pode copiar isso** —
+monetizamos os dados dele, TEF aberto. **Nenhum líder pode copiar isso**,
 é estrutural.
 
 **Menções honrosas:** relatórios financeiros incompletos e não confiáveis
@@ -161,9 +161,9 @@ Cada dor acima é um item da página de preços do VetHub:
   automatizado; as citações são os trechos truncados das listagens (verbatim,
   porém cortados).
 - Sites de review (Capterra BR, B2B Stack, GetApp) estão **vazios** para
-  software vet brasileiro — quase todos com zero avaliações. O Reclame Aqui é
+  software vet brasileiro, quase todos com zero avaliações. O Reclame Aqui é
   a única fonte pública de dor real.
 - Não há discussão indexável em Reddit/LinkedIn sobre o tema no Brasil; o
   debate acontece em grupos fechados de WhatsApp e Facebook.
-- Peti9, ClinicVet, Nuvem Vet e VetPlus não têm nenhuma fonte independente —
+- Peti9, ClinicVet, Nuvem Vet e VetPlus não têm nenhuma fonte independente:
   ausência de reclamação não é atestado de qualidade.

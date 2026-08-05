@@ -60,7 +60,7 @@ function revalidarCompras(id?: string) {
   revalidatePath("/fornecedores");
 }
 
-/** Receber/cancelar mexe em estoque e contas — revalida tudo que exibe isso. */
+/** Receber/cancelar mexe em estoque e contas: revalida tudo que exibe isso. */
 function revalidarEstoqueEFinanceiro() {
   revalidatePath("/estoque");
   revalidatePath("/estoque/validade");
@@ -120,7 +120,7 @@ export async function criarCompra(formData: FormData) {
 
   const v = resultado.data;
 
-  // valor_total é recalculado por trigger (itens + frete) — nunca escrever aqui.
+  // valor_total é recalculado por trigger (itens + frete), nunca escrever aqui.
   const { data: compra, error } = await supabase
     .from("compra")
     .insert({
@@ -301,7 +301,7 @@ export async function receberCompra(id: string) {
   if (erroConta) {
     comErro(
       destino,
-      "Mercadoria recebida, mas a conta a pagar não foi gerada — lance manualmente."
+      "Mercadoria recebida, mas a conta a pagar não foi gerada. Lance manualmente."
     );
   }
 
@@ -388,7 +388,7 @@ export async function cancelarCompra(id: string) {
         tipo: "saida",
         quantidade: Number(linha.quantidade),
         valor_unitario: centavos(Number(linha.valor_unitario)),
-        motivo: `Estorno — ${rotulo} cancelada`,
+        motivo: `Estorno: ${rotulo} cancelada`,
         origem: "compra",
         registrado_por: usuario.id,
       });

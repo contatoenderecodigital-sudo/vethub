@@ -34,8 +34,8 @@ import { formatBRL } from "@/lib/format";
  * NÃO usa as cores do tema de propósito: o fundo do sistema é o próprio
  * degradê do tema, então uma série na cor do tema desaparece dentro dele
  * (o roxo some no roxo). Estas são cores claras e saturadas, escolhidas
- * para saltar sobre qualquer fundo colorido — verde, azul, roxo ou
- * vermelho — mantendo contraste de leitura.
+ * para saltar sobre qualquer fundo colorido: verde, azul, roxo ou
+ * vermelho, mantendo contraste de leitura.
  */
 export const CORES_SERIE = [
   "#fcd34d", // âmbar
@@ -106,7 +106,7 @@ interface BaseProps {
   formato?: Formato;
 }
 
-/** Barras verticais com degradê — bom para comparar meses ou categorias. */
+/** Barras verticais com degradê, bom para comparar meses ou categorias. */
 export function GraficoBarras({
   dados,
   eixoX,
@@ -161,7 +161,7 @@ export function GraficoBarras({
   );
 }
 
-/** Área com degradê — bom para evolução no tempo (faturamento, atendimentos). */
+/** Área com degradê, bom para evolução no tempo (faturamento, atendimentos). */
 export function GraficoArea({
   dados,
   eixoX,
@@ -217,7 +217,7 @@ export function GraficoArea({
   );
 }
 
-/** Linha simples — para acompanhar uma métrica só. */
+/** Linha simples, para acompanhar uma métrica só. */
 export function GraficoLinha({
   dados,
   eixoX,
@@ -247,7 +247,7 @@ export function GraficoLinha({
   );
 }
 
-/** Rosca — participação por categoria (formas de pagamento, tipos de atendimento). */
+/** Rosca: participação por categoria (formas de pagamento, tipos de atendimento). */
 export function GraficoRosca({
   dados,
   chaveRotulo,

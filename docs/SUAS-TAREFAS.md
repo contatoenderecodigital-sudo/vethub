@@ -8,7 +8,7 @@ o resto pode ser feito em qualquer ordem.
 
 ---
 
-## 1. Meta / WhatsApp — comece por aqui, demora dias
+## 1. Meta / WhatsApp: comece por aqui, demora dias
 
 Sem isso não existem **mensagens automáticas** nem **chatbot**, que são o
 principal diferencial de venda do VetHub.
@@ -16,7 +16,7 @@ principal diferencial de venda do VetHub.
 - [ ] **1.1** Criar o Portfólio Empresarial em https://business.facebook.com
 - [ ] **1.2** Fazer a **verificação da empresa** (Configurações do negócio →
       Central de segurança → Iniciar verificação). Precisa de CNPJ e
-      documento da empresa. **É o passo lento — pode levar dias.**
+      documento da empresa. **É o passo lento: pode levar dias.**
 - [ ] **1.3** Em https://developers.facebook.com criar um app do tipo
       **Empresa/Business** e vinculá-lo ao portfólio
 - [ ] **1.4** No app, adicionar o produto **WhatsApp**
@@ -40,10 +40,10 @@ principal diferencial de venda do VetHub.
 
 ---
 
-## 2. Chave de IA — para o Bento (nosso assistente)
+## 2. Chave de IA: para o Bento (nosso assistente)
 
 O Bento (a capivara veterinária) vai transcrever consulta, resumir prontuário
-e analisar histórico — igual à "Nina" do concorrente, e melhor.
+e analisar histórico, igual à "Nina" do concorrente, e melhor.
 
 - [ ] **2.1** Criar conta em https://console.anthropic.com (recomendado) ou
       https://platform.openai.com
@@ -52,11 +52,11 @@ e analisar histórico — igual à "Nina" do concorrente, e melhor.
 
 **Custo real por consulta transcrita:** R$ 0,26 a R$ 1,30 (a maior parte é a
 transcrição do áudio, não o texto). Numa mensalidade de R$ 329 com cota de
-60 consultas, isso é ~R$ 40 de custo — cabe folgado.
+60 consultas, isso é ~R$ 40 de custo. Cabe folgado.
 
 ---
 
-## 3. Vercel — variáveis que faltam
+## 3. Vercel: variáveis que faltam
 
 Depois que você me passar os itens 1 e 2, **eu configuro sozinho**. Estas já
 estão lá e funcionando:
@@ -74,10 +74,10 @@ estão lá e funcionando:
 
 ---
 
-## 4. Supabase — não precisa fazer nada
+## 4. Supabase: não precisa fazer nada
 
 Todas as migrações (10 até agora) já foram aplicadas por mim no banco. Você
-**não precisa criar coluna nem tabela manualmente** — nunca precisará, é sempre
+**não precisa criar coluna nem tabela manualmente**, nunca precisará, é sempre
 por migração versionada.
 
 Duas coisas que valem a pena ligar quando começar a ter cliente de verdade:
@@ -86,7 +86,7 @@ Duas coisas que valem a pena ligar quando começar a ter cliente de verdade:
       backup automático diário está ativo (no plano gratuito é 7 dias; o Pro
       guarda mais e permite restaurar no ponto exato)
 - [ ] **4.2** Quando passar de umas 20 clínicas, subir do plano gratuito para
-      o **Pro (US$ 25/mês)** — o gratuito pausa o projeto se ficar uma semana
+      o **Pro (US$ 25/mês)**. O gratuito pausa o projeto se ficar uma semana
       sem acesso, e isso não pode acontecer com cliente pagando
 
 ---
@@ -94,19 +94,19 @@ Duas coisas que valem a pena ligar quando começar a ter cliente de verdade:
 ## 5. Antes de vender para a primeira clínica
 
 - [ ] **5.1** Registrar um domínio (ex.: `vethub.com.br` no registro.br,
-      ~R$ 40/ano) e me avisar — eu plugo na Vercel em minutos
+      ~R$ 40/ano) e me avisar: eu plugo na Vercel em minutos
 - [ ] **5.2** Definir os preços finais (minha proposta está em
       `docs/concorrentes/mercado.md`: R$ 149 / R$ 329 / R$ 699)
 - [ ] **5.3** Trocar o e-mail de contato nas páginas legais, se quiser um
       institucional em vez do pessoal (hoje: `yungsandro23@gmail.com`)
 - [ ] **5.4** Decidir o meio de cobrança da assinatura do VetHub
-      (Stripe, Asaas, Pagar.me...) — quando decidir, eu integro
+      (Stripe, Asaas, Pagar.me...). Quando decidir, eu integro
 - [ ] **5.5** Rodar o teste de isolamento uma última vez (`npm test`) e
       fazer um teste completo com dados reais
 
 ---
 
-## 6. Módulo Fiscal — decisão sua
+## 6. Módulo Fiscal: decisão sua
 
 Ver `docs/fiscal.md` para a análise completa das opções.
 

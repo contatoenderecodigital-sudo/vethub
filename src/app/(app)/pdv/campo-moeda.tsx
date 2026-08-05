@@ -6,7 +6,7 @@ import { mascaraMoeda } from "./numeros";
 
 /**
  * Input de dinheiro com máscara pt-BR (digita da direita para a esquerda).
- * O servidor revalida o número com zod — a máscara é só conforto de balcão.
+ * O servidor revalida o número com zod. A máscara é só conforto de balcão.
  */
 export function CampoMoeda({
   valorInicial = "",

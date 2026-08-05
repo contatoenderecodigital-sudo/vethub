@@ -17,7 +17,7 @@ import { itemSchema, type ItemFormValores } from "./schema";
 export interface OpcaoSimples {
   id: string;
   nome: string;
-  /** Sigla da unidade / nome do grupo pai — mostrado entre parênteses. */
+  /** Sigla da unidade / nome do grupo pai, mostrado entre parênteses. */
   detalhe?: string | null;
 }
 
@@ -286,7 +286,7 @@ export function ItemForm({
           )}
 
           <p className="text-xs text-ink-muted">
-            O saldo atual não é editado aqui — ele vem das movimentações
+            O saldo atual não é editado aqui. Ele vem das movimentações
             registradas em Estoque.
           </p>
         </div>

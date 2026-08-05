@@ -69,7 +69,7 @@ export function valorOuZero(texto: string): number {
   return n === null || !Number.isFinite(n) ? 0 : n;
 }
 
-/** Arredonda para 2 casas — as colunas são numeric(12,2). */
+/** Arredonda para 2 casas. As colunas são numeric(12,2). */
 export function centavos(valor: number): number {
   return Math.round(valor * 100) / 100;
 }

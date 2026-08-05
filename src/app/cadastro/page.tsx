@@ -43,7 +43,7 @@ export default function CadastroPage() {
       return;
     }
 
-    // conta criada — entra direto
+    // conta criada: entra direto
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithPassword({
       email: valores.email,

@@ -81,7 +81,7 @@ export default async function ReceitaPage({
   return (
     <div>
       <PageHeader
-        titulo={`Receita — ${pet?.nome ?? "Pet removido"}`}
+        titulo={`Receita · ${pet?.nome ?? "Pet removido"}`}
         subtitulo={`${formatDataISO(receita.data)}${
           receita.veterinario ? ` · ${receita.veterinario.nome}` : ""
         }`}
@@ -205,7 +205,7 @@ export default async function ReceitaPage({
           </dl>
 
           <p className="mt-3 border-t border-white/20 pt-3 text-xs text-ink-muted">
-            O CRMV ainda não é cadastrado no VetHub — a receita impressa deixa a
+            O CRMV ainda não é cadastrado no VetHub. A receita impressa deixa a
             linha do carimbo em branco para o preenchimento manual.
           </p>
         </Card>
@@ -226,7 +226,7 @@ export default async function ReceitaPage({
                       <span className="text-ink-muted">{indice + 1}. </span>
                       {item.medicamento}
                       {item.concentracao ? ` ${item.concentracao}` : ""}
-                      {forma ? ` — ${forma}` : ""}
+                      {forma ? ` · ${forma}` : ""}
                     </p>
                     {item.quantidade && (
                       <span className="text-sm text-ink-muted">

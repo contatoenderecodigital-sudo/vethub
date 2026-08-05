@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Wordmark } from "@/components/wordmark";
 import { NavInferior, NavLateral } from "@/components/nav-links";
 import { SeletorTema } from "@/components/seletor-tema";
+import { GuiaCapivara } from "@/components/guia/guia-capivara";
 
 const ROTULO_PAPEL: Record<string, string> = {
   admin: "Administrador",
@@ -42,7 +43,7 @@ export default async function AppLayout({
 
   return (
     <div className="flex min-h-dvh flex-col">
-      {/* Cabeçalho: vidro transparente sobre o degradê da marca — o
+      {/* Cabeçalho: vidro transparente sobre o degradê da marca, o
           conteúdo passa desfocado por baixo ao rolar */}
       <header className="sticky top-0 z-40 border-b border-white/20 bg-white/10 backdrop-blur-xl">
         <div className="flex h-14 items-center justify-between gap-3 px-4 sm:px-5">
@@ -58,9 +59,11 @@ export default async function AppLayout({
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3">
-            <SeletorTema />
+            <span data-guia="tema" className="flex">
+              <SeletorTema />
+            </span>
 
-            {/* Usuário (mobile — no desktop fica na lateral) */}
+            {/* Usuário (mobile: no desktop fica na lateral) */}
             <span
               className="flex size-8 items-center justify-center rounded-full bg-white/20 text-xs font-bold text-white md:hidden"
               title={usuario.nome}
@@ -82,8 +85,8 @@ export default async function AppLayout({
       </header>
 
       <div className="flex flex-1">
-        {/* Navegação lateral (desktop) — painel de vidro flutuante */}
-        <aside className="glass sticky top-[4.25rem] ml-3 mt-3 hidden h-[calc(100dvh-4.5rem)] w-60 shrink-0 flex-col justify-between self-start overflow-y-auto rounded-2xl md:flex 2xl:w-64">
+        {/* Navegação lateral (desktop): painel de vidro flutuante */}
+        <aside data-guia="menu" className="glass sticky top-[4.25rem] ml-3 mt-3 hidden h-[calc(100dvh-4.5rem)] w-60 shrink-0 flex-col justify-between self-start overflow-y-auto rounded-2xl md:flex 2xl:w-64">
           <NavLateral ehAdmin={usuario.papel === "admin"} />
 
           {/* Bloco do usuário */}
@@ -114,7 +117,7 @@ export default async function AppLayout({
           </div>
         </aside>
 
-        {/* Conteúdo — largura acompanha a tela: notebook, monitor grande, TV */}
+        {/* Conteúdo: largura acompanha a tela (notebook, monitor grande, TV) */}
         <main className="min-w-0 flex-1 px-4 py-6 pb-24 sm:px-6 md:pb-8 2xl:px-10">
           <div className="mx-auto max-w-5xl xl:max-w-6xl 2xl:max-w-[88rem]">
             {children}
@@ -124,6 +127,9 @@ export default async function AppLayout({
 
       {/* Navegação inferior (mobile) */}
       <NavInferior ehAdmin={usuario.papel === "admin"} />
+
+      {/* O Bento: o "?" do canto que explica a página */}
+      <GuiaCapivara />
     </div>
   );
 }

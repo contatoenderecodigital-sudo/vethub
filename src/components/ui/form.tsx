@@ -14,7 +14,7 @@ export function Input({ className = "", ...props }: ComponentProps<"input">) {
  * A seta padrão do <select> é desenhada pelo sistema operacional e
  * destoa do vidro (aparece cinza e quadrada no Windows). Aqui ela é
  * substituída por um chevron branco desenhado no próprio fundo do
- * campo — o menu de opções continua sendo o nativo, que é o certo
+ * campo: o menu de opções continua sendo o nativo, que é o certo
  * para acessibilidade e para o teclado do celular.
  */
 const SETA_SELECT =

@@ -2,7 +2,7 @@ import "server-only";
 import { getSessao } from "@/lib/auth";
 import type { OpcaoItemBeneficio } from "./beneficios-editor";
 
-/** Teto do select de itens — clínica normal fica bem abaixo disso. */
+/** Teto do select de itens: clínica normal fica bem abaixo disso. */
 const LIMITE_ITENS = 300;
 
 /**

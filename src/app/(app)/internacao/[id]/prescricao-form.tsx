@@ -122,7 +122,7 @@ export function PrescricaoForm({
       <Campo
         rotulo="Horários"
         htmlFor="horarios"
-        dica="Separados por vírgula — geram o checklist das próximas 48 h"
+        dica="Separados por vírgula. Geram o checklist das próximas 48 h"
         erro={errors.horarios?.message}
       >
         <Input

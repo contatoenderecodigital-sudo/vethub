@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Campo, Input } from "@/components/ui/form";
 import { schemaEmailObrigatorio } from "@/lib/validacao";
 
-// Validação leve: só formato de e-mail e senha não vazia — quem decide
+// Validação leve: só formato de e-mail e senha não vazia. Quem decide
 // se as credenciais valem é o Supabase Auth.
 const loginSchema = z.object({
   email: schemaEmailObrigatorio,

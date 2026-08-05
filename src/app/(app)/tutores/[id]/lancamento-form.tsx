@@ -12,7 +12,7 @@ import { registrarLancamento } from "../actions";
 
 /**
  * Máscara de moeda: só dígitos → centavos → "1.234,56".
- * O sinal de menos (inclusive o "−" do teclado numérico) não entra — quem
+ * O sinal de menos (inclusive o "−" do teclado numérico) não entra. Quem
  * define crédito ou débito é o tipo do lançamento, não o sinal digitado.
  */
 function mascaraMoeda(v: string): string {
@@ -25,7 +25,7 @@ function mascaraMoeda(v: string): string {
 
 /**
  * Formulário inline de lançamento financeiro do tutor. Fica recolhido até o
- * usuário pedir — o card mostra saldo e extrato sem ruído. O servidor
+ * usuário pedir. O card mostra saldo e extrato sem ruído. O servidor
  * revalida tudo de novo (zod) em registrarLancamento.
  */
 export function LancamentoForm({ tutorId }: { tutorId: string }) {

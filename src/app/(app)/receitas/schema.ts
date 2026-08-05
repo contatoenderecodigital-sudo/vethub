@@ -8,7 +8,7 @@ import {
 
 /**
  * Schema da receita, compartilhado entre o editor de medicamentos (client)
- * e as server actions — o servidor SEMPRE revalida com este mesmo schema,
+ * e as server actions. O servidor SEMPRE revalida com este mesmo schema,
  * nunca confia no que chega do formulário.
  */
 
@@ -85,7 +85,7 @@ export const receitaSchema = z
 export type MedicamentoValores = z.infer<typeof medicamentoSchema>;
 export type ReceitaFormValores = z.infer<typeof receitaSchema>;
 
-/** Linha em branco do editor — usada no client e como base do parse. */
+/** Linha em branco do editor, usada no client e como base do parse. */
 export const MEDICAMENTO_VAZIO: MedicamentoValores = {
   medicamento: "",
   concentracao: "",

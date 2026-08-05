@@ -55,6 +55,16 @@ interface Item {
   icone: IconeDeMenu;
   /** Rota ainda não construída: aparece esmaecida com selo "breve". */
   breve?: boolean;
+  /**
+   * Tela do dia a dia: o Next busca os DADOS dela antes do clique, então a
+   * troca de aba é instantânea em vez de esperar meio segundo.
+   *
+   * Não é para marcar tudo: por padrão o Next só pré-carrega o esqueleto da
+   * página, e pedir os dados de toda rota do menu faria a clínica consultar
+   * o banco para telas que ninguém vai abrir. Só as mais usadas valem a
+   * troca (com `staleTimes.dynamic: 30`, o que veio adiantado vale 30s).
+   */
+  quente?: boolean;
 }
 
 interface Grupo {
@@ -73,6 +83,7 @@ const INICIO: Item = {
   href: "/dashboard",
   rotulo: "Início",
   icone: LayoutDashboard,
+  quente: true,
 };
 
 const GRUPOS: Grupo[] = [
@@ -80,8 +91,8 @@ const GRUPOS: Grupo[] = [
     titulo: "Atendimento",
     icone: Stethoscope,
     itens: [
-      { href: "/agenda", rotulo: "Agenda", icone: CalendarDays },
-      { href: "/consultas", rotulo: "Consultas", icone: Stethoscope },
+      { href: "/agenda", rotulo: "Agenda", icone: CalendarDays, quente: true },
+      { href: "/consultas", rotulo: "Consultas", icone: Stethoscope, quente: true },
       { href: "/receitas", rotulo: "Receituário", icone: Pill },
       { href: "/internacao", rotulo: "Internação", icone: BedDouble },
       { href: "/banho-tosa", rotulo: "Banho e tosa", icone: Bath },
@@ -92,8 +103,8 @@ const GRUPOS: Grupo[] = [
     titulo: "Cadastros",
     icone: Users,
     itens: [
-      { href: "/tutores", rotulo: "Tutores", icone: Users },
-      { href: "/pets", rotulo: "Pets", icone: PawPrint },
+      { href: "/tutores", rotulo: "Tutores", icone: Users, quente: true },
+      { href: "/pets", rotulo: "Pets", icone: PawPrint, quente: true },
       { href: "/fornecedores", rotulo: "Fornecedores", icone: Handshake },
     ],
   },
@@ -186,6 +197,7 @@ export function NavLateral({ ehAdmin }: { ehAdmin: boolean }) {
       {/* Início fica solto no topo, sem categoria */}
       <Link
         href={INICIO.href}
+        prefetch={INICIO.quente ? true : undefined}
         className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
           inicioAtivo
             ? "bg-white/25 text-white"
@@ -247,6 +259,7 @@ export function NavLateral({ ehAdmin }: { ehAdmin: boolean }) {
                     <Link
                       key={item.href}
                       href={item.href}
+                      prefetch={item.quente ? true : undefined}
                       className={`flex items-center gap-2.5 rounded-lg px-3 py-1.5 text-sm transition-colors ${
                         estaAtivo(pathname, item.href)
                           ? "bg-white/25 font-semibold text-white"
@@ -269,10 +282,10 @@ export function NavLateral({ ehAdmin }: { ehAdmin: boolean }) {
 
 /** Atalhos fixos da barra inferior. O 5º slot é o botão "Mais". */
 const ITENS_MOBILE: Item[] = [
-  { href: "/dashboard", rotulo: "Início", icone: LayoutDashboard },
-  { href: "/agenda", rotulo: "Agenda", icone: CalendarDays },
-  { href: "/consultas", rotulo: "Consultas", icone: Stethoscope },
-  { href: "/tutores", rotulo: "Tutores", icone: Users },
+  { href: "/dashboard", rotulo: "Início", icone: LayoutDashboard, quente: true },
+  { href: "/agenda", rotulo: "Agenda", icone: CalendarDays, quente: true },
+  { href: "/consultas", rotulo: "Consultas", icone: Stethoscope, quente: true },
+  { href: "/tutores", rotulo: "Tutores", icone: Users, quente: true },
 ];
 
 /**
@@ -395,7 +408,12 @@ export function NavInferior({ ehAdmin }: { ehAdmin: boolean }) {
         {ITENS_MOBILE.map((item) => {
           const ativo = estaAtivo(pathname, item.href);
           return (
-            <Link key={item.href} href={item.href} className={classeItem(ativo)}>
+            <Link
+              key={item.href}
+              href={item.href}
+              prefetch={item.quente ? true : undefined}
+              className={classeItem(ativo)}
+            >
               <item.icone className="size-5 shrink-0" strokeWidth={ativo ? 2.2 : 1.8} />
               <span className="max-w-full truncate">{item.rotulo}</span>
             </Link>

@@ -54,19 +54,22 @@ export default async function CaixaPage({
   const { erro } = await searchParams;
   const { supabase } = await getSessao();
 
-  const { data: caixa } = await supabase
-    .from("caixa")
-    .select(CAMPOS_CAIXA)
-    .eq("status", "aberto")
-    .maybeSingle<CaixaLinha>();
-
-  const { data: fechados } = await supabase
-    .from("caixa")
-    .select(CAMPOS_CAIXA)
-    .eq("status", "fechado")
-    .order("fechamento", { ascending: false })
-    .limit(10)
-    .returns<CaixaLinha[]>();
+  // O caixa aberto e o histórico não dependem um do outro: vão juntos, numa
+  // ida só ao banco em vez de duas em fila.
+  const [{ data: caixa }, { data: fechados }] = await Promise.all([
+    supabase
+      .from("caixa")
+      .select(CAMPOS_CAIXA)
+      .eq("status", "aberto")
+      .maybeSingle<CaixaLinha>(),
+    supabase
+      .from("caixa")
+      .select(CAMPOS_CAIXA)
+      .eq("status", "fechado")
+      .order("fechamento", { ascending: false })
+      .limit(10)
+      .returns<CaixaLinha[]>(),
+  ]);
 
   // Vendas de todos os caixas em tela (o aberto + os 10 do histórico), para
   // montar os totais por forma sem uma consulta por caixa.

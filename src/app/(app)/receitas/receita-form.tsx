@@ -2,7 +2,8 @@ import { Check } from "lucide-react";
 import { hojeISO } from "@/lib/format";
 import { TIPOS_RECEITA, type ReceitaTipo } from "@/lib/types";
 import { ButtonLink } from "@/components/ui/button";
-import { Campo, Input, Select, Textarea } from "@/components/ui/form";
+import { Campo, Select, Textarea } from "@/components/ui/form";
+import { CampoData } from "@/components/ui/campo-data";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { BuscaCombobox, type OpcaoBusca } from "@/components/busca-combobox";
 import { MedicamentosEditor } from "./medicamentos-editor";
@@ -99,10 +100,9 @@ export function ReceitaForm({
         </Campo>
 
         <Campo rotulo="Data" htmlFor="data" obrigatorio>
-          <Input
+          <CampoData
             id="data"
             name="data"
-            type="date"
             required
             min={DATA_MIN}
             max={DATA_MAX}
@@ -133,10 +133,9 @@ export function ReceitaForm({
       </Campo>
 
       <Campo rotulo="Retorno em" htmlFor="retorno_em" dica="Opcional.">
-        <Input
+        <CampoData
           id="retorno_em"
           name="retorno_em"
-          type="date"
           min={DATA_MIN}
           max={DATA_MAX}
           className="sm:max-w-48"

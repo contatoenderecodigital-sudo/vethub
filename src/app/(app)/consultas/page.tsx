@@ -8,6 +8,7 @@ import { ButtonLink } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Pagination } from "@/components/ui/pagination";
 import { Input } from "@/components/ui/form";
+import { CampoData } from "@/components/ui/campo-data";
 import { IconeEspecie } from "@/components/icone-especie";
 
 const POR_PAGINA = 20;
@@ -88,9 +89,9 @@ export default async function ConsultasPage({
             caem para a linha de baixo inteiras, nunca espremidas. */}
         <label className="min-w-36 flex-1 text-xs font-medium text-white/90 drop-shadow-sm sm:max-w-40">
           De
-          <Input
-            type="date"
+          <CampoData
             name="de"
+            aria-label="De"
             min="2000-01-01"
             max="2099-12-31"
             defaultValue={de ?? ""}
@@ -99,9 +100,9 @@ export default async function ConsultasPage({
         </label>
         <label className="min-w-36 flex-1 text-xs font-medium text-white/90 drop-shadow-sm sm:max-w-40">
           Até
-          <Input
-            type="date"
+          <CampoData
             name="ate"
+            aria-label="Até"
             min="2000-01-01"
             max="2099-12-31"
             defaultValue={ate ?? ""}

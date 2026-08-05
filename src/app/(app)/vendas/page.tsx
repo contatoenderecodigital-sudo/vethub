@@ -6,6 +6,7 @@ import type { VendaStatus } from "@/lib/types";
 import { PageHeader } from "@/components/ui/page-header";
 import { ButtonLink } from "@/components/ui/button";
 import { Campo, Input, Select } from "@/components/ui/form";
+import { CampoData } from "@/components/ui/campo-data";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Pagination } from "@/components/ui/pagination";
 import { ConfirmButton } from "@/components/ui/confirm-button";
@@ -155,10 +156,10 @@ export default async function VendasPage({
           />
         </Campo>
         <Campo rotulo="De" htmlFor="de">
-          <Input id="de" name="de" type="date" defaultValue={de ?? ""} />
+          <CampoData id="de" name="de" defaultValue={de ?? ""} />
         </Campo>
         <Campo rotulo="Até" htmlFor="ate">
-          <Input id="ate" name="ate" type="date" defaultValue={ate ?? ""} />
+          <CampoData id="ate" name="ate" defaultValue={ate ?? ""} />
         </Campo>
         <Campo rotulo="Situação" htmlFor="status">
           <Select id="status" name="status" defaultValue={status ?? ""}>

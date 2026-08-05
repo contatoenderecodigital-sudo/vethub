@@ -5,6 +5,7 @@ import { Check } from "lucide-react";
 import { hojeISO } from "@/lib/format";
 import { ButtonLink } from "@/components/ui/button";
 import { Campo, Input, Select, Textarea } from "@/components/ui/form";
+import { CampoData } from "@/components/ui/campo-data";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { BuscaCombobox, type OpcaoBusca } from "@/components/busca-combobox";
 import { criarAssinatura } from "../actions";
@@ -136,10 +137,9 @@ export function AssinaturaForm({
         </Campo>
 
         <Campo rotulo="Início" htmlFor="inicio" obrigatorio>
-          <Input
+          <CampoData
             id="inicio"
             name="inicio"
-            type="date"
             required
             defaultValue={hojeISO()}
           />

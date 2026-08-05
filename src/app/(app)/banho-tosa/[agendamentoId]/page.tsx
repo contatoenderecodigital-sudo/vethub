@@ -7,13 +7,13 @@ import {
   Camera,
   CheckCircle2,
   Clock,
-  MessageCircle,
   Phone,
   Play,
   Sparkles,
   Square,
   User,
 } from "lucide-react";
+import { IconeWhatsapp } from "@/components/icone-whatsapp";
 import { getSessao } from "@/lib/auth";
 import { formatDataHora, formatHora, formatTelefone } from "@/lib/format";
 import { soDigitos } from "@/lib/validacao";
@@ -402,7 +402,7 @@ export default async function ExecucaoBanhoTosaPage({
                 rel="noopener noreferrer"
                 className="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-lg bg-white px-4 text-sm font-semibold text-brand-dark shadow-lg shadow-black/10 transition-colors hover:bg-white/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
               >
-                <MessageCircle className="size-4" aria-hidden />
+                <IconeWhatsapp className="size-4" aria-hidden />
                 Enviar no WhatsApp
               </a>
             ) : (

@@ -126,7 +126,7 @@ export function StatusSelect({
         <ul
           role="menu"
           aria-label="Alterar situação"
-          className="glass-menu absolute right-0 z-20 mt-1 w-44 overflow-hidden rounded-xl py-1"
+          className="glass-menu absolute right-0 z-30 mt-1 w-44 overflow-hidden rounded-xl py-1"
         >
           {STATUS_AGENDAMENTO_ORDEM.map((s, i) => (
             <li key={s} role="none">

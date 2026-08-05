@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Input, Select } from "@/components/ui/form";
+import { CampoData } from "@/components/ui/campo-data";
 import { Pagination } from "@/components/ui/pagination";
 import { sanitizarBusca } from "../itens/formato";
 import { BadgeCompra } from "./badge-compra";
@@ -225,22 +226,18 @@ export default async function ComprasPage({
         </div>
         <div className="flex min-w-64 flex-1 flex-wrap items-center gap-2">
           <div className="min-w-32 flex-1">
-            <Input
-              type="date"
+            <CampoData
               name="de"
               defaultValue={de ?? ""}
               aria-label="Compras a partir de"
-              title="Compras a partir de"
             />
           </div>
           <span className="text-sm text-ink-muted">até</span>
           <div className="min-w-32 flex-1">
-            <Input
-              type="date"
+            <CampoData
               name="ate"
               defaultValue={ate ?? ""}
               aria-label="Compras até"
-              title="Compras até"
             />
           </div>
         </div>

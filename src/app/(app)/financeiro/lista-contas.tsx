@@ -22,6 +22,7 @@ import { Button, ButtonLink } from "@/components/ui/button";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Input, Select } from "@/components/ui/form";
+import { CampoData } from "@/components/ui/campo-data";
 import { PageHeader } from "@/components/ui/page-header";
 import { Pagination } from "@/components/ui/pagination";
 import { BadgeStatusConta, BadgeVencimento } from "./badges";
@@ -274,22 +275,18 @@ export async function ListaContas({
         </div>
         <div className="flex min-w-64 flex-1 flex-wrap items-center gap-2">
           <div className="min-w-32 flex-1">
-            <Input
-              type="date"
+            <CampoData
               name="de"
               defaultValue={de ?? ""}
               aria-label="Vencimento de"
-              title="Vencimento de"
             />
           </div>
           <span className="text-sm text-ink-muted">até</span>
           <div className="min-w-32 flex-1">
-            <Input
-              type="date"
+            <CampoData
               name="ate"
               defaultValue={ate ?? ""}
               aria-label="Vencimento até"
-              title="Vencimento até"
             />
           </div>
         </div>

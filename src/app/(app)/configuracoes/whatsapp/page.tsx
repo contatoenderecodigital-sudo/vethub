@@ -4,12 +4,12 @@ import {
   CalendarCheck,
   CircleAlert,
   CircleCheck,
-  MessageCircle,
   Phone,
   ShieldCheck,
   Syringe,
   Unplug,
 } from "lucide-react";
+import { IconeWhatsapp } from "@/components/icone-whatsapp";
 import { getSessao } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { metaConfigurada, type ConexaoWhatsapp } from "@/lib/whatsapp";
@@ -60,7 +60,7 @@ export default async function WhatsappPage() {
             Lembrete de vacina e de retorno na data certa
           </li>
           <li className="flex items-start gap-2">
-            <MessageCircle className="mt-0.5 size-4 shrink-0 text-brand-mint" />
+            <IconeWhatsapp className="mt-0.5 size-4 shrink-0 text-brand-mint" />
             Chatbot que agenda sozinho, sem ocupar a recepção
           </li>
         </ul>

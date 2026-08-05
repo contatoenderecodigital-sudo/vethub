@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import { Campo, Input, Select } from "@/components/ui/form";
+import { CampoData } from "@/components/ui/campo-data";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { sanitizarNumero } from "../itens/formato";
 import { cadastrarLote } from "./actions";
@@ -55,10 +56,9 @@ export function LoteForm({
         </Campo>
 
         <Campo rotulo="Validade" htmlFor="lote-validade" obrigatorio>
-          <Input
+          <CampoData
             id="lote-validade"
             name="validade"
-            type="date"
             required
             min="2000-01-01"
             max={`${anoLimite}-12-31`}

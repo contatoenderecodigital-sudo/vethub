@@ -5,12 +5,12 @@ import {
   IdCard,
   Mail,
   MapPin,
-  MessageCircle,
   PawPrint,
   Pencil,
   Plus,
   Trash2,
 } from "lucide-react";
+import { IconeWhatsapp } from "@/components/icone-whatsapp";
 import { getSessao } from "@/lib/auth";
 import { formatEndereco, formatTelefone, idadeDoPet } from "@/lib/format";
 import type { Pet, Tutor } from "@/lib/types";
@@ -94,7 +94,7 @@ export default async function TutorPage({
           <dl className="space-y-3 text-sm">
             <div className="flex items-center justify-between gap-4">
               <dt className="flex items-center gap-2 text-ink-muted">
-                <MessageCircle className="size-4" />
+                <IconeWhatsapp className="size-4" />
                 WhatsApp
               </dt>
               <dd className="font-medium">

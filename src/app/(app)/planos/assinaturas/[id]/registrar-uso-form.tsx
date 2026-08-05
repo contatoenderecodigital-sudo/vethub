@@ -5,6 +5,7 @@ import { Plus, X } from "lucide-react";
 import { hojeISO } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Campo, Input, Select } from "@/components/ui/form";
+import { CampoData } from "@/components/ui/campo-data";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { registrarUso } from "../../actions";
 
@@ -99,10 +100,9 @@ export function RegistrarUsoForm({
         </Campo>
 
         <Campo rotulo="Data" htmlFor="uso-data" obrigatorio>
-          <Input
+          <CampoData
             id="uso-data"
             name="data"
-            type="date"
             required
             defaultValue={hojeISO()}
           />

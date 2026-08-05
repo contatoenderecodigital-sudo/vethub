@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { MessageCircle } from "lucide-react";
+import { IconeWhatsapp } from "@/components/icone-whatsapp";
 import { Button } from "@/components/ui/button";
 
 /**
@@ -138,7 +138,7 @@ export function ConectarWhatsapp({
   return (
     <div className="space-y-3">
       <Button onClick={conectar} disabled={!pronto || conectando} tamanho="lg">
-        <MessageCircle className="size-5" />
+        <IconeWhatsapp className="size-5" />
         {conectando ? "Conectando…" : "Conectar WhatsApp"}
       </Button>
       {erro && (

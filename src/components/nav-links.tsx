@@ -2,7 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+  type ComponentType,
+  type SVGProps,
+} from "react";
 import {
   Bath,
   BedDouble,
@@ -17,7 +22,7 @@ import {
   Handshake,
   LayoutDashboard,
   Menu,
-  MessageCircle,
+
   Package,
   PawPrint,
   Percent,
@@ -36,18 +41,25 @@ import {
   Wallet,
   type LucideIcon,
 } from "lucide-react";
+import { IconeWhatsapp } from "@/components/icone-whatsapp";
+
+/**
+ * O ícone pode vir do Lucide ou ser um SVG nosso (o logo do WhatsApp,
+ * por exemplo — o Lucide não traz marcas).
+ */
+type IconeDeMenu = LucideIcon | ComponentType<SVGProps<SVGSVGElement>>;
 
 interface Item {
   href: string;
   rotulo: string;
-  icone: LucideIcon;
+  icone: IconeDeMenu;
   /** Rota ainda não construída: aparece esmaecida com selo "breve". */
   breve?: boolean;
 }
 
 interface Grupo {
   titulo: string;
-  icone: LucideIcon;
+  icone: IconeDeMenu;
   itens: Item[];
   somenteAdmin?: boolean;
 }
@@ -131,7 +143,7 @@ const GRUPOS: Grupo[] = [
     icone: UserCog,
     somenteAdmin: true,
     itens: [
-      { href: "/configuracoes/whatsapp", rotulo: "WhatsApp", icone: MessageCircle },
+      { href: "/configuracoes/whatsapp", rotulo: "WhatsApp", icone: IconeWhatsapp },
       { href: "/configuracoes/usuarios", rotulo: "Equipe", icone: UserCog },
       { href: "/configuracoes/clinica", rotulo: "Clínica", icone: Building2 },
     ],

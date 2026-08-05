@@ -5,6 +5,7 @@ import { Plus, X } from "lucide-react";
 import { formatBRL } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/form";
+import { CampoData } from "@/components/ui/campo-data";
 
 /** Produto do catálogo oferecido no select de cada linha. */
 export interface ProdutoOpcao {
@@ -298,11 +299,10 @@ export function CompraItensEditor({
                   <span className="mb-1 block text-[11px] font-medium text-ink-muted">
                     Validade (opcional)
                   </span>
-                  <Input
-                    type="date"
+                  <CampoData
                     aria-label="Validade do lote"
                     value={linha.validade}
-                    onChange={(e) => atualizar(linha.chave, "validade", e.target.value)}
+                    onChange={(valor) => atualizar(linha.chave, "validade", valor)}
                   />
                 </label>
 

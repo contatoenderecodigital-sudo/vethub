@@ -6,6 +6,7 @@ import { hojeISO } from "@/lib/format";
 import { FORMAS_PAGAMENTO, TIPOS_LANCAMENTO } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Campo, Input, Select } from "@/components/ui/form";
+import { CampoData } from "@/components/ui/campo-data";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { registrarLancamento } from "../actions";
 
@@ -113,10 +114,9 @@ export function LancamentoForm({ tutorId }: { tutorId: string }) {
         </Campo>
 
         <Campo rotulo="Data" htmlFor="lanc-data" obrigatorio>
-          <Input
+          <CampoData
             id="lanc-data"
             name="data"
-            type="date"
             required
             defaultValue={hojeISO()}
           />

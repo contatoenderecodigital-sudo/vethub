@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardTitulo } from "@/components/ui/card";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { Input } from "@/components/ui/form";
+import { CampoData } from "@/components/ui/campo-data";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { excluirPesagem, registrarPesagem } from "../actions";
 
@@ -124,10 +125,9 @@ export async function PesoHistorico({
           <label htmlFor="peso-data" className="block text-xs text-ink-muted">
             Data
           </label>
-          <Input
+          <CampoData
             id="peso-data"
             name="data"
-            type="date"
             defaultValue={hoje}
             min="1980-01-01"
             max={hoje}

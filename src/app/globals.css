@@ -164,24 +164,33 @@ body::before {
     inset 0 1px 0 rgb(255 255 255 / 0.45);
 }
 
-/* Menus flutuantes (dropdowns, autocomplete): mesmo vidro do resto, só
-   que com blur MUITO mais pesado — o que está atrás vira borrão de cor,
-   nunca texto legível. Nada de painel escuro: quebraria a linguagem. */
+/* Menus flutuantes (dropdown, autocomplete, modal).
+ *
+ * Aqui o vidro é ESCURO, ao contrário dos cards. Não é capricho: o texto
+ * do sistema é branco, e vidro claro com texto branco por cima de uma
+ * página clara não fica legível por mais blur que se coloque — foi
+ * exatamente o que aconteceu no autocomplete, com o formulário de trás
+ * atravessando a lista.
+ *
+ * Vidro escuro sobre conteúdo claro é o mesmo recurso que iOS e macOS
+ * usam nos menus de contexto: continua translúcido e desfocado, mas o
+ * contraste com o texto branco é garantido.
+ */
 .glass-menu {
-  background: rgb(255 255 255 / 0.58);
-  -webkit-backdrop-filter: blur(44px) saturate(1.9);
-  backdrop-filter: blur(44px) saturate(1.9);
-  border: 1px solid rgb(255 255 255 / 0.55);
+  background: color-mix(in srgb, var(--tema-profundo) 90%, transparent);
+  -webkit-backdrop-filter: blur(28px) saturate(1.6);
+  backdrop-filter: blur(28px) saturate(1.6);
+  border: 1px solid rgb(255 255 255 / 0.22);
   box-shadow:
-    0 18px 48px rgb(0 0 0 / 0.22),
-    inset 0 1px 0 rgb(255 255 255 / 0.6);
+    0 20px 50px rgb(0 0 0 / 0.35),
+    inset 0 1px 0 rgb(255 255 255 / 0.14);
 }
 
-/* Navegadores sem backdrop-filter (o borrão não acontece): compensa com
-   opacidade, senão o menu fica ilegível. */
+/* Navegadores sem backdrop-filter: sem o borrão, só a opacidade segura
+   a legibilidade. */
 @supports not (backdrop-filter: blur(1px)) {
   .glass-menu {
-    background: color-mix(in srgb, var(--tema-escuro) 92%, white);
+    background: var(--tema-profundo);
   }
 }
 
@@ -246,6 +255,69 @@ select option {
   .janela-modal[data-state] {
     animation: none;
   }
+}
+
+/* ------------------------------------------------------------------
+ * Calendário (react-day-picker) no visual de vidro.
+ * A biblioteca traz o próprio CSS com variáveis; aqui elas são
+ * redefinidas para o tema em vez de sobrescrever seletor por seletor.
+ * ------------------------------------------------------------------ */
+.calendario-vidro {
+  --rdp-accent-color: #ffffff;
+  --rdp-accent-background-color: rgb(255 255 255 / 0.25);
+  --rdp-day-height: 2.15rem;
+  --rdp-day-width: 2.15rem;
+  --rdp-day_button-height: 2.15rem;
+  --rdp-day_button-width: 2.15rem;
+  --rdp-day_button-border-radius: 0.6rem;
+  --rdp-selected-border: none;
+  --rdp-outside-opacity: 0.35;
+  --rdp-disabled-opacity: 0.25;
+  --rdp-today-color: #ffffff;
+  --rdp-nav_button-height: 2rem;
+  --rdp-nav_button-width: 2rem;
+  color: #fff;
+  font-size: 0.875rem;
+}
+
+.calendario-vidro .rdp-month_caption {
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.calendario-vidro .rdp-weekday {
+  color: rgb(255 255 255 / 0.65);
+  font-weight: 600;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+}
+
+.calendario-vidro .rdp-day_button:hover:not([disabled]) {
+  background: rgb(255 255 255 / 0.2);
+}
+
+/* Dia selecionado: branco cheio com o texto na cor do tema — o mesmo
+   contraste dos botões primários do sistema. */
+.calendario-vidro .rdp-selected .rdp-day_button {
+  background: #ffffff;
+  color: var(--tema-escuro);
+  font-weight: 700;
+}
+
+/* Hoje ganha só um anel, para não competir com o dia selecionado. */
+.calendario-vidro .rdp-today:not(.rdp-selected) .rdp-day_button {
+  box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.55);
+  font-weight: 600;
+}
+
+.calendario-vidro .rdp-chevron {
+  fill: rgb(255 255 255 / 0.85);
+}
+
+.calendario-vidro .rdp-button_next:hover,
+.calendario-vidro .rdp-button_previous:hover {
+  background: rgb(255 255 255 / 0.2);
+  border-radius: 0.5rem;
 }
 
 /* Wordmark: VetHub junto, sem espaço, tracking levemente apertado */

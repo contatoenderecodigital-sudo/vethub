@@ -164,7 +164,7 @@ export function BuscaCombobox({
         role="listbox"
         aria-label={rotulo ? `Sugestões de ${rotulo.toLowerCase()}` : "Sugestões"}
         hidden={!listaVisivel}
-        className="glass-menu absolute z-20 mt-1 max-h-64 w-full overflow-auto rounded-xl py-1"
+        className="glass-menu absolute z-30 mt-1 max-h-64 w-full overflow-auto rounded-xl py-1"
       >
         {opcoes.map((o, indice) => (
           <li
@@ -189,7 +189,7 @@ export function BuscaCombobox({
       {aberto && !buscando && opcoes.length === 0 && texto.trim() && !selecionado && (
         <div
           role="status"
-          className="glass-menu absolute z-20 mt-1 w-full rounded-xl px-3 py-2 text-sm text-white/70"
+          className="glass-menu absolute z-30 mt-1 w-full rounded-xl px-3 py-2 text-sm text-white/70"
         >
           Nada encontrado.
         </div>

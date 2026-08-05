@@ -19,7 +19,8 @@ import {
   GradeEstatisticas,
   type EstatisticaProps,
 } from "@/components/ui/estatistica";
-import { Campo, Input, Select } from "@/components/ui/form";
+import { Campo, Select } from "@/components/ui/form";
+import { CampoData } from "@/components/ui/campo-data";
 import { PageHeader } from "@/components/ui/page-header";
 import { Pagination } from "@/components/ui/pagination";
 import {
@@ -306,10 +307,9 @@ export default async function ComissoesPage({
         <input type="hidden" name="status" value={status} />
         <div className="min-w-32 flex-1">
           <Campo rotulo="De" htmlFor="de">
-            <Input
+            <CampoData
               id="de"
               name="de"
-              type="date"
               min="2015-01-01"
               max="2099-12-31"
               defaultValue={periodo.de}
@@ -318,10 +318,9 @@ export default async function ComissoesPage({
         </div>
         <div className="min-w-32 flex-1">
           <Campo rotulo="Até" htmlFor="ate">
-            <Input
+            <CampoData
               id="ate"
               name="ate"
-              type="date"
               min="2015-01-01"
               max="2099-12-31"
               defaultValue={periodo.ate}

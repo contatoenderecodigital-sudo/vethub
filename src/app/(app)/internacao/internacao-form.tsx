@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { BedDouble, Check } from "lucide-react";
 import { Campo, Input, Select, Textarea } from "@/components/ui/form";
+import { CampoData } from "@/components/ui/campo-data";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { BuscaCombobox, type OpcaoBusca } from "@/components/busca-combobox";
 import { internacaoSchema, type InternacaoFormValores } from "./schema";
@@ -37,12 +38,16 @@ export function InternacaoForm({
     register,
     handleSubmit,
     setValue,
+    control,
     formState: { errors, isValid },
   } = useForm<InternacaoFormValores>({
     resolver: zodResolver(internacaoSchema),
     mode: "onChange",
     defaultValues: valoresIniciais,
   });
+
+  // useWatch (e não watch()) para o React Compiler conseguir otimizar o form
+  const data = useWatch({ control, name: "data" });
 
   async function aoEnviar(valores: InternacaoFormValores) {
     setEnviando(true);
@@ -123,13 +128,15 @@ export function InternacaoForm({
           obrigatorio
           erro={errors.data?.message}
         >
-          <Input
+          {/* fonte da verdade da data para o RHF/FormData */}
+          <input type="hidden" {...register("data")} />
+          <CampoData
             id="data"
-            type="date"
+            value={data ?? ""}
+            onChange={(iso) => setValue("data", iso, { shouldValidate: true })}
             min="2020-01-01"
             max={`${new Date().getFullYear() + 5}-12-31`}
             aria-invalid={!!errors.data}
-            {...register("data")}
           />
         </Campo>
         <Campo

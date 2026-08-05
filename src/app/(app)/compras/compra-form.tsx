@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Check } from "lucide-react";
 import { Campo, Input, Select, Textarea } from "@/components/ui/form";
+import { CampoData } from "@/components/ui/campo-data";
 import { ButtonLink } from "@/components/ui/button";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { CompraItensEditor, type ProdutoOpcao } from "./itens-editor";
@@ -80,7 +81,7 @@ export function CompraForm({
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Campo rotulo="Data da compra" htmlFor="data" obrigatorio>
-          <Input id="data" name="data" type="date" defaultValue={dataInicial} required />
+          <CampoData id="data" name="data" defaultValue={dataInicial} required />
         </Campo>
 
         <Campo

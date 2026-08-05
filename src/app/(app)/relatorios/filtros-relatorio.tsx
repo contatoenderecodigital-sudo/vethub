@@ -1,7 +1,8 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Search } from "lucide-react";
-import { Campo, Input } from "@/components/ui/form";
+import { Campo } from "@/components/ui/form";
+import { CampoData } from "@/components/ui/campo-data";
 import { atalhosPeriodo, type Periodo } from "./definicoes";
 
 /** Monta uma URL do relatório preservando os filtros atuais. */
@@ -87,10 +88,9 @@ export function FiltrosRelatorio({
           <>
             <div className="min-w-32 flex-1">
               <Campo rotulo={rotuloDe} htmlFor="de">
-                <Input
+                <CampoData
                   id="de"
                   name="de"
-                  type="date"
                   min="2015-01-01"
                   max="2099-12-31"
                   defaultValue={periodo.de}
@@ -99,10 +99,9 @@ export function FiltrosRelatorio({
             </div>
             <div className="min-w-32 flex-1">
               <Campo rotulo={rotuloAte} htmlFor="ate">
-                <Input
+                <CampoData
                   id="ate"
                   name="ate"
-                  type="date"
                   min="2015-01-01"
                   max="2099-12-31"
                   defaultValue={periodo.ate}

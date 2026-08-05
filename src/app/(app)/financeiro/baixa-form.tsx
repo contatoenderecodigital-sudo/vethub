@@ -6,6 +6,7 @@ import { formatBRL, hojeISO } from "@/lib/format";
 import { FORMAS_PAGAMENTO, type ContaTipo } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Campo, Input, Select } from "@/components/ui/form";
+import { CampoData } from "@/components/ui/campo-data";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { darBaixa } from "./actions";
 import { mascaraMoeda } from "./schema";
@@ -85,10 +86,9 @@ export function BaixaForm({
         </Campo>
 
         <Campo rotulo="Data" htmlFor={`baixa-data-${contaId}`} obrigatorio>
-          <Input
+          <CampoData
             id={`baixa-data-${contaId}`}
             name="pagamento"
-            type="date"
             required
             defaultValue={hojeISO()}
           />

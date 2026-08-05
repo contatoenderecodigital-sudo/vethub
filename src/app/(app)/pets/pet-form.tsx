@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Campo, Input, Select, Textarea } from "@/components/ui/form";
+import { CampoData } from "@/components/ui/campo-data";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { BuscaCombobox, type OpcaoBusca } from "@/components/busca-combobox";
 import { ESPECIES, PORTES, type Pet } from "@/lib/types";
@@ -35,6 +36,7 @@ export function PetForm({
     register,
     handleSubmit,
     setValue,
+    control,
     formState: { errors, isValid },
   } = useForm<PetFormValores>({
     resolver: zodResolver(petSchema),
@@ -56,6 +58,9 @@ export function PetForm({
       observacoes: pet?.observacoes ?? "",
     },
   });
+
+  // useWatch (e não watch()) para o React Compiler conseguir otimizar o form
+  const dataNascimento = useWatch({ control, name: "data_nascimento" });
 
   async function aoEnviar(valores: PetFormValores) {
     setEnviando(true);
@@ -145,13 +150,17 @@ export function PetForm({
           htmlFor="data_nascimento"
           erro={errors.data_nascimento?.message}
         >
-          <Input
+          {/* fonte da verdade da data para o RHF/FormData */}
+          <input type="hidden" {...register("data_nascimento")} />
+          <CampoData
             id="data_nascimento"
-            type="date"
+            value={dataNascimento ?? ""}
+            onChange={(iso) =>
+              setValue("data_nascimento", iso, { shouldValidate: true })
+            }
             min="1980-01-01"
             max={hojeISOValidacao()}
             aria-invalid={!!errors.data_nascimento}
-            {...register("data_nascimento")}
           />
         </Campo>
       </div>

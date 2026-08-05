@@ -9,6 +9,7 @@ import {
 } from "@/lib/types";
 import { ButtonLink } from "@/components/ui/button";
 import { Campo, Input, Select, Textarea } from "@/components/ui/form";
+import { CampoData } from "@/components/ui/campo-data";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { BuscaCombobox, type OpcaoBusca } from "@/components/busca-combobox";
 import { mascaraMoeda } from "./schema";
@@ -141,10 +142,9 @@ export function ContaForm({
         </Campo>
 
         <Campo rotulo="Vencimento" htmlFor="conta-vencimento" obrigatorio>
-          <Input
+          <CampoData
             id="conta-vencimento"
             name="vencimento"
-            type="date"
             required
             min="2015-01-01"
             defaultValue={valoresIniciais.vencimento}

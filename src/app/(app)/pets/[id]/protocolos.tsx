@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardTitulo } from "@/components/ui/card";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { Campo, Input, Select, Textarea } from "@/components/ui/form";
+import { CampoData } from "@/components/ui/campo-data";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { excluirProtocolo, registrarProtocolo } from "../actions";
@@ -253,10 +254,9 @@ export async function Protocolos({
               htmlFor="protocolo-aplicacao"
               obrigatorio
             >
-              <Input
+              <CampoData
                 id="protocolo-aplicacao"
                 name="data_aplicacao"
-                type="date"
                 defaultValue={hoje}
                 min="1980-01-01"
                 max={hoje}
@@ -268,10 +268,9 @@ export async function Protocolos({
               htmlFor="protocolo-proxima"
               dica="Alimenta os lembretes de reforço."
             >
-              <Input
+              <CampoData
                 id="protocolo-proxima"
                 name="proxima_dose"
-                type="date"
                 min="1980-01-01"
               />
             </Campo>

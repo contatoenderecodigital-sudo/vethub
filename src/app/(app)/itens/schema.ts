@@ -79,6 +79,11 @@ export const itemSchema = z
     principio_ativo: z.string().max(200, "Texto longo demais."),
     requer_receita: z.boolean(),
     vacina: z.boolean(),
+    intervalo_dose_dias: z.string().refine((v) => {
+      if (!v.trim()) return true;
+      const n = Number(v.trim());
+      return Number.isInteger(n) && n >= 1 && n <= 3650;
+    }, "Intervalo inválido. Use de 1 a 3650 dias."),
     duracao_minutos: z.string().refine((v) => {
       if (!v.trim()) return true;
       const n = Number(v.trim());
@@ -124,6 +129,10 @@ export function itemParaBanco(v: ItemFormValores) {
     principio_ativo: produto ? v.principio_ativo.trim() || null : null,
     requer_receita: produto ? v.requer_receita : false,
     vacina: produto ? v.vacina : false,
+    // Só faz sentido em vacina: é o que preenche a data do reforço sozinha
+    // ao registrar a aplicação na ficha do pet.
+    intervalo_dose_dias:
+      produto && v.vacina ? inteiroOuNull(v.intervalo_dose_dias) : null,
     duracao_minutos: servico ? inteiroOuNull(v.duracao_minutos) : null,
     ativo: v.ativo,
   };
@@ -149,6 +158,7 @@ export function itemDoFormData(formData: FormData) {
     principio_ativo: String(formData.get("principio_ativo") ?? ""),
     requer_receita: formData.get("requer_receita") === "on",
     vacina: formData.get("vacina") === "on",
+    intervalo_dose_dias: String(formData.get("intervalo_dose_dias") ?? ""),
     duracao_minutos: String(formData.get("duracao_minutos") ?? ""),
     ativo: formData.get("ativo") === "on",
   };

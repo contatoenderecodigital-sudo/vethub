@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardTitulo } from "@/components/ui/card";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { Campo, Input, Select, Textarea } from "@/components/ui/form";
-import { CampoData } from "@/components/ui/campo-data";
+import { CamposProtocolo, type VacinaDoCatalogo } from "./campos-protocolo";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { excluirProtocolo, registrarProtocolo } from "../actions";
@@ -66,17 +66,30 @@ export async function Protocolos({
 }) {
   const { supabase } = await getSessao();
 
-  const { data } = await supabase
-    .from("protocolo_saude")
-    .select(
-      "id, tipo, nome, dose, lote, fabricante, data_aplicacao, proxima_dose, observacao, veterinario:veterinario_id (nome)"
-    )
-    .eq("pet_id", petId)
-    .order("data_aplicacao", { ascending: false })
-    .limit(100)
-    .returns<ProtocoloLinha[]>();
+  const [{ data }, { data: catalogo }] = await Promise.all([
+    supabase
+      .from("protocolo_saude")
+      .select(
+        "id, tipo, nome, dose, lote, fabricante, data_aplicacao, proxima_dose, observacao, veterinario:veterinario_id (nome)"
+      )
+      .eq("pet_id", petId)
+      .order("data_aplicacao", { ascending: false })
+      .limit(100)
+      .returns<ProtocoloLinha[]>(),
+    // Vacinas e vermífugos do catálogo: é daqui que sai o intervalo que
+    // preenche a data do reforço sozinha.
+    supabase
+      .from("item")
+      .select("id, nome, intervalo_dose_dias")
+      .eq("ativo", true)
+      .eq("vacina", true)
+      .order("nome")
+      .limit(200)
+      .returns<VacinaDoCatalogo[]>(),
+  ]);
 
   const todos = data ?? [];
+  const vacinas = catalogo ?? [];
   const lista = tipoAtivo ? todos.filter((p) => p.tipo === tipoAtivo) : todos;
 
   const registrar = registrarProtocolo.bind(null, petId);
@@ -222,14 +235,6 @@ export async function Protocolos({
                 ))}
               </Select>
             </Campo>
-            <Campo rotulo="Nome do produto" htmlFor="protocolo-nome" obrigatorio>
-              <Input
-                id="protocolo-nome"
-                name="nome"
-                placeholder="Ex.: V10, Bravecto"
-                required
-              />
-            </Campo>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-3">
@@ -248,33 +253,8 @@ export async function Protocolos({
             </Campo>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <Campo
-              rotulo="Data de aplicação"
-              htmlFor="protocolo-aplicacao"
-              obrigatorio
-            >
-              <CampoData
-                id="protocolo-aplicacao"
-                name="data_aplicacao"
-                defaultValue={hoje}
-                min="1980-01-01"
-                max={hoje}
-                required
-              />
-            </Campo>
-            <Campo
-              rotulo="Próxima dose"
-              htmlFor="protocolo-proxima"
-              dica="Alimenta os lembretes de reforço."
-            >
-              <CampoData
-                id="protocolo-proxima"
-                name="proxima_dose"
-                min="1980-01-01"
-              />
-            </Campo>
-          </div>
+          <CamposProtocolo hoje={hoje} catalogo={vacinas} />
+
 
           <Campo rotulo="Observação" htmlFor="protocolo-observacao">
             <Textarea

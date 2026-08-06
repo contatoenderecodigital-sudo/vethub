@@ -502,6 +502,8 @@ export interface Item {
   principio_ativo: string | null;
   requer_receita: boolean;
   vacina: boolean;
+  /** Dias até o reforço desta vacina. Preenche a próxima dose sozinha. */
+  intervalo_dose_dias: number | null;
   duracao_minutos: number | null;
   ativo: boolean;
   created_at: string;

@@ -76,6 +76,7 @@ export function ItemForm({
       principio_ativo: item?.principio_ativo ?? "",
       requer_receita: item?.requer_receita ?? false,
       vacina: item?.vacina ?? false,
+      intervalo_dose_dias: item?.intervalo_dose_dias ? String(item.intervalo_dose_dias) : "",
       duracao_minutos:
         item?.duracao_minutos != null ? String(item.duracao_minutos) : "",
       ativo: item?.ativo ?? true,
@@ -96,6 +97,7 @@ export function ItemForm({
   // useWatch (e não watch()) para o React Compiler conseguir otimizar o form
   const tipo = useWatch({ control, name: "tipo" });
   const controlaEstoque = useWatch({ control, name: "controla_estoque" });
+  const ehVacina = useWatch({ control, name: "vacina" });
   const ehProduto = tipo === "produto";
   const ehServico = tipo === "servico";
 
@@ -329,6 +331,30 @@ export function ItemForm({
               <span>É vacina</span>
             </label>
           </div>
+
+          {/* O intervalo do reforço vive no item porque é característica do
+              produto, não da aplicação: V10 anual = 365, giárdia = 21. É o
+              que faz a ficha do pet preencher a próxima dose sozinha — sem
+              ele, ninguém calcula reforço de cabeça no balcão e o relatório
+              de vacinas a vencer fica vazio. */}
+          {ehVacina && (
+            <Campo
+              rotulo="Reforço a cada (dias)"
+              htmlFor="intervalo_dose_dias"
+              dica="Preenche a próxima dose sozinho na ficha do pet. Ex.: 365 para anual, 21 para giárdia."
+              erro={errors.intervalo_dose_dias?.message}
+            >
+              <Input
+                id="intervalo_dose_dias"
+                type="number"
+                min={1}
+                max={3650}
+                placeholder="365"
+                aria-invalid={!!errors.intervalo_dose_dias}
+                {...register("intervalo_dose_dias")}
+              />
+            </Campo>
+          )}
 
           <Campo
             rotulo="Princípio ativo"

@@ -9,6 +9,7 @@ import { Button, ButtonLink } from "@/components/ui/button";
 import { BuscaCombobox, type OpcaoBusca } from "@/components/busca-combobox";
 import type { Consulta } from "@/lib/types";
 import { consultaSchema, type ConsultaFormValores } from "./consulta-schema";
+import { useEnvioComAviso } from "@/components/ui/envio-formulario";
 
 type CamposConsulta = Pick<
   Consulta,
@@ -48,12 +49,7 @@ export function ConsultaForm({
 }) {
   const [enviando, setEnviando] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors, isValid },
-  } = useForm<ConsultaFormValores>({
+  const form = useForm<ConsultaFormValores>({
     resolver: zodResolver(consultaSchema),
     mode: "onChange",
     defaultValues: {
@@ -68,6 +64,16 @@ export function ConsultaForm({
     },
   });
 
+  const {
+    register,
+    setValue,
+    formState: { errors },
+  } = form;
+
+  // Botão sempre clicável: quem clica com erro recebe o resumo e é
+  // levado ao primeiro campo, em vez de encarar um botão apagado.
+  const { enviar, aviso } = useEnvioComAviso(form, aoEnviar);
+
   async function aoEnviar(valores: ConsultaFormValores) {
     setEnviando(true);
     try {
@@ -81,7 +87,8 @@ export function ConsultaForm({
   }
 
   return (
-    <form onSubmit={handleSubmit(aoEnviar)} className="space-y-4" noValidate>
+    <form onSubmit={enviar} className="space-y-4" noValidate>
+        {aviso}
       {erro && (
         <p className="rounded-lg bg-red-400/25 px-3 py-2 text-sm text-red-100">
           {erro}
@@ -161,7 +168,7 @@ export function ConsultaForm({
       )}
 
       <div className="flex gap-2 pt-2">
-        <Button type="submit" disabled={!isValid || enviando}>
+        <Button type="submit" disabled={enviando}>
           <Check className="size-4" />
           {enviando ? "Salvando…" : "Salvar"}
         </Button>

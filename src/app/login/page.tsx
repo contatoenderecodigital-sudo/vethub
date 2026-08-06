@@ -11,6 +11,7 @@ import { Wordmark } from "@/components/wordmark";
 import { Button } from "@/components/ui/button";
 import { Campo, Input } from "@/components/ui/form";
 import { schemaEmailObrigatorio } from "@/lib/validacao";
+import { useEnvioComAviso } from "@/components/ui/envio-formulario";
 
 // Validação leve: só formato de e-mail e senha não vazia. Quem decide
 // se as credenciais valem é o Supabase Auth.
@@ -26,15 +27,20 @@ export default function LoginPage() {
   const [erro, setErro] = useState<string | null>(null);
   const [carregando, setCarregando] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isValid },
-  } = useForm<LoginValores>({
+  const form = useForm<LoginValores>({
     resolver: zodResolver(loginSchema),
     mode: "onChange",
     defaultValues: { email: "", senha: "" },
   });
+
+  const {
+    register,
+    formState: { errors },
+  } = form;
+
+  // Botão sempre clicável: quem clica com erro recebe o resumo e é
+  // levado ao primeiro campo, em vez de encarar um botão apagado.
+  const { enviar, aviso } = useEnvioComAviso(form, entrar);
 
   async function entrar(valores: LoginValores) {
     setErro(null);
@@ -63,7 +69,8 @@ export default function LoginPage() {
           Acesse a central da sua clínica.
         </p>
 
-        <form onSubmit={handleSubmit(entrar)} className="space-y-4" noValidate>
+        <form onSubmit={enviar} className="space-y-4" noValidate>
+        {aviso}
           {erro && (
             <p className="rounded-lg bg-red-400/25 px-3 py-2 text-sm text-red-100">
               {erro}
@@ -89,7 +96,7 @@ export default function LoginPage() {
             />
           </Campo>
 
-          <Button type="submit" className="w-full" disabled={!isValid || carregando}>
+          <Button type="submit" className="w-full" disabled={carregando}>
             {carregando ? "Entrando…" : "Entrar"}
           </Button>
         </form>

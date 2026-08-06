@@ -7,6 +7,7 @@ import { NotebookPen } from "lucide-react";
 import { Campo, Input, Textarea } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { evolucaoSchema, type EvolucaoFormValores } from "../schema";
+import { useEnvioComAviso } from "@/components/ui/envio-formulario";
 
 const VAZIO: EvolucaoFormValores = {
   texto: "",
@@ -26,16 +27,21 @@ export function EvolucaoForm({
 }) {
   const [enviando, setEnviando] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors, isValid },
-  } = useForm<EvolucaoFormValores>({
+  const form = useForm<EvolucaoFormValores>({
     resolver: zodResolver(evolucaoSchema),
     mode: "onChange",
     defaultValues: VAZIO,
   });
+
+  const {
+    register,
+    reset,
+    formState: { errors },
+  } = form;
+
+  // Botão sempre clicável: quem clica com erro recebe o resumo e é
+  // levado ao primeiro campo, em vez de encarar um botão apagado.
+  const { enviar, aviso } = useEnvioComAviso(form, aoEnviar);
 
   async function aoEnviar(valores: EvolucaoFormValores) {
     setEnviando(true);
@@ -51,10 +57,11 @@ export function EvolucaoForm({
 
   return (
     <form
-      onSubmit={handleSubmit(aoEnviar)}
+      onSubmit={enviar}
       className="mb-4 space-y-3 rounded-xl border border-white/20 bg-white/10 p-3"
       noValidate
     >
+      {aviso}
       <Campo rotulo="Nova evolução" htmlFor="texto" obrigatorio erro={errors.texto?.message}>
         <Textarea
           id="texto"
@@ -104,7 +111,7 @@ export function EvolucaoForm({
         </Campo>
       </div>
 
-      <Button type="submit" tamanho="sm" disabled={!isValid || enviando}>
+      <Button type="submit" tamanho="sm" disabled={enviando}>
         <NotebookPen className="size-4" />
         {enviando ? "Registrando…" : "Registrar evolução"}
       </Button>

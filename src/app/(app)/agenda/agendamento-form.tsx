@@ -10,6 +10,7 @@ import { Button, ButtonLink } from "@/components/ui/button";
 import { BuscaCombobox, type OpcaoBusca } from "@/components/busca-combobox";
 import { TIPOS_AGENDAMENTO, type Usuario } from "@/lib/types";
 import { agendamentoSchema, type AgendamentoFormValores } from "./schema";
+import { useEnvioComAviso } from "@/components/ui/envio-formulario";
 
 /**
  * Formulário de novo agendamento com validação em tempo real
@@ -31,13 +32,7 @@ export function AgendamentoForm({
 }) {
   const [enviando, setEnviando] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    control,
-    formState: { errors, isValid },
-  } = useForm<AgendamentoFormValores>({
+  const form = useForm<AgendamentoFormValores>({
     resolver: zodResolver(agendamentoSchema),
     mode: "onChange",
     defaultValues: {
@@ -49,6 +44,17 @@ export function AgendamentoForm({
       observacoes: "",
     },
   });
+
+  const {
+    register,
+    setValue,
+    control,
+    formState: { errors },
+  } = form;
+
+  // Botão sempre clicável: quem clica com erro recebe o resumo e é
+  // levado ao primeiro campo, em vez de encarar um botão apagado.
+  const { enviar, aviso } = useEnvioComAviso(form, aoEnviar);
 
   // useWatch (e não watch()) para o React Compiler conseguir otimizar o form
   const data = useWatch({ control, name: "data" });
@@ -65,7 +71,8 @@ export function AgendamentoForm({
   }
 
   return (
-    <form onSubmit={handleSubmit(aoEnviar)} className="space-y-4" noValidate>
+    <form onSubmit={enviar} className="space-y-4" noValidate>
+        {aviso}
       {erro && (
         <p className="rounded-lg bg-red-400/25 px-3 py-2 text-sm text-red-100">
           {erro}
@@ -148,7 +155,7 @@ export function AgendamentoForm({
       </Campo>
 
       <div className="flex gap-2 pt-2">
-        <Button type="submit" disabled={!isValid || enviando}>
+        <Button type="submit" disabled={enviando}>
           <CalendarPlus className="size-4" />
           {enviando ? "Agendando…" : "Agendar"}
         </Button>

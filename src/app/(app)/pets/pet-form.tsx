@@ -10,6 +10,7 @@ import { BuscaCombobox, type OpcaoBusca } from "@/components/busca-combobox";
 import { ESPECIES, PORTES, type Pet } from "@/lib/types";
 import { hojeISOValidacao } from "@/lib/validacao";
 import { petSchema, sanitizarPeso, type PetFormValores } from "./schema";
+import { useEnvioComAviso } from "@/components/ui/envio-formulario";
 
 /**
  * Formulário de pet (criar/editar) com validação em tempo real
@@ -32,13 +33,7 @@ export function PetForm({
 }) {
   const [enviando, setEnviando] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    control,
-    formState: { errors, isValid },
-  } = useForm<PetFormValores>({
+  const form = useForm<PetFormValores>({
     resolver: zodResolver(petSchema),
     mode: "onChange",
     defaultValues: {
@@ -59,6 +54,17 @@ export function PetForm({
     },
   });
 
+  const {
+    register,
+    setValue,
+    control,
+    formState: { errors },
+  } = form;
+
+  // Botão sempre clicável: quem clica com erro recebe o resumo e é
+  // levado ao primeiro campo, em vez de encarar um botão apagado.
+  const { enviar, aviso } = useEnvioComAviso(form, aoEnviar);
+
   // useWatch (e não watch()) para o React Compiler conseguir otimizar o form
   const dataNascimento = useWatch({ control, name: "data_nascimento" });
 
@@ -76,7 +82,8 @@ export function PetForm({
   }
 
   return (
-    <form onSubmit={handleSubmit(aoEnviar)} className="space-y-4" noValidate>
+    <form onSubmit={enviar} className="space-y-4" noValidate>
+        {aviso}
       {erro && (
         <p className="rounded-lg bg-red-400/25 px-3 py-2 text-sm text-red-100">{erro}</p>
       )}
@@ -269,7 +276,7 @@ export function PetForm({
       </label>
 
       <div className="flex gap-2 pt-2">
-        <Button type="submit" disabled={!isValid || enviando}>
+        <Button type="submit" disabled={enviando}>
           {enviando ? "Salvando…" : "Salvar"}
         </Button>
         <ButtonLink href={cancelarHref} variante="secondary">

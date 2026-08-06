@@ -7,6 +7,7 @@ import { PAPEIS } from "@/lib/types";
 import { Campo, Input, Select } from "@/components/ui/form";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { novoUsuarioSchema, type NovoUsuarioValores } from "./schema";
+import { useEnvioComAviso } from "@/components/ui/envio-formulario";
 
 /**
  * Formulário de novo usuário da equipe (react-hook-form + zod).
@@ -22,15 +23,20 @@ export function NovoUsuarioForm({
 }) {
   const [enviando, setEnviando] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isValid },
-  } = useForm<NovoUsuarioValores>({
+  const form = useForm<NovoUsuarioValores>({
     resolver: zodResolver(novoUsuarioSchema),
     mode: "onChange",
     defaultValues: { nome: "", email: "", senha: "", papel: "recepcao" },
   });
+
+  const {
+    register,
+    formState: { errors },
+  } = form;
+
+  // Botão sempre clicável: quem clica com erro recebe o resumo e é
+  // levado ao primeiro campo, em vez de encarar um botão apagado.
+  const { enviar, aviso } = useEnvioComAviso(form, aoEnviar);
 
   async function aoEnviar(valores: NovoUsuarioValores) {
     setEnviando(true);
@@ -44,7 +50,8 @@ export function NovoUsuarioForm({
   }
 
   return (
-    <form onSubmit={handleSubmit(aoEnviar)} className="space-y-4" noValidate>
+    <form onSubmit={enviar} className="space-y-4" noValidate>
+        {aviso}
       {erro && (
         <p className="rounded-lg bg-red-400/25 px-3 py-2 text-sm text-red-100">{erro}</p>
       )}
@@ -90,7 +97,7 @@ export function NovoUsuarioForm({
       </div>
 
       <div className="flex gap-2 pt-2">
-        <Button type="submit" disabled={!isValid || enviando}>
+        <Button type="submit" disabled={enviando}>
           {enviando ? "Criando…" : "Criar usuário"}
         </Button>
         <ButtonLink href="/configuracoes/usuarios" variante="secondary">

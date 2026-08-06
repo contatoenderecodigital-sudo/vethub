@@ -13,6 +13,7 @@ import {
   fornecedorSchema,
   type FornecedorFormValores,
 } from "./schema";
+import { useEnvioComAviso } from "@/components/ui/envio-formulario";
 
 /**
  * Formulário de fornecedor com validação em tempo real (react-hook-form +
@@ -40,10 +41,16 @@ export function FornecedorForm({
 
   const {
     register,
-    handleSubmit,
     setValue,
-    formState: { errors, isValid },
+    formState: { errors },
   } = form;
+
+
+  // Botão sempre clicável: quem clica com erro recebe o resumo e é
+
+  // levado ao primeiro campo, em vez de encarar um botão apagado.
+
+  const { enviar, aviso } = useEnvioComAviso(form, aoEnviar);
 
   async function aoEnviar(valores: FornecedorFormValores) {
     setEnviando(true);
@@ -60,7 +67,8 @@ export function FornecedorForm({
 
   return (
     <FormProvider {...form}>
-      <form onSubmit={handleSubmit(aoEnviar)} className="space-y-4" noValidate>
+      <form onSubmit={enviar} className="space-y-4" noValidate>
+        {aviso}
         {erro && (
           <p className="rounded-lg bg-red-400/25 px-3 py-2 text-sm text-red-100">{erro}</p>
         )}
@@ -178,7 +186,7 @@ export function FornecedorForm({
         </label>
 
         <div className="flex gap-2 pt-2">
-          <Button type="submit" disabled={!isValid || enviando}>
+          <Button type="submit" disabled={enviando}>
             {enviando ? "Salvando…" : "Salvar"}
           </Button>
           <ButtonLink href={cancelarHref} variante="secondary">

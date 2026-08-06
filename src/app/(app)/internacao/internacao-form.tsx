@@ -9,6 +9,7 @@ import { CampoData } from "@/components/ui/campo-data";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { BuscaCombobox, type OpcaoBusca } from "@/components/busca-combobox";
 import { internacaoSchema, type InternacaoFormValores } from "./schema";
+import { useEnvioComAviso } from "@/components/ui/envio-formulario";
 
 /**
  * Formulário de internação, compartilhado entre internar e editar.
@@ -34,17 +35,22 @@ export function InternacaoForm({
 }) {
   const [enviando, setEnviando] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    control,
-    formState: { errors, isValid },
-  } = useForm<InternacaoFormValores>({
+  const form = useForm<InternacaoFormValores>({
     resolver: zodResolver(internacaoSchema),
     mode: "onChange",
     defaultValues: valoresIniciais,
   });
+
+  const {
+    register,
+    setValue,
+    control,
+    formState: { errors },
+  } = form;
+
+  // Botão sempre clicável: quem clica com erro recebe o resumo e é
+  // levado ao primeiro campo, em vez de encarar um botão apagado.
+  const { enviar, aviso } = useEnvioComAviso(form, aoEnviar);
 
   // useWatch (e não watch()) para o React Compiler conseguir otimizar o form
   const data = useWatch({ control, name: "data" });
@@ -61,7 +67,8 @@ export function InternacaoForm({
   }
 
   return (
-    <form onSubmit={handleSubmit(aoEnviar)} className="space-y-4" noValidate>
+    <form onSubmit={enviar} className="space-y-4" noValidate>
+        {aviso}
       {erro && (
         <p className="rounded-lg bg-red-400/25 px-3 py-2 text-sm text-red-100">
           {erro}
@@ -191,7 +198,7 @@ export function InternacaoForm({
       </Campo>
 
       <div className="flex gap-2 pt-2">
-        <Button type="submit" disabled={!isValid || enviando}>
+        <Button type="submit" disabled={enviando}>
           {edicao ? <Check className="size-4" /> : <BedDouble className="size-4" />}
           {enviando ? "Salvando…" : edicao ? "Salvar" : "Internar"}
         </Button>

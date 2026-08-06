@@ -8,6 +8,7 @@ import { Campo, Input, Select, Textarea } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { prescricaoSchema, type PrescricaoFormValores } from "../schema";
 import { VIAS } from "../tipos";
+import { useEnvioComAviso } from "@/components/ui/envio-formulario";
 
 const VAZIO: PrescricaoFormValores = {
   medicamento: "",
@@ -30,16 +31,21 @@ export function PrescricaoForm({
 }) {
   const [enviando, setEnviando] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors, isValid },
-  } = useForm<PrescricaoFormValores>({
+  const form = useForm<PrescricaoFormValores>({
     resolver: zodResolver(prescricaoSchema),
     mode: "onChange",
     defaultValues: VAZIO,
   });
+
+  const {
+    register,
+    reset,
+    formState: { errors },
+  } = form;
+
+  // Botão sempre clicável: quem clica com erro recebe o resumo e é
+  // levado ao primeiro campo, em vez de encarar um botão apagado.
+  const { enviar, aviso } = useEnvioComAviso(form, aoEnviar);
 
   async function aoEnviar(valores: PrescricaoFormValores) {
     setEnviando(true);
@@ -55,10 +61,11 @@ export function PrescricaoForm({
 
   return (
     <form
-      onSubmit={handleSubmit(aoEnviar)}
+      onSubmit={enviar}
       className="mb-4 space-y-3 rounded-xl border border-white/20 bg-white/10 p-3"
       noValidate
     >
+      {aviso}
       <div className="grid gap-3 sm:grid-cols-2 sm:gap-x-4">
         <Campo
           rotulo="Medicamento"
@@ -142,7 +149,7 @@ export function PrescricaoForm({
         />
       </Campo>
 
-      <Button type="submit" tamanho="sm" disabled={!isValid || enviando}>
+      <Button type="submit" tamanho="sm" disabled={enviando}>
         <Pill className="size-4" />
         {enviando ? "Salvando…" : "Adicionar prescrição"}
       </Button>

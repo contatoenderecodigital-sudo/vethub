@@ -10,21 +10,27 @@ import { Wordmark } from "@/components/wordmark";
 import { Button } from "@/components/ui/button";
 import { Campo, Input } from "@/components/ui/form";
 import { cadastroSchema, type CadastroValores } from "./schema";
+import { useEnvioComAviso } from "@/components/ui/envio-formulario";
 
 export default function CadastroPage() {
   const router = useRouter();
   const [erro, setErro] = useState<string | null>(null);
   const [carregando, setCarregando] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isValid },
-  } = useForm<CadastroValores>({
+  const form = useForm<CadastroValores>({
     resolver: zodResolver(cadastroSchema),
     mode: "onChange",
     defaultValues: { clinica: "", nome: "", email: "", senha: "" },
   });
+
+  const {
+    register,
+    formState: { errors },
+  } = form;
+
+  // Botão sempre clicável: quem clica com erro recebe o resumo e é
+  // levado ao primeiro campo, em vez de encarar um botão apagado.
+  const { enviar, aviso } = useEnvioComAviso(form, cadastrar);
 
   async function cadastrar(valores: CadastroValores) {
     setErro(null);
@@ -67,7 +73,8 @@ export default function CadastroPage() {
           Crie a conta de administrador e comece a usar em minutos.
         </p>
 
-        <form onSubmit={handleSubmit(cadastrar)} className="space-y-4" noValidate>
+        <form onSubmit={enviar} className="space-y-4" noValidate>
+        {aviso}
           {erro && (
             <p className="rounded-lg bg-red-400/25 px-3 py-2 text-sm text-red-100">
               {erro}
@@ -120,7 +127,7 @@ export default function CadastroPage() {
             />
           </Campo>
 
-          <Button type="submit" className="w-full" disabled={!isValid || carregando}>
+          <Button type="submit" className="w-full" disabled={carregando}>
             {carregando ? "Criando conta…" : "Criar conta"}
           </Button>
         </form>

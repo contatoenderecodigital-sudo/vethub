@@ -13,6 +13,7 @@ import {
   sanitizarNumero,
 } from "./formato";
 import { itemSchema, type ItemFormValores } from "./schema";
+import { useEnvioComAviso } from "@/components/ui/envio-formulario";
 
 export interface OpcaoSimples {
   id: string;
@@ -48,13 +49,7 @@ export function ItemForm({
 }) {
   const [enviando, setEnviando] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    control,
-    formState: { errors, isValid },
-  } = useForm<ItemFormValores>({
+  const form = useForm<ItemFormValores>({
     resolver: zodResolver(itemSchema),
     mode: "onChange",
     defaultValues: {
@@ -87,6 +82,17 @@ export function ItemForm({
     },
   });
 
+  const {
+    register,
+    setValue,
+    control,
+    formState: { errors },
+  } = form;
+
+  // Botão sempre clicável: quem clica com erro recebe o resumo e é
+  // levado ao primeiro campo, em vez de encarar um botão apagado.
+  const { enviar, aviso } = useEnvioComAviso(form, aoEnviar);
+
   // useWatch (e não watch()) para o React Compiler conseguir otimizar o form
   const tipo = useWatch({ control, name: "tipo" });
   const controlaEstoque = useWatch({ control, name: "controla_estoque" });
@@ -107,7 +113,8 @@ export function ItemForm({
   }
 
   return (
-    <form onSubmit={handleSubmit(aoEnviar)} className="space-y-4" noValidate>
+    <form onSubmit={enviar} className="space-y-4" noValidate>
+        {aviso}
       {erro && (
         <p className="rounded-lg bg-red-400/25 px-3 py-2 text-sm text-red-100">{erro}</p>
       )}
@@ -377,7 +384,7 @@ export function ItemForm({
       </label>
 
       <div className="flex gap-2 pt-2">
-        <Button type="submit" disabled={!isValid || enviando}>
+        <Button type="submit" disabled={enviando}>
           {enviando ? "Salvando…" : "Salvar"}
         </Button>
         <ButtonLink href={cancelarHref} variante="secondary">

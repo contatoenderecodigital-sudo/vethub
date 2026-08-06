@@ -71,12 +71,44 @@ function novaChave() {
  * nos totais é o servidor, que recalcula tudo em finalizarVenda a partir dos
  * itens e do catálogo.
  */
-export function PdvTerminal({ vendedor }: { vendedor: string }) {
+export function PdvTerminal({
+  vendedor,
+  orcamento,
+}: {
+  vendedor: string;
+  /**
+   * Venda já começada a partir de um orçamento aprovado. Antes, aprovar um
+   * orçamento não levava a lugar nenhum: era preciso redigitar item por item
+   * no PDV, o que na prática significava que ninguém usava o módulo.
+   */
+  orcamento?: {
+    id: string;
+    numero: string;
+    tutor: OpcaoBusca | null;
+    itens: {
+      item_id: string | null;
+      descricao: string;
+      quantidade: number;
+      valor_unitario: number;
+    }[];
+  };
+}) {
   const router = useRouter();
 
-  const [linhas, setLinhas] = useState<Linha[]>([]);
+  const [linhas, setLinhas] = useState<Linha[]>(() =>
+    (orcamento?.itens ?? []).map((i) => ({
+      chave: crypto.randomUUID(),
+      item_id: i.item_id,
+      descricao: i.descricao,
+      quantidade: textoQuantidade(i.quantidade),
+      valor_unitario: textoMoeda(i.valor_unitario),
+      desconto: "",
+      controla_estoque: false,
+      estoque_atual: 0,
+    }))
+  );
   const [descontoGeral, setDescontoGeral] = useState("");
-  const [tutor, setTutor] = useState<OpcaoBusca | null>(null);
+  const [tutor, setTutor] = useState<OpcaoBusca | null>(orcamento?.tutor ?? null);
   const [codigo, setCodigo] = useState("");
   const [chaveBusca, setChaveBusca] = useState(0);
   const [aviso, setAviso] = useState<string | null>(null);

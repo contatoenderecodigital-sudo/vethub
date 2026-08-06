@@ -35,9 +35,9 @@ function nomeDe(
 export default async function PdvPage({
   searchParams,
 }: {
-  searchParams: Promise<{ erro?: string }>;
+  searchParams: Promise<{ erro?: string; orcamento?: string }>;
 }) {
-  const { erro } = await searchParams;
+  const { erro, orcamento: orcamentoId } = await searchParams;
   const { supabase, usuario } = await getSessao();
 
   const { data: caixa } = await supabase
@@ -45,6 +45,12 @@ export default async function PdvPage({
     .select("id, abertura, valor_abertura, usuario:aberto_por (nome)")
     .eq("status", "aberto")
     .maybeSingle<CaixaAberto>();
+
+  // Venda vinda de um orçamento aprovado. Só aprovado entra: orçamento em
+  // aberto ainda pode mudar de valor, e recusado não vira venda nenhuma.
+  const orcamentoCarregado = orcamentoId
+    ? await carregarOrcamento(supabase, orcamentoId)
+    : undefined;
 
   const alerta = erro && (
     <p
@@ -164,7 +170,66 @@ export default async function PdvPage({
       />
       {alerta}
 
-      <PdvTerminal vendedor={usuario.nome} />
+      <PdvTerminal vendedor={usuario.nome} orcamento={orcamentoCarregado} />
     </div>
   );
+}
+
+/**
+ * Traz o orçamento aprovado no formato que o terminal entende.
+ *
+ * O item do orçamento é texto livre com valor; quando ele tem um item do
+ * catálogo por trás, o vínculo vem junto para a venda dar baixa no estoque.
+ */
+async function carregarOrcamento(
+  supabase: Awaited<ReturnType<typeof getSessao>>["supabase"],
+  id: string
+) {
+  const { data: orcamento } = await supabase
+    .from("orcamento")
+    .select("id, status, pet:pet_id (nome, tutor:tutor_id (id, nome))")
+    .eq("id", id)
+    .eq("status", "aprovado")
+    .maybeSingle<{
+      id: string;
+      status: string;
+      pet: {
+        nome: string;
+        tutor: { id: string; nome: string } | { id: string; nome: string }[] | null;
+      } | null;
+    }>();
+
+  if (!orcamento) return undefined;
+
+  const { data: itens } = await supabase
+    .from("orcamento_item")
+    .select("item_id, descricao, quantidade, valor_unitario")
+    .eq("orcamento_id", id)
+    .order("id")
+    .returns<
+      {
+        item_id: string | null;
+        descricao: string;
+        quantidade: number;
+        valor_unitario: number;
+      }[]
+    >();
+
+  const tutorBruto = Array.isArray(orcamento.pet?.tutor)
+    ? orcamento.pet?.tutor[0]
+    : orcamento.pet?.tutor;
+
+  return {
+    id: orcamento.id,
+    numero: orcamento.id.slice(-6).toUpperCase(),
+    tutor: tutorBruto
+      ? { id: tutorBruto.id, rotulo: tutorBruto.nome }
+      : null,
+    itens: (itens ?? []).map((i) => ({
+      item_id: i.item_id,
+      descricao: i.descricao,
+      quantidade: Number(i.quantidade),
+      valor_unitario: Number(i.valor_unitario),
+    })),
+  };
 }

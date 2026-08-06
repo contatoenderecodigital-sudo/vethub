@@ -7,6 +7,7 @@ import {
   RotateCcw,
   Stethoscope,
   Trash2,
+  ShoppingCart,
 } from "lucide-react";
 import { getSessao } from "@/lib/auth";
 import { formatBRL, formatDataHora } from "@/lib/format";
@@ -152,12 +153,23 @@ export default async function OrcamentoPage({
               </form>
             </>
           ) : (
-            <form action={reabrir}>
-              <SubmitButton variante="secondary" carregando="Reabrindo…">
-                <RotateCcw className="size-4 shrink-0" />
-                Reabrir
-              </SubmitButton>
-            </form>
+            <>
+              <form action={reabrir}>
+                <SubmitButton variante="secondary" carregando="Reabrindo…">
+                  <RotateCcw className="size-4 shrink-0" />
+                  Reabrir
+                </SubmitButton>
+              </form>
+              {/* Aprovar era o fim da linha: para cobrar, alguém redigitava
+                  item por item no PDV. Agora o orçamento aprovado abre a
+                  venda já montada, com tutor e itens. */}
+              {orcamento.status === "aprovado" && (
+                <ButtonLink href={`/pdv?orcamento=${id}`}>
+                  <ShoppingCart className="size-4 shrink-0" />
+                  Cobrar no PDV
+                </ButtonLink>
+              )}
+            </>
           )}
         </div>
       </div>

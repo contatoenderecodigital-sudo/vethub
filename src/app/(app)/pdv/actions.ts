@@ -152,7 +152,15 @@ export async function carregarItemPorCodigo(
 
 export type ResultadoVenda =
   | { erro: string }
-  | { id: string; numero: number; troco: number };
+  | {
+      id: string;
+      numero: number;
+      troco: number;
+      /** Quanto ficou no fiado (0 quando a venda foi toda paga). */
+      fiado: number;
+      /** Vencimento da parte fiada, para a tela dizer a data ao operador. */
+      vencimentoFiado: string;
+    };
 
 /**
  * Fecha a venda: grava venda + itens + pagamentos, dá baixa no estoque e,
@@ -360,7 +368,13 @@ export async function finalizarVenda(payload: string): Promise<ResultadoVenda> {
   revalidatePath("/vendas");
   revalidatePath("/dashboard");
 
-  return { id: venda.id, numero: venda.numero, troco };
+  return {
+    id: venda.id,
+    numero: venda.numero,
+    troco,
+    fiado: totalFiado,
+    vencimentoFiado: totalFiado > 0 ? somarDias(hoje, PRAZO_FIADO_DIAS) : hoje,
+  };
 }
 
 type ClienteSupabase = Awaited<ReturnType<typeof getSessao>>["supabase"];

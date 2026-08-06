@@ -8,6 +8,7 @@ import { Input, Select } from "@/components/ui/form";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { excluirGrupo, salvarGrupo } from "../actions";
+import { plural } from "@/lib/format";
 
 export const metadata = { title: "Grupos e subgrupos" };
 
@@ -133,7 +134,7 @@ export default async function GruposPage({
     <div className="mx-auto max-w-3xl">
       <PageHeader
         titulo="Grupos e subgrupos"
-        subtitulo={`${grupos.length} cadastrados`}
+        subtitulo={plural(grupos.length, "grupo") + " cadastrado" + (grupos.length === 1 ? "" : "s")}
       />
 
       {erro && (

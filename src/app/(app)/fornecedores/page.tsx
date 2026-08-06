@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ChevronRight, Handshake, Plus, Search } from "lucide-react";
 import { getSessao } from "@/lib/auth";
-import { formatTelefone } from "@/lib/format";
+import { formatTelefone, plural } from "@/lib/format";
 import { PageHeader } from "@/components/ui/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button, ButtonLink } from "@/components/ui/button";
@@ -89,7 +89,7 @@ export default async function FornecedoresPage({
     <div>
       <PageHeader
         titulo="Fornecedores"
-        subtitulo={count != null ? `${count} cadastrados` : undefined}
+        subtitulo={count != null ? plural(count, "fornecedor", "fornecedores") + " cadastrado" + (count === 1 ? "" : "s") : undefined}
         acao={novoFornecedor}
       />
 

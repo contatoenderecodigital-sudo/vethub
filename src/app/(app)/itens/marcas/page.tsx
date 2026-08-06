@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/form";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { excluirMarca, salvarMarca } from "../actions";
+import { plural } from "@/lib/format";
 
 export const metadata = { title: "Marcas" };
 
@@ -36,7 +37,7 @@ export default async function MarcasPage({
     <div className="mx-auto max-w-2xl">
       <PageHeader
         titulo="Marcas"
-        subtitulo={`${marcas.length} cadastradas`}
+        subtitulo={plural(marcas.length, "marca") + " cadastrada" + (marcas.length === 1 ? "" : "s")}
       />
 
       {erro && (

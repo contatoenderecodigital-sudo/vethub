@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { CalendarClock, Trash2 } from "lucide-react";
 import { getSessao } from "@/lib/auth";
-import { diasAte, formatDataISO } from "@/lib/format";
+import { diasAte, formatDataISO, plural } from "@/lib/format";
 import { PageHeader } from "@/components/ui/page-header";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
@@ -112,7 +112,7 @@ export default async function ValidadePage({
         subtitulo={
           vencidos > 0
             ? `${lotes.length} lotes · ${vencidos} vencido${vencidos > 1 ? "s" : ""}`
-            : `${lotes.length} lotes com validade`
+            : plural(lotes.length, "lote") + " com validade"
         }
         acao={
           <ButtonLink href="/estoque" variante="secondary">

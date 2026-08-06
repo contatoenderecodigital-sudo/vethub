@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/form";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { excluirUnidade, salvarUnidade } from "../actions";
+import { plural } from "@/lib/format";
 
 export const metadata = { title: "Unidades de medida" };
 
@@ -54,7 +55,7 @@ export default async function UnidadesPage({
     <div className="mx-auto max-w-2xl">
       <PageHeader
         titulo="Unidades de medida"
-        subtitulo={`${unidades.length} cadastradas`}
+        subtitulo={plural(unidades.length, "unidade") + " cadastrada" + (unidades.length === 1 ? "" : "s")}
       />
 
       {erro && (

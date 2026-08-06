@@ -169,3 +169,24 @@ export function formatEndereco(e: {
   const partes = [comComplemento, e.bairro, cidadeUf, cep].filter(Boolean);
   return partes.length > 0 ? partes.join(" · ") : "—";
 }
+
+/**
+ * Concordância de número: `plural(1, "lote")` → "1 lote".
+ *
+ * O sistema estava cheio de "1 lotes", "1 itens", "1 cadastrados". Numa tela
+ * de gestão isso passa a impressão de software mal-acabado, e é o tipo de
+ * coisa que o cliente repara antes de reparar no que funciona bem.
+ *
+ * O plural irregular vai explícito quando o "s" não resolve:
+ *   plural(2, "unidade")            → "2 unidades"
+ *   plural(1, "item", "itens")      → "1 item"
+ */
+export function plural(
+  quantidade: number,
+  singular: string,
+  formaPlural?: string
+): string {
+  const palavra =
+    quantidade === 1 ? singular : (formaPlural ?? `${singular}s`);
+  return `${quantidade} ${palavra}`;
+}

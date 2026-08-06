@@ -13,7 +13,7 @@ import {
   TriangleAlert,
   X,
 } from "lucide-react";
-import { formatBRL } from "@/lib/format";
+import { formatBRL, formatDataISO } from "@/lib/format";
 import {
   FORMAS_PAGAMENTO_VENDA,
   FORMAS_PARCELAVEIS,
@@ -58,6 +58,8 @@ interface Concluida {
   id: string;
   numero: number;
   troco: number;
+  fiado: number;
+  vencimentoFiado: string;
 }
 
 function novaChave() {
@@ -290,10 +292,15 @@ export function PdvTerminal({ vendedor }: { vendedor: string }) {
         <h2 className="text-lg font-bold text-ink">
           Venda nº {concluida.numero} registrada
         </h2>
+        {/* Dizer "pagamento recebido por completo" numa venda fiada é mentir
+            para quem operou o caixa: não entrou nada. A mensagem tem que
+            contar o que de fato aconteceu com o dinheiro. */}
         <p className="mt-1 text-sm text-ink-muted">
-          {concluida.troco > 0
-            ? `Troco de ${formatBRL(concluida.troco)}.`
-            : "Pagamento recebido por completo."}
+          {concluida.fiado > 0
+            ? `${formatBRL(concluida.fiado)} no fiado, com vencimento em ${formatDataISO(concluida.vencimentoFiado)}.`
+            : concluida.troco > 0
+              ? `Troco de ${formatBRL(concluida.troco)}.`
+              : "Pagamento recebido por completo."}
         </p>
         <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
           <Button type="button" onClick={novaVenda}>

@@ -8,6 +8,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Pagination } from "@/components/ui/pagination";
 import { Input, Select } from "@/components/ui/form";
 import { IconeEspecie } from "@/components/icone-especie";
+import { plural } from "@/lib/format";
 
 const POR_PAGINA = 20;
 
@@ -51,7 +52,7 @@ export default async function PetsPage({
     <div>
       <PageHeader
         titulo="Pets"
-        subtitulo={count != null ? `${count} cadastrados` : undefined}
+        subtitulo={count != null ? plural(count, "pet") + " cadastrado" + (count === 1 ? "" : "s") : undefined}
         acao={
           <ButtonLink href="/pets/novo">
             <Plus className="size-4" />

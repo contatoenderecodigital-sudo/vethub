@@ -43,13 +43,40 @@ interface ContaAberta {
   tutor: { nome: string } | null;
 }
 
-interface ContaPaga {
-  tipo: ContaTipo;
-  valor_pago: number;
-  pagamento: string | null;
+/** Uma entrada/saída de dinheiro de verdade, com a data em que aconteceu. */
+interface BaixaDoGrafico {
+  valor: number;
+  data: string;
+  conta: { tipo: ContaTipo } | { tipo: ContaTipo }[] | null;
 }
 
-export default async function PainelFinanceiroPage() {
+/** Uma dívida nascida no período, paga ou não. */
+interface ContaDeCompetencia {
+  tipo: ContaTipo;
+  valor: number;
+  competencia: string;
+}
+
+/**
+ * Os dois jeitos legítimos de olhar o mesmo dinheiro:
+ *
+ * - CAIXA: pela data em que o dinheiro entrou ou saiu. Responde "quanto eu
+ *   tenho". É o padrão porque é o que a clínica pequena pergunta.
+ * - COMPETÊNCIA: pela data em que a dívida nasceu. Responde "quanto eu
+ *   vendi". Sem ele, um mês de muita venda fiada parece um mês fraco.
+ *
+ * Na venda à vista as duas datas são a mesma e os números batem. A diferença
+ * aparece no fiado e no parcelado.
+ */
+type Regime = "caixa" | "competencia";
+
+export default async function PainelFinanceiroPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ regime?: string }>;
+}) {
+  const { regime: regimeParam } = await searchParams;
+  const regime: Regime = regimeParam === "competencia" ? "competencia" : "caixa";
   const { supabase } = await getSessao();
 
   const hoje = hojeISO();
@@ -70,14 +97,25 @@ export default async function PainelFinanceiroPage() {
       .order("vencimento")
       .limit(LIMITE)
       .returns<ContaAberta[]>(),
-    // Movimento realizado dos últimos 6 meses (o que de fato entrou/saiu).
-    supabase
-      .from("conta")
-      .select("tipo, valor_pago, pagamento")
-      .in("status", ["paga", "parcial"])
-      .gte("pagamento", inicioGrafico)
-      .limit(LIMITE * 4)
-      .returns<ContaPaga[]>(),
+    // Movimento dos últimos 6 meses, na leitura escolhida.
+    //
+    // No regime de caixa a fonte são as BAIXAS, não a conta: quem pagou R$ 40
+    // em agosto e R$ 60 em setembro tem duas entradas em meses diferentes, e
+    // ler só `conta.pagamento` (a última data) jogaria tudo em setembro.
+    regime === "caixa"
+      ? supabase
+          .from("baixa")
+          .select("valor, data, conta:conta_id (tipo)")
+          .gte("data", inicioGrafico)
+          .limit(LIMITE * 4)
+          .returns<BaixaDoGrafico[]>()
+      : supabase
+          .from("conta")
+          .select("tipo, valor, competencia")
+          .neq("status", "cancelada")
+          .gte("competencia", inicioGrafico)
+          .limit(LIMITE * 4)
+          .returns<ContaDeCompetencia[]>(),
   ]);
 
   const contas = abertas ?? [];
@@ -114,12 +152,21 @@ export default async function PainelFinanceiroPage() {
   const porMes = new Map(
     chavesMeses.map((chave) => [chave, { receita: 0, despesa: 0 }])
   );
-  for (const p of pagas ?? []) {
-    if (!p.pagamento) continue;
-    const alvo = porMes.get(p.pagamento.slice(0, 7));
+  for (const linha of pagas ?? []) {
+    // A relação vem como objeto ou lista de um item, dependendo do join.
+    const relacao = "conta" in linha ? linha.conta : null;
+    const tipo =
+      "tipo" in linha
+        ? linha.tipo
+        : (Array.isArray(relacao) ? relacao[0] : relacao)?.tipo;
+    const quando = "data" in linha ? linha.data : linha.competencia;
+    if (!tipo || !quando) continue;
+
+    const alvo = porMes.get(quando.slice(0, 7));
     if (!alvo) continue;
-    if (p.tipo === "receber") alvo.receita += Number(p.valor_pago);
-    else alvo.despesa += Number(p.valor_pago);
+    const valor = Number(linha.valor);
+    if (tipo === "receber") alvo.receita += valor;
+    else alvo.despesa += valor;
   }
   const barras = chavesMeses.map((chave) => ({
     mes: rotuloMes(chave),
@@ -203,7 +250,38 @@ export default async function PainelFinanceiroPage() {
       </div>
 
       <Card>
-        <CardTitulo>Últimos {MESES_GRAFICO} meses</CardTitulo>
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+          <CardTitulo className="mb-0">Últimos {MESES_GRAFICO} meses</CardTitulo>
+
+          {/* A mesma pergunta tem duas respostas certas. "Quanto entrou" e
+              "quanto vendi" só coincidem quando não há fiado nem parcelado. */}
+          <div
+            role="group"
+            aria-label="Como contar o movimento"
+            className="flex shrink-0 rounded-lg border border-white/30 bg-white/10 p-0.5 text-xs"
+          >
+            {(
+              [
+                ["caixa", "Caixa", "pela data em que o dinheiro entrou ou saiu"],
+                ["competencia", "Competência", "pela data em que a venda aconteceu"],
+              ] as const
+            ).map(([valor, rotulo, dica]) => (
+              <Link
+                key={valor}
+                href={valor === "caixa" ? "/financeiro" : `/financeiro?regime=${valor}`}
+                title={dica}
+                aria-current={regime === valor ? "true" : undefined}
+                className={`rounded-md px-2.5 py-1 font-medium transition-colors ${
+                  regime === valor
+                    ? "bg-white text-brand-dark"
+                    : "text-ink-muted hover:bg-white/15 hover:text-ink"
+                }`}
+              >
+                {rotulo}
+              </Link>
+            ))}
+          </div>
+        </div>
 
         {temMovimento ? (
           <GraficoBarras
@@ -222,7 +300,9 @@ export default async function PainelFinanceiroPage() {
         )}
 
         <p className="mt-3 text-xs text-ink-muted">
-          Valores efetivamente recebidos e pagos, pela data da baixa.
+          {regime === "caixa"
+            ? "Valores efetivamente recebidos e pagos, pela data da baixa."
+            : "Valores pela data em que a venda ou a despesa aconteceu, tenha sido paga ou não."}
         </p>
       </Card>
     </div>

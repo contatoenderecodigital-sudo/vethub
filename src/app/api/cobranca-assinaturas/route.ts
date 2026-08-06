@@ -40,7 +40,21 @@ async function executar(request: NextRequest) {
   // Sem segredo configurado a rota fica fechada, e não aberta: gerar cobrança
   // é escrita em dinheiro, o padrão inseguro aqui seria imperdoável.
   if (!segredo || autorizacao !== `Bearer ${segredo}`) {
-    return NextResponse.json({ erro: "não autorizado" }, { status: 401 });
+    // A resposta diferencia "o servidor não tem segredo" de "o segredo veio
+    // errado". Sem isso, quem configura a variável na Vercel e esquece de
+    // fazer o redeploy vê o mesmo 401 dos dois casos e não tem como saber
+    // qual é — a rotina simplesmente não cobra ninguém, em silêncio.
+    // Dizer se a variável existe não expõe o valor dela.
+    return NextResponse.json(
+      {
+        erro: "não autorizado",
+        segredoConfiguradoNoServidor: Boolean(segredo),
+        dica: segredo
+          ? "O servidor tem o segredo; o cabeçalho Authorization é que não bate."
+          : "Falta a variável CRON_SECRET nesta implantação. Configure na Vercel e refaça o deploy.",
+      },
+      { status: 401 }
+    );
   }
 
   const db = createClient(

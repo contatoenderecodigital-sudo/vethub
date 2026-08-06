@@ -161,8 +161,28 @@ const GRUPOS: Grupo[] = [
   },
 ];
 
+/** Todos os endereços do menu, para saber qual deles casa melhor. */
+const TODOS_OS_HREFS = [INICIO.href, ...GRUPOS.flatMap((g) => g.itens.map((i) => i.href))];
+
+/**
+ * O endereço do menu que melhor descreve a tela atual.
+ *
+ * Casar por prefixo sozinho acende dois itens ao mesmo tempo: em
+ * `/financeiro/receber` acendiam "Painel financeiro" (`/financeiro`) e
+ * "Contas a receber". Ganha sempre o endereço MAIS LONGO que casa, que é o
+ * mais específico.
+ */
+function hrefAtivo(pathname: string): string | null {
+  let melhor: string | null = null;
+  for (const href of TODOS_OS_HREFS) {
+    if (pathname !== href && !pathname.startsWith(href + "/")) continue;
+    if (!melhor || href.length > melhor.length) melhor = href;
+  }
+  return melhor;
+}
+
 function estaAtivo(pathname: string, href: string) {
-  return pathname === href || pathname.startsWith(href + "/");
+  return hrefAtivo(pathname) === href;
 }
 
 /** A categoria fica ativa quando alguma rota dela é a atual. */
@@ -197,7 +217,7 @@ export function NavLateral({ ehAdmin }: { ehAdmin: boolean }) {
       {/* Início fica solto no topo, sem categoria */}
       <Link
         href={INICIO.href}
-        prefetch={INICIO.quente ? true : undefined}
+        prefetch={INICIO.quente === true}
         className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
           inicioAtivo
             ? "bg-white/25 text-white"
@@ -259,7 +279,7 @@ export function NavLateral({ ehAdmin }: { ehAdmin: boolean }) {
                     <Link
                       key={item.href}
                       href={item.href}
-                      prefetch={item.quente ? true : undefined}
+                      prefetch={item.quente === true}
                       className={`flex items-center gap-2.5 rounded-lg px-3 py-1.5 text-sm transition-colors ${
                         estaAtivo(pathname, item.href)
                           ? "bg-white/25 font-semibold text-white"
@@ -411,7 +431,7 @@ export function NavInferior({ ehAdmin }: { ehAdmin: boolean }) {
             <Link
               key={item.href}
               href={item.href}
-              prefetch={item.quente ? true : undefined}
+              prefetch={item.quente === true}
               className={classeItem(ativo)}
             >
               <item.icone className="size-5 shrink-0" strokeWidth={ativo ? 2.2 : 1.8} />

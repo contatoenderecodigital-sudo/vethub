@@ -13,6 +13,7 @@ import {
 import { IconeWhatsapp } from "@/components/icone-whatsapp";
 import { getSessao } from "@/lib/auth";
 import { formatEndereco, formatTelefone, idadeDoPet } from "@/lib/format";
+import { mascaraCPF } from "@/lib/validacao";
 import type { Pet, Tutor } from "@/lib/types";
 import { PageHeader } from "@/components/ui/page-header";
 import { Badge } from "@/components/ui/badge";
@@ -120,7 +121,9 @@ export default async function TutorPage({
                 <IdCard className="size-4" />
                 CPF
               </dt>
-              <dd className="font-medium text-ink">{tutor.cpf ?? "—"}</dd>
+              <dd className="font-medium text-ink">
+                {tutor.cpf ? mascaraCPF(tutor.cpf) : "—"}
+              </dd>
             </div>
             <div className="flex items-center justify-between gap-4">
               <dt className="flex items-center gap-2 text-ink-muted">

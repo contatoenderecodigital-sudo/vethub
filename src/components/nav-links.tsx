@@ -31,6 +31,7 @@ import {
   Ruler,
   ShoppingCart,
   Stethoscope,
+  Store,
   Syringe,
   Tag,
   Tags,
@@ -157,6 +158,7 @@ const GRUPOS: Grupo[] = [
       { href: "/configuracoes/whatsapp", rotulo: "WhatsApp", icone: IconeWhatsapp },
       { href: "/configuracoes/usuarios", rotulo: "Equipe", icone: UserCog },
       { href: "/configuracoes/clinica", rotulo: "Clínica", icone: Building2 },
+      { href: "/configuracoes/unidades", rotulo: "Unidades", icone: Store },
     ],
   },
 ];

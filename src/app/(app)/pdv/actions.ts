@@ -308,34 +308,52 @@ export async function finalizarVenda(payload: string): Promise<ResultadoVenda> {
   // ---- estoque: só produtos que controlam --------------------------------
   await baixarEstoque(supabase, usuario, itens, venda.numero);
 
-  // ---- fiado: débito no extrato + conta a receber -------------------------
-  if (totalFiado > 0 && dados.tutor_id) {
-    const hoje = hojeISO();
-    await supabase.from("lancamento_financeiro").insert({
-      clinica_id: usuario.clinica_id,
-      tutor_id: dados.tutor_id,
-      tipo: "debito",
-      valor: totalFiado,
-      descricao: `Venda nº ${venda.numero} (fiado)`,
-      forma_pagamento: "fiado",
-      data: hoje,
-      registrado_por: usuario.id,
-    });
+  // ---- livro único: TODA venda vira uma conta a receber -------------------
+  //
+  // Antes só o fiado virava conta, e ainda por cima em dois lugares (extrato
+  // + contas a receber), o que fazia a mesma dívida aparecer com dois valores
+  // diferentes. E a venda à vista não virava nada: o painel financeiro
+  // mostrava R$ 0,00 mesmo com o caixa tendo vendido.
+  //
+  // Agora é uma conta pelo TOTAL da venda e uma baixa pelo que foi pago na
+  // hora. Pagou tudo: a conta nasce quitada e a data da baixa é a entrada no
+  // caixa. Ficou fiado: sobra em aberto, com vencimento. Misturou as duas
+  // formas: a conta fica parcial, que é exatamente o que aconteceu.
+  const hoje = hojeISO();
+  const totalPago = centavos(total - totalFiado);
 
-    await supabase.from("conta").insert({
+  const { data: contaVenda } = await supabase
+    .from("conta")
+    .insert({
       clinica_id: usuario.clinica_id,
       tipo: "receber",
       descricao: `Venda nº ${venda.numero}`,
       tutor_id: dados.tutor_id,
       venda_id: venda.id,
-      valor: totalFiado,
-      vencimento: somarDias(hoje, PRAZO_FIADO_DIAS),
-      status: "aberta",
+      valor: total,
+      competencia: hoje,
+      vencimento: totalFiado > 0 ? somarDias(hoje, PRAZO_FIADO_DIAS) : hoje,
+      origem: "venda",
+      registrado_por: usuario.id,
+    })
+    .select("id")
+    .single<{ id: string }>();
+
+  if (contaVenda && totalPago > 0) {
+    // A baixa é o que o relatório de caixa lê. O gatilho do banco cuida de
+    // atualizar valor_pago e status da conta.
+    await supabase.from("baixa").insert({
+      clinica_id: usuario.clinica_id,
+      conta_id: contaVenda.id,
+      valor: totalPago,
+      data: hoje,
+      forma_pagamento: efetivos[0]?.forma ?? null,
+      caixa_id: caixa.id,
       registrado_por: usuario.id,
     });
-
-    revalidatePath(`/tutores/${dados.tutor_id}`);
   }
+
+  if (dados.tutor_id) revalidatePath(`/tutores/${dados.tutor_id}`);
 
   revalidatePath("/pdv");
   revalidatePath("/pdv/caixa");
@@ -494,22 +512,12 @@ export async function cancelarVenda(id: string) {
         contas.map((c) => c.id)
       );
 
-    // O extrato do tutor não apaga lançamentos: entra um crédito de estorno.
-    if (venda.tutor_id) {
-      const totalEstorno = contas.reduce((soma, c) => centavos(soma + Number(c.valor)), 0);
-      if (totalEstorno > 0) {
-        await supabase.from("lancamento_financeiro").insert({
-          clinica_id: usuario.clinica_id,
-          tutor_id: venda.tutor_id,
-          tipo: "credito",
-          valor: totalEstorno,
-          descricao: `Estorno da venda nº ${venda.numero} (cancelada)`,
-          data: hojeISO(),
-          registrado_por: usuario.id,
-        });
-      }
-      revalidatePath(`/tutores/${venda.tutor_id}`);
-    }
+    // Com livro único não existe mais lançamento de estorno: a conta
+    // cancelada some do saldo sozinha, e a venda cancelada continua no
+    // histórico com o motivo. Um crédito de estorno aqui contaria a dívida
+    // duas vezes ao contrário — era o mesmo defeito da versão anterior, só
+    // que com o sinal invertido.
+    if (venda.tutor_id) revalidatePath(`/tutores/${venda.tutor_id}`);
   }
 
   revalidatePath("/vendas");

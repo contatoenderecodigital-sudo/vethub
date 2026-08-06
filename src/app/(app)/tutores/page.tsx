@@ -2,7 +2,6 @@ import Link from "next/link";
 import { ChevronRight, Plus, Search, Users } from "lucide-react";
 import { getSessao } from "@/lib/auth";
 import { formatBRL, formatTelefone } from "@/lib/format";
-import type { LancamentoFinanceiro } from "@/lib/types";
 import { PageHeader } from "@/components/ui/page-header";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
@@ -49,15 +48,27 @@ export default async function TutoresPage({
   const saldos = new Map<string, number>();
   const idsDaPagina = (tutores ?? []).map((t) => t.id);
   if (idsDaPagina.length > 0) {
-    const { data: lancamentos } = await supabase
-      .from("lancamento_financeiro")
-      .select("tutor_id, tipo, valor")
+    const { data: contas } = await supabase
+      .from("conta")
+      .select("tutor_id, tipo, valor, valor_pago")
       .in("tutor_id", idsDaPagina)
-      .returns<Pick<LancamentoFinanceiro, "tutor_id" | "tipo" | "valor">[]>();
+      .neq("status", "cancelada")
+      .returns<
+        {
+          tutor_id: string;
+          tipo: "receber" | "pagar";
+          valor: number;
+          valor_pago: number;
+        }[]
+      >();
 
-    for (const l of lancamentos ?? []) {
-      const sinal = l.tipo === "credito" ? 1 : -1;
-      saldos.set(l.tutor_id, (saldos.get(l.tutor_id) ?? 0) + sinal * Number(l.valor));
+    // Conta a receber ainda aberta = o tutor deve (sinal negativo).
+    // Conta a pagar para o tutor = crédito dele (sinal positivo).
+    for (const c of contas ?? []) {
+      const aberto = Number(c.valor) - Number(c.valor_pago);
+      if (aberto <= 0) continue;
+      const sinal = c.tipo === "pagar" ? 1 : -1;
+      saldos.set(c.tutor_id, (saldos.get(c.tutor_id) ?? 0) + sinal * aberto);
     }
   }
 

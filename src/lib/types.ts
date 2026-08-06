@@ -187,24 +187,12 @@ export interface OrcamentoItem {
 }
 
 /**
- * Lançamento no extrato financeiro do tutor.
- * `debito` = o tutor passou a dever; `credito` = pagamento/adiantamento.
- * O saldo é crédito menos débito (negativo = tutor deve para a clínica).
+ * O extrato do tutor NÃO tem tabela própria: ele é a leitura das contas
+ * dele (veja `Conta` abaixo). Conta a receber em aberto é o que o tutor
+ * deve; conta a pagar com tutor_id é crédito dele, de troco guardado ou
+ * adiantamento. Manter dois livros para a mesma dívida foi o que fazia a
+ * ficha do tutor e o relatório de clientes mostrarem valores diferentes.
  */
-export interface LancamentoFinanceiro {
-  id: string;
-  clinica_id: string;
-  tutor_id: string;
-  tipo: LancamentoTipo;
-  valor: number;
-  descricao: string;
-  orcamento_id: string | null;
-  consulta_id: string | null;
-  forma_pagamento: string | null;
-  data: string;
-  registrado_por: string | null;
-  created_at: string;
-}
 
 // ------------------------------------------------------------------
 // Financeiro: contas a pagar / a receber e categorias

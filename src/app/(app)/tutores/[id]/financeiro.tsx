@@ -1,11 +1,7 @@
 import { ArrowDownRight, ArrowUpRight, Receipt, Trash2 } from "lucide-react";
 import { getSessao } from "@/lib/auth";
 import { formatBRL, formatDataISO } from "@/lib/format";
-import {
-  rotuloFormaPagamento,
-  type LancamentoFinanceiro,
-  type Papel,
-} from "@/lib/types";
+import { rotuloFormaPagamento, type Papel } from "@/lib/types";
 import { Card, CardTitulo } from "@/components/ui/card";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { excluirLancamento } from "../actions";
@@ -16,10 +12,21 @@ const PAPEIS_FINANCEIRO: Papel[] = ["admin", "recepcao"];
 
 const ULTIMOS = 10;
 
-type LinhaExtrato = Pick<
-  LancamentoFinanceiro,
-  "id" | "tipo" | "valor" | "descricao" | "forma_pagamento" | "data"
->;
+/**
+ * Uma linha do extrato é uma CONTA do tutor — o mesmo registro que aparece
+ * em Contas a receber. Antes o extrato vinha de uma tabela própria, e a
+ * mesma dívida acabava com dois valores diferentes nas duas telas.
+ */
+interface LinhaExtrato {
+  id: string;
+  tipo: "receber" | "pagar";
+  valor: number;
+  valor_pago: number;
+  descricao: string;
+  forma_pagamento: string | null;
+  competencia: string;
+  status: string;
+}
 
 /**
  * Painel financeiro do tutor (o "saldo do cliente" da Peti9): saldo em
@@ -30,30 +37,39 @@ export async function CardFinanceiro({ tutorId }: { tutorId: string }) {
   const { supabase, usuario } = await getSessao();
   const podeLancar = PAPEIS_FINANCEIRO.includes(usuario.papel);
 
-  const [{ data: saldoRpc }, { data: totais }, { data: ultimos }] =
+  const CAMPOS =
+    "id, tipo, valor, valor_pago, descricao, forma_pagamento, competencia, status";
+
+  const [{ data: saldoRpc }, { data: todas }, { data: ultimos }] =
     await Promise.all([
-      // saldo autoritativo: crédito - débito, calculado no banco
+      // saldo autoritativo: calculado no banco a partir das contas
       supabase.rpc("saldo_do_tutor", { p_tutor_id: tutorId }),
       supabase
-        .from("lancamento_financeiro")
-        .select("tipo, valor")
+        .from("conta")
+        .select("tipo, valor, valor_pago, status")
         .eq("tutor_id", tutorId)
-        .returns<Pick<LancamentoFinanceiro, "tipo" | "valor">[]>(),
+        .neq("status", "cancelada")
+        .returns<Pick<LinhaExtrato, "tipo" | "valor" | "valor_pago" | "status">[]>(),
       supabase
-        .from("lancamento_financeiro")
-        .select("id, tipo, valor, descricao, forma_pagamento, data")
+        .from("conta")
+        .select(CAMPOS)
         .eq("tutor_id", tutorId)
-        .order("data", { ascending: false })
+        .order("competencia", { ascending: false })
         .order("created_at", { ascending: false })
         .limit(ULTIMOS)
         .returns<LinhaExtrato[]>(),
     ]);
 
+  // "Débito" é o que o tutor ainda deve; "crédito", o que a clínica deve a
+  // ele (troco guardado, adiantamento). Só o que está EM ABERTO conta: uma
+  // venda já paga não é dívida de ninguém.
   let totalDebito = 0;
   let totalCredito = 0;
-  for (const l of totais ?? []) {
-    if (l.tipo === "credito") totalCredito += Number(l.valor);
-    else totalDebito += Number(l.valor);
+  for (const c of todas ?? []) {
+    const aberto = Number(c.valor) - Number(c.valor_pago);
+    if (aberto <= 0) continue;
+    if (c.tipo === "pagar") totalCredito += aberto;
+    else totalDebito += aberto;
   }
 
   // rpc é a fonte da verdade; se ela falhar, cai na soma em memória
@@ -136,15 +152,24 @@ export async function CardFinanceiro({ tutorId }: { tutorId: string }) {
       ) : (
         <ul className="divide-y divide-white/15">
           {ultimos.map((l) => {
-            const credito = l.tipo === "credito";
+            const credito = l.tipo === "pagar";
             const forma = rotuloFormaPagamento(l.forma_pagamento);
+            const emAberto = Number(l.valor) - Number(l.valor_pago);
+            const situacao =
+              l.status === "cancelada"
+                ? "Cancelado"
+                : emAberto <= 0
+                  ? "Quitado"
+                  : emAberto < Number(l.valor)
+                    ? `Em aberto ${formatBRL(emAberto)}`
+                    : null;
             return (
               <li
                 key={l.id}
                 className="flex flex-wrap items-center gap-x-3 gap-y-1 py-2.5"
               >
                 <span className="w-20 shrink-0 text-xs tabular-nums text-ink-muted">
-                  {formatDataISO(l.data)}
+                  {formatDataISO(l.competencia)}
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-ink">
@@ -153,6 +178,7 @@ export async function CardFinanceiro({ tutorId }: { tutorId: string }) {
                   <p className="text-xs text-ink-muted">
                     {credito ? "Crédito" : "Débito"}
                     {forma ? ` · ${forma}` : ""}
+                    {situacao ? ` · ${situacao}` : ""}
                   </p>
                 </div>
                 <span

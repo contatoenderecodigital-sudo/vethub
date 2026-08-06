@@ -129,15 +129,21 @@ export async function registrarLancamento(tutorId: string, formData: FormData) {
 
   const { tipo, valor, descricao, forma_pagamento, data } = resultado.data;
 
-  const { error } = await supabase.from("lancamento_financeiro").insert({
+  // Livro único: o lançamento avulso é uma conta como qualquer outra.
+  // Débito = o tutor deve à clínica (a receber). Crédito = a clínica deve a
+  // ele, por troco guardado ou adiantamento (a pagar). É dessa oposição que
+  // sai o sinal do extrato, sem precisar de um terceiro tipo.
+  const { error } = await supabase.from("conta").insert({
     clinica_id: usuario.clinica_id,
+    tipo: tipo === "debito" ? "receber" : "pagar",
     tutor_id: tutorId,
-    tipo,
     // numeric(12,2): arredonda aqui para o banco nunca receber 3 casas
     valor: Math.round(valor * 100) / 100,
     descricao,
     forma_pagamento: forma_pagamento || null,
-    data,
+    competencia: data,
+    vencimento: data,
+    origem: "avulso",
     registrado_por: usuario.id,
   });
 
@@ -157,7 +163,7 @@ export async function excluirLancamento(id: string, tutorId: string) {
   }
 
   const { error } = await supabase
-    .from("lancamento_financeiro")
+    .from("conta")
     .delete()
     .eq("id", id);
 

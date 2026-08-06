@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { redirecionarComAviso } from "@/lib/aviso";
 import { getSessao } from "@/lib/auth";
 import {
   grupoSchema,
@@ -19,14 +20,14 @@ import {
 async function sessaoCatalogo(destino: string) {
   const sessao = await getSessao();
   if (sessao.usuario.papel === "recepcao") {
-    redirect(`${destino}?erro=${encodeURIComponent("Seu perfil não pode editar o catálogo.")}`);
+    return redirecionarComAviso(`${destino}?erro=${encodeURIComponent("Seu perfil não pode editar o catálogo.")}`);
   }
   return sessao;
 }
 
-function comErro(destino: string, mensagem: string): never {
+async function comErro(destino: string, mensagem: string): Promise<never> {
   const separador = destino.includes("?") ? "&" : "?";
-  redirect(`${destino}${separador}erro=${encodeURIComponent(mensagem)}`);
+  return redirecionarComAviso(`${destino}${separador}erro=${encodeURIComponent(mensagem)}`);
 }
 
 // ------------------------------------------------------------------
@@ -38,7 +39,7 @@ export async function criarItem(formData: FormData) {
 
   const resultado = itemSchema.safeParse(itemDoFormData(formData));
   if (!resultado.success) {
-    comErro(
+    return comErro(
       "/itens/novo",
       resultado.error.issues[0]?.message ?? "Verifique os campos."
     );
@@ -50,7 +51,7 @@ export async function criarItem(formData: FormData) {
     .select("id")
     .single();
 
-  if (error) comErro("/itens/novo", "Não foi possível salvar o item.");
+  if (error) return comErro("/itens/novo", "Não foi possível salvar o item.");
 
   revalidatePath("/itens");
   revalidatePath("/estoque");
@@ -62,7 +63,7 @@ export async function atualizarItem(id: string, formData: FormData) {
 
   const resultado = itemSchema.safeParse(itemDoFormData(formData));
   if (!resultado.success) {
-    comErro(
+    return comErro(
       `/itens/${id}/editar`,
       resultado.error.issues[0]?.message ?? "Verifique os campos."
     );
@@ -73,7 +74,7 @@ export async function atualizarItem(id: string, formData: FormData) {
     .update(itemParaBanco(resultado.data))
     .eq("id", id);
 
-  if (error) comErro(`/itens/${id}/editar`, "Não foi possível salvar o item.");
+  if (error) return comErro(`/itens/${id}/editar`, "Não foi possível salvar o item.");
 
   revalidatePath("/itens");
   revalidatePath(`/itens/${id}`);
@@ -86,7 +87,7 @@ export async function excluirItem(id: string) {
 
   const { error } = await supabase.from("item").delete().eq("id", id);
   if (error) {
-    comErro(
+    return comErro(
       `/itens/${id}`,
       "Não foi possível excluir. O item já tem movimentação registrada."
     );
@@ -108,7 +109,7 @@ export async function salvarMarca(id: string | null, formData: FormData) {
     nome: String(formData.get("nome") ?? ""),
   });
   if (!resultado.success) {
-    comErro("/itens/marcas", resultado.error.issues[0]?.message ?? "Verifique os campos.");
+    return comErro("/itens/marcas", resultado.error.issues[0]?.message ?? "Verifique os campos.");
   }
 
   const nome = resultado.data.nome;
@@ -116,7 +117,7 @@ export async function salvarMarca(id: string | null, formData: FormData) {
     ? await supabase.from("marca").update({ nome }).eq("id", id)
     : await supabase.from("marca").insert({ nome, clinica_id: usuario.clinica_id });
 
-  if (error) comErro("/itens/marcas", "Já existe uma marca com esse nome.");
+  if (error) return comErro("/itens/marcas", "Já existe uma marca com esse nome.");
 
   revalidatePath("/itens/marcas");
   revalidatePath("/itens");
@@ -127,7 +128,7 @@ export async function excluirMarca(id: string) {
   const { supabase } = await sessaoCatalogo("/itens/marcas");
 
   const { error } = await supabase.from("marca").delete().eq("id", id);
-  if (error) comErro("/itens/marcas", "Não foi possível excluir a marca.");
+  if (error) return comErro("/itens/marcas", "Não foi possível excluir a marca.");
 
   revalidatePath("/itens/marcas");
   revalidatePath("/itens");
@@ -147,7 +148,7 @@ export async function salvarUnidade(id: string | null, formData: FormData) {
     fracionavel: formData.get("fracionavel") === "on",
   });
   if (!resultado.success) {
-    comErro(
+    return comErro(
       "/itens/unidades",
       resultado.error.issues[0]?.message ?? "Verifique os campos."
     );
@@ -165,7 +166,7 @@ export async function salvarUnidade(id: string | null, formData: FormData) {
         .from("unidade_medida")
         .insert({ ...dados, clinica_id: usuario.clinica_id });
 
-  if (error) comErro("/itens/unidades", "Já existe uma unidade com essa sigla.");
+  if (error) return comErro("/itens/unidades", "Já existe uma unidade com essa sigla.");
 
   revalidatePath("/itens/unidades");
   revalidatePath("/itens");
@@ -176,7 +177,7 @@ export async function excluirUnidade(id: string) {
   const { supabase } = await sessaoCatalogo("/itens/unidades");
 
   const { error } = await supabase.from("unidade_medida").delete().eq("id", id);
-  if (error) comErro("/itens/unidades", "Não foi possível excluir a unidade.");
+  if (error) return comErro("/itens/unidades", "Não foi possível excluir a unidade.");
 
   revalidatePath("/itens/unidades");
   revalidatePath("/itens");
@@ -196,13 +197,13 @@ export async function salvarGrupo(id: string | null, formData: FormData) {
     tipo: String(formData.get("tipo") ?? ""),
   });
   if (!resultado.success) {
-    comErro("/itens/grupos", resultado.error.issues[0]?.message ?? "Verifique os campos.");
+    return comErro("/itens/grupos", resultado.error.issues[0]?.message ?? "Verifique os campos.");
   }
 
   // Um grupo nunca pode ser pai de si mesmo (viraria hierarquia circular).
   const paiId = resultado.data.grupo_pai_id || null;
   if (id && paiId === id) {
-    comErro("/itens/grupos", "Um grupo não pode ser subgrupo dele mesmo.");
+    return comErro("/itens/grupos", "Um grupo não pode ser subgrupo dele mesmo.");
   }
 
   const dados = {
@@ -217,7 +218,7 @@ export async function salvarGrupo(id: string | null, formData: FormData) {
         .from("grupo_item")
         .insert({ ...dados, clinica_id: usuario.clinica_id });
 
-  if (error) comErro("/itens/grupos", "Não foi possível salvar o grupo.");
+  if (error) return comErro("/itens/grupos", "Não foi possível salvar o grupo.");
 
   revalidatePath("/itens/grupos");
   revalidatePath("/itens");
@@ -228,7 +229,7 @@ export async function excluirGrupo(id: string) {
   const { supabase } = await sessaoCatalogo("/itens/grupos");
 
   const { error } = await supabase.from("grupo_item").delete().eq("id", id);
-  if (error) comErro("/itens/grupos", "Não foi possível excluir o grupo.");
+  if (error) return comErro("/itens/grupos", "Não foi possível excluir o grupo.");
 
   revalidatePath("/itens/grupos");
   revalidatePath("/itens");

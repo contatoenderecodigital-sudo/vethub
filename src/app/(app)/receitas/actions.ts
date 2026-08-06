@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { redirecionarComAviso } from "@/lib/aviso";
 import { getSessao } from "@/lib/auth";
 import { receitaSchema, type ReceitaFormValores } from "./schema";
 
@@ -89,7 +90,7 @@ function itensParaBanco(valores: ReceitaFormValores, receitaId: string) {
 
 export async function criarReceita(formData: FormData) {
   const { supabase, usuario } = await getSessao();
-  if (usuario.papel === "recepcao") redirect(`/receitas?erro=${ERRO_PERMISSAO}`);
+  if (usuario.papel === "recepcao") return redirecionarComAviso(`/receitas?erro=${ERRO_PERMISSAO}`);
 
   const petParam = String(formData.get("pet_id") ?? "").trim();
   const consultaParam = String(formData.get("consulta_id") ?? "").trim();
@@ -131,11 +132,11 @@ export async function criarReceita(formData: FormData) {
 
 export async function atualizarReceita(id: string, formData: FormData) {
   const { supabase, usuario } = await getSessao();
-  if (usuario.papel === "recepcao") redirect(`/receitas/${id}?erro=${ERRO_PERMISSAO}`);
+  if (usuario.papel === "recepcao") return redirecionarComAviso(`/receitas/${id}?erro=${ERRO_PERMISSAO}`);
 
   const validado = validarForm(formData);
   if ("erro" in validado) {
-    redirect(`/receitas/${id}/editar?erro=${validado.erro}`);
+    return redirecionarComAviso(`/receitas/${id}/editar?erro=${validado.erro}`);
   }
 
   const { error } = await supabase
@@ -143,7 +144,7 @@ export async function atualizarReceita(id: string, formData: FormData) {
     .update(cabecalhoParaBanco(validado.dados))
     .eq("id", id);
 
-  if (error) redirect(`/receitas/${id}/editar?erro=Não foi possível salvar.`);
+  if (error) return redirecionarComAviso(`/receitas/${id}/editar?erro=Não foi possível salvar.`);
 
   // Os medicamentos são regravados por inteiro (a ordem faz parte do documento).
   const { error: erroDelete } = await supabase
@@ -151,14 +152,14 @@ export async function atualizarReceita(id: string, formData: FormData) {
     .delete()
     .eq("receita_id", id);
   if (erroDelete) {
-    redirect(`/receitas/${id}/editar?erro=Não foi possível salvar os medicamentos.`);
+    return redirecionarComAviso(`/receitas/${id}/editar?erro=Não foi possível salvar os medicamentos.`);
   }
 
   const { error: erroInsert } = await supabase
     .from("receita_item")
     .insert(itensParaBanco(validado.dados, id));
   if (erroInsert) {
-    redirect(`/receitas/${id}/editar?erro=Não foi possível salvar os medicamentos.`);
+    return redirecionarComAviso(`/receitas/${id}/editar?erro=Não foi possível salvar os medicamentos.`);
   }
 
   revalidatePath("/receitas");
@@ -169,11 +170,11 @@ export async function atualizarReceita(id: string, formData: FormData) {
 
 export async function excluirReceita(id: string, petId: string) {
   const { supabase, usuario } = await getSessao();
-  if (usuario.papel === "recepcao") redirect(`/receitas/${id}?erro=${ERRO_PERMISSAO}`);
+  if (usuario.papel === "recepcao") return redirecionarComAviso(`/receitas/${id}?erro=${ERRO_PERMISSAO}`);
 
   // receita_item tem ON DELETE CASCADE: some junto com o cabeçalho.
   const { error } = await supabase.from("receita").delete().eq("id", id);
-  if (error) redirect(`/receitas/${id}?erro=Não foi possível excluir.`);
+  if (error) return redirecionarComAviso(`/receitas/${id}?erro=Não foi possível excluir.`);
 
   revalidatePath("/receitas");
   revalidatePath(`/pets/${petId}`);

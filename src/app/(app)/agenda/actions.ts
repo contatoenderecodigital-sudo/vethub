@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { redirecionarComAviso } from "@/lib/aviso";
 import { getSessao } from "@/lib/auth";
 import { dataCalendarioValida } from "@/lib/validacao";
 import type { AgendamentoStatus } from "@/lib/types";
@@ -22,7 +23,7 @@ export async function criarAgendamento(formData: FormData) {
 
   if (!resultado.success) {
     const dataParam = String(formData.get("data") ?? "").trim();
-    redirect(`/agenda/novo?data=${dataParam}&erro=Verifique os campos.`);
+    return redirecionarComAviso(`/agenda/novo?data=${dataParam}&erro=Verifique os campos.`);
   }
 
   const { pet_id, veterinario_id, data, hora, tipo, observacoes } =
@@ -81,7 +82,7 @@ export async function atualizarStatus(
   const { supabase } = await getSessao();
 
   if (!STATUS_PERMITIDOS.includes(novoStatus)) {
-    redirect(`/agenda?data=${dataAtual}&erro=Status inválido.`);
+    return redirecionarComAviso(`/agenda?data=${dataAtual}&erro=Status inválido.`);
   }
 
   const { error } = await supabase
@@ -90,7 +91,7 @@ export async function atualizarStatus(
     .eq("id", id);
 
   if (error) {
-    redirect(`/agenda?data=${dataAtual}&erro=Não foi possível atualizar o status.`);
+    return redirecionarComAviso(`/agenda?data=${dataAtual}&erro=Não foi possível atualizar o status.`);
   }
 
   revalidatePath("/agenda");
@@ -194,7 +195,7 @@ export async function excluirAgendamento(id: string, dataAtual: string) {
 
   const { error } = await supabase.from("agendamento").delete().eq("id", id);
   if (error) {
-    redirect(`/agenda?data=${dataAtual}&erro=Não foi possível excluir.`);
+    return redirecionarComAviso(`/agenda?data=${dataAtual}&erro=Não foi possível excluir.`);
   }
 
   revalidatePath("/agenda");

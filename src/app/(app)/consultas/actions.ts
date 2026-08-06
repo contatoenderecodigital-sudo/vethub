@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { redirecionarComAviso } from "@/lib/aviso";
 import { getSessao } from "@/lib/auth";
 import type { AnexoTipo } from "@/lib/types";
 import { consultaSchema, type ConsultaFormValores } from "./consulta-schema";
@@ -105,7 +106,7 @@ export async function atualizarConsulta(id: string, formData: FormData) {
 
   const validado = validarForm(formData);
   if ("erro" in validado) {
-    redirect(`/consultas/${id}/editar?erro=${validado.erro}`);
+    return redirecionarComAviso(`/consultas/${id}/editar?erro=${validado.erro}`);
   }
   // O pet da consulta não muda na edição, só os demais campos.
   const campos = { ...validado.dados };
@@ -113,7 +114,7 @@ export async function atualizarConsulta(id: string, formData: FormData) {
 
   const { error } = await supabase.from("consulta").update(campos).eq("id", id);
 
-  if (error) redirect(`/consultas/${id}/editar?erro=Não foi possível salvar.`);
+  if (error) return redirecionarComAviso(`/consultas/${id}/editar?erro=Não foi possível salvar.`);
 
   revalidatePath(`/consultas/${id}`);
   redirect(`/consultas/${id}`);
@@ -129,7 +130,7 @@ export async function excluirConsulta(id: string, petId: string) {
     .eq("consulta_id", id);
 
   const { error } = await supabase.from("consulta").delete().eq("id", id);
-  if (error) redirect(`/consultas/${id}?erro=Não foi possível excluir.`);
+  if (error) return redirecionarComAviso(`/consultas/${id}?erro=Não foi possível excluir.`);
 
   if (anexos && anexos.length > 0) {
     await supabase.storage
@@ -178,7 +179,7 @@ export async function excluirAnexo(
 
   const { error } = await supabase.from("anexo").delete().eq("id", id);
   if (error) {
-    redirect(`/consultas/${consultaId}?erro=Não foi possível excluir o anexo.`);
+    return redirecionarComAviso(`/consultas/${consultaId}?erro=Não foi possível excluir o anexo.`);
   }
 
   revalidatePath(`/consultas/${consultaId}`);

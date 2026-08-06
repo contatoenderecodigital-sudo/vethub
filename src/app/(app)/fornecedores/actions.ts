@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { redirecionarComAviso } from "@/lib/aviso";
 import { getSessao } from "@/lib/auth";
 import type { Papel } from "@/lib/types";
 import {
@@ -13,9 +14,9 @@ import {
 /** Excluir apaga histórico de compra, só o administrador. */
 const PAPEIS_ADMIN: Papel[] = ["admin"];
 
-function comErro(destino: string, mensagem: string): never {
+async function comErro(destino: string, mensagem: string): Promise<never> {
   const separador = destino.includes("?") ? "&" : "?";
-  redirect(`${destino}${separador}erro=${encodeURIComponent(mensagem)}`);
+  return redirecionarComAviso(`${destino}${separador}erro=${encodeURIComponent(mensagem)}`);
 }
 
 /** Revalida o form no servidor com o MESMO schema zod do front. */
@@ -38,7 +39,7 @@ export async function criarFornecedor(formData: FormData) {
   const destino = "/fornecedores/novo";
 
   const { dados, mensagem } = validarForm(formData);
-  if (!dados) comErro(destino, mensagem);
+  if (!dados) return comErro(destino, mensagem);
 
   const { data, error } = await supabase
     .from("fornecedor")
@@ -46,7 +47,7 @@ export async function criarFornecedor(formData: FormData) {
     .select("id")
     .single<{ id: string }>();
 
-  if (error || !data) comErro(destino, "Não foi possível salvar o fornecedor.");
+  if (error || !data) return comErro(destino, "Não foi possível salvar o fornecedor.");
 
   revalidarFornecedores();
   redirect(`/fornecedores/${data.id}`);
@@ -57,10 +58,10 @@ export async function atualizarFornecedor(id: string, formData: FormData) {
   const destino = `/fornecedores/${id}/editar`;
 
   const { dados, mensagem } = validarForm(formData);
-  if (!dados) comErro(destino, mensagem);
+  if (!dados) return comErro(destino, mensagem);
 
   const { error } = await supabase.from("fornecedor").update(dados).eq("id", id);
-  if (error) comErro(destino, "Não foi possível salvar o fornecedor.");
+  if (error) return comErro(destino, "Não foi possível salvar o fornecedor.");
 
   revalidarFornecedores(id);
   redirect(`/fornecedores/${id}`);
@@ -71,12 +72,12 @@ export async function excluirFornecedor(id: string) {
   const destino = `/fornecedores/${id}`;
 
   if (!PAPEIS_ADMIN.includes(usuario.papel)) {
-    comErro(destino, "Só o administrador pode excluir fornecedores.");
+    return comErro(destino, "Só o administrador pode excluir fornecedores.");
   }
 
   // As compras do fornecedor continuam no histórico (on delete set null).
   const { error } = await supabase.from("fornecedor").delete().eq("id", id);
-  if (error) comErro(destino, "Não foi possível excluir o fornecedor.");
+  if (error) return comErro(destino, "Não foi possível excluir o fornecedor.");
 
   revalidarFornecedores(id);
   redirect("/fornecedores");

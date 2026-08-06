@@ -1,5 +1,7 @@
 "use server";
 
+import { redirecionarComAviso } from "@/lib/aviso";
+
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getSessao } from "@/lib/auth";
@@ -103,12 +105,12 @@ export async function criarPlano(formData: FormData) {
   const voltar = "/planos/novo";
 
   if (!PAPEIS_PLANO.includes(usuario.papel)) {
-    redirect(comErro(voltar, "Só o administrador pode criar planos."));
+    return redirecionarComAviso(comErro(voltar, "Só o administrador pode criar planos."));
   }
 
   const resultado = lerFormPlano(formData);
   if (!resultado.success) {
-    redirect(comErro(voltar, resultado.error.issues[0]?.message ?? "Verifique os campos."));
+    return redirecionarComAviso(comErro(voltar, resultado.error.issues[0]?.message ?? "Verifique os campos."));
   }
   const dados = resultado.data;
 
@@ -126,7 +128,7 @@ export async function criarPlano(formData: FormData) {
     .single<{ id: string }>();
 
   if (erroItem || !plano) {
-    redirect(comErro(voltar, "Não foi possível salvar o plano."));
+    return redirecionarComAviso(comErro(voltar, "Não foi possível salvar o plano."));
   }
 
   const { error: erroBeneficios } = await supabase
@@ -137,7 +139,7 @@ export async function criarPlano(formData: FormData) {
   // na mão para não deixar um plano vazio no catálogo.
   if (erroBeneficios) {
     await supabase.from("item").delete().eq("id", plano.id);
-    redirect(comErro(voltar, "Não foi possível salvar os benefícios do plano."));
+    return redirecionarComAviso(comErro(voltar, "Não foi possível salvar os benefícios do plano."));
   }
 
   revalidarPlanos();
@@ -150,12 +152,12 @@ export async function atualizarPlano(id: string, formData: FormData) {
   const voltar = `/planos/${id}/editar`;
 
   if (!PAPEIS_PLANO.includes(usuario.papel)) {
-    redirect(comErro(voltar, "Só o administrador pode editar planos."));
+    return redirecionarComAviso(comErro(voltar, "Só o administrador pode editar planos."));
   }
 
   const resultado = lerFormPlano(formData);
   if (!resultado.success) {
-    redirect(comErro(voltar, resultado.error.issues[0]?.message ?? "Verifique os campos."));
+    return redirecionarComAviso(comErro(voltar, resultado.error.issues[0]?.message ?? "Verifique os campos."));
   }
   const dados = resultado.data;
 
@@ -170,7 +172,7 @@ export async function atualizarPlano(id: string, formData: FormData) {
     .eq("id", id)
     .eq("tipo", "plano");
 
-  if (erroItem) redirect(comErro(voltar, "Não foi possível salvar o plano."));
+  if (erroItem) return redirecionarComAviso(comErro(voltar, "Não foi possível salvar o plano."));
 
   // Os benefícios são substituídos por inteiro. Guardamos os antigos antes
   // de apagar para conseguir devolvê-los se o insert novo falhar.
@@ -207,7 +209,7 @@ export async function atualizarPlano(id: string, formData: FormData) {
         }))
       );
     }
-    redirect(comErro(voltar, "Não foi possível salvar os benefícios do plano."));
+    return redirecionarComAviso(comErro(voltar, "Não foi possível salvar os benefícios do plano."));
   }
 
   revalidarPlanos();
@@ -221,7 +223,7 @@ export async function excluirPlano(id: string) {
   const voltar = `/planos/${id}`;
 
   if (!PAPEIS_PLANO.includes(usuario.papel)) {
-    redirect(comErro(voltar, "Só o administrador pode excluir planos."));
+    return redirecionarComAviso(comErro(voltar, "Só o administrador pode excluir planos."));
   }
 
   // assinatura.plano_item_id é "on delete restrict": um plano com assinantes
@@ -232,13 +234,12 @@ export async function excluirPlano(id: string) {
     .eq("plano_item_id", id);
 
   if ((count ?? 0) > 0) {
-    redirect(
-      comErro(voltar, "Este plano já tem assinaturas. Desative-o em vez de excluir.")
+    return redirecionarComAviso(comErro(voltar, "Este plano já tem assinaturas. Desative-o em vez de excluir.")
     );
   }
 
   const { error } = await supabase.from("item").delete().eq("id", id).eq("tipo", "plano");
-  if (error) redirect(comErro(voltar, "Não foi possível excluir o plano."));
+  if (error) return redirecionarComAviso(comErro(voltar, "Não foi possível excluir o plano."));
 
   revalidarPlanos();
   revalidatePath("/itens");
@@ -254,7 +255,7 @@ export async function criarAssinatura(formData: FormData) {
   const voltar = "/planos/assinaturas/nova";
 
   if (!PAPEIS_ASSINATURA.includes(usuario.papel)) {
-    redirect(comErro(voltar, "Seu perfil não pode criar assinaturas."));
+    return redirecionarComAviso(comErro(voltar, "Seu perfil não pode criar assinaturas."));
   }
 
   const resultado = assinaturaSchema.safeParse({
@@ -268,7 +269,7 @@ export async function criarAssinatura(formData: FormData) {
   });
 
   if (!resultado.success) {
-    redirect(comErro(voltar, resultado.error.issues[0]?.message ?? "Verifique os campos."));
+    return redirecionarComAviso(comErro(voltar, resultado.error.issues[0]?.message ?? "Verifique os campos."));
   }
   const dados = resultado.data;
 
@@ -280,7 +281,7 @@ export async function criarAssinatura(formData: FormData) {
     .eq("tipo", "plano")
     .single<{ id: string }>();
 
-  if (!plano) redirect(comErro(voltar, "Plano inválido."));
+  if (!plano) return redirecionarComAviso(comErro(voltar, "Plano inválido."));
 
   const { data: assinatura, error } = await supabase
     .from("assinatura")
@@ -298,7 +299,7 @@ export async function criarAssinatura(formData: FormData) {
     .single<{ id: string }>();
 
   if (error || !assinatura) {
-    redirect(comErro(voltar, "Não foi possível salvar a assinatura."));
+    return redirecionarComAviso(comErro(voltar, "Não foi possível salvar a assinatura."));
   }
 
   revalidarPlanos();
@@ -312,11 +313,11 @@ export async function alterarStatusAssinatura(id: string, status: AssinaturaStat
   const voltar = `/planos/assinaturas/${id}`;
 
   if (!PAPEIS_ASSINATURA.includes(usuario.papel)) {
-    redirect(comErro(voltar, "Seu perfil não pode alterar assinaturas."));
+    return redirecionarComAviso(comErro(voltar, "Seu perfil não pode alterar assinaturas."));
   }
 
   if (!["ativa", "suspensa", "cancelada"].includes(status)) {
-    redirect(comErro(voltar, "Status inválido."));
+    return redirecionarComAviso(comErro(voltar, "Status inválido."));
   }
 
   // Cancelar encerra de verdade: grava a data do fim. Reativar limpa o fim.
@@ -328,7 +329,7 @@ export async function alterarStatusAssinatura(id: string, status: AssinaturaStat
     })
     .eq("id", id);
 
-  if (error) redirect(comErro(voltar, "Não foi possível alterar a assinatura."));
+  if (error) return redirecionarComAviso(comErro(voltar, "Não foi possível alterar a assinatura."));
 
   revalidarPlanos();
   revalidatePath(voltar);
@@ -340,7 +341,7 @@ export async function registrarUso(assinaturaId: string, formData: FormData) {
   const voltar = `/planos/assinaturas/${assinaturaId}`;
 
   if (!PAPEIS_USO.includes(usuario.papel)) {
-    redirect(comErro(voltar, "Seu perfil não pode registrar uso de benefício."));
+    return redirecionarComAviso(comErro(voltar, "Seu perfil não pode registrar uso de benefício."));
   }
 
   const resultado = usoSchema.safeParse({
@@ -350,7 +351,7 @@ export async function registrarUso(assinaturaId: string, formData: FormData) {
   });
 
   if (!resultado.success) {
-    redirect(comErro(voltar, resultado.error.issues[0]?.message ?? "Verifique os campos."));
+    return redirecionarComAviso(comErro(voltar, resultado.error.issues[0]?.message ?? "Verifique os campos."));
   }
   const dados = resultado.data;
 
@@ -360,9 +361,9 @@ export async function registrarUso(assinaturaId: string, formData: FormData) {
     .eq("id", assinaturaId)
     .single<{ id: string; status: AssinaturaStatus }>();
 
-  if (!assinatura) redirect(comErro(voltar, "Assinatura não encontrada."));
+  if (!assinatura) return redirecionarComAviso(comErro(voltar, "Assinatura não encontrada."));
   if (assinatura.status !== "ativa") {
-    redirect(comErro(voltar, "Só assinatura ativa consome benefício."));
+    return redirecionarComAviso(comErro(voltar, "Só assinatura ativa consome benefício."));
   }
 
   const { error } = await supabase.from("uso_beneficio").insert({
@@ -373,7 +374,7 @@ export async function registrarUso(assinaturaId: string, formData: FormData) {
     data: dados.data,
   });
 
-  if (error) redirect(comErro(voltar, "Não foi possível registrar o uso."));
+  if (error) return redirecionarComAviso(comErro(voltar, "Não foi possível registrar o uso."));
 
   revalidatePath(voltar);
   redirect(voltar);
@@ -411,7 +412,7 @@ export async function gerarCobrancasDoMes() {
   const { supabase, usuario } = await getSessao();
 
   if (!PAPEIS_PLANO.includes(usuario.papel)) {
-    redirect(comErro(ROTA_ASSINATURAS, "Só o administrador pode gerar cobranças."));
+    return redirecionarComAviso(comErro(ROTA_ASSINATURAS, "Só o administrador pode gerar cobranças."));
   }
 
   const hoje = hojeISO();
@@ -484,7 +485,7 @@ export async function gerarCobrancasDoMes() {
     );
 
     if (error) {
-      redirect(comErro(ROTA_ASSINATURAS, "Não foi possível gerar as cobranças."));
+      return redirecionarComAviso(comErro(ROTA_ASSINATURAS, "Não foi possível gerar as cobranças."));
     }
   }
 

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { redirecionarComAviso } from "@/lib/aviso";
 import { getSessao } from "@/lib/auth";
 import { enderecoParaBanco, soDigitos } from "@/lib/validacao";
 import { clinicaSchema } from "./schema";
@@ -24,7 +25,7 @@ export async function atualizarClinica(formData: FormData) {
     uf: String(formData.get("uf") ?? ""),
   });
   if (!resultado.success) {
-    redirect("/configuracoes/clinica?erro=Verifique os campos destacados.");
+    return redirecionarComAviso("/configuracoes/clinica?erro=Verifique os campos destacados.");
   }
 
   const dados = {
@@ -40,7 +41,7 @@ export async function atualizarClinica(formData: FormData) {
     .update(dados)
     .eq("id", usuario.clinica_id);
 
-  if (error) redirect("/configuracoes/clinica?erro=Não foi possível salvar.");
+  if (error) return redirecionarComAviso("/configuracoes/clinica?erro=Não foi possível salvar.");
 
   revalidatePath("/configuracoes/clinica");
   revalidatePath("/", "layout"); // nome da clínica aparece no cabeçalho

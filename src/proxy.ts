@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { COOKIE_AVISO } from "@/lib/aviso-cookie";
 
 /**
  * Renova a sessão do Supabase a cada request, protege as rotas
@@ -123,6 +124,35 @@ export default async function proxy(request: NextRequest) {
     const redirecionamento = NextResponse.redirect(url);
     aplicarCabecalhos(redirecionamento.headers, nonce, desenvolvimento);
     return redirecionamento;
+  }
+
+  // ------------------------------------------------------------------
+  // Recado de erro: entra pelo cookie, nunca pela URL.
+  //
+  // Um `?erro=` vindo de fora é texto de estranho e seria renderizado no
+  // banner oficial do sistema — é assim que se monta um golpe em cima de um
+  // link. Aqui ele é jogado fora. O recado legítimo, que a server action
+  // deixou no cookie, entra na rota INTERNA via rewrite: as telas seguem
+  // lendo `searchParams.erro` como sempre, a barra de endereço fica limpa e
+  // o erro não volta no F5.
+  // ------------------------------------------------------------------
+  const aviso = request.cookies.get(COOKIE_AVISO)?.value;
+  const urlInterna = request.nextUrl.clone();
+  const veioErroDeFora = urlInterna.searchParams.has("erro");
+
+  if (veioErroDeFora) urlInterna.searchParams.delete("erro");
+  if (aviso) urlInterna.searchParams.set("erro", aviso);
+
+  if (aviso || veioErroDeFora) {
+    const reescrita = NextResponse.rewrite(urlInterna, {
+      request: { headers: cabecalhosDaRequisicao },
+    });
+    // A renovação de sessão do Supabase pode ter deixado cookies na
+    // resposta anterior; eles precisam sobreviver à troca.
+    for (const cookie of response.cookies.getAll()) reescrita.cookies.set(cookie);
+    if (aviso) reescrita.cookies.delete(COOKIE_AVISO);
+    aplicarCabecalhos(reescrita.headers, nonce, desenvolvimento);
+    return reescrita;
   }
 
   aplicarCabecalhos(response.headers, nonce, desenvolvimento);

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { redirecionarComAviso } from "@/lib/aviso";
 import { z } from "zod";
 import { getSessao } from "@/lib/auth";
 import type { OrcamentoStatus } from "@/lib/types";
@@ -104,21 +105,21 @@ export async function atualizarItens(id: string, formData: FormData) {
   const { supabase } = await getSessao();
 
   const itens = itensDoForm(formData);
-  if (!itens) redirect(`/orcamentos/${id}/editar?erro=${ERRO_ITENS}`);
+  if (!itens) return redirecionarComAviso(`/orcamentos/${id}/editar?erro=${ERRO_ITENS}`);
 
   const { error: erroDelete } = await supabase
     .from("orcamento_item")
     .delete()
     .eq("orcamento_id", id);
   if (erroDelete) {
-    redirect(`/orcamentos/${id}/editar?erro=Não foi possível salvar os itens.`);
+    return redirecionarComAviso(`/orcamentos/${id}/editar?erro=Não foi possível salvar os itens.`);
   }
 
   const { error: erroInsert } = await supabase
     .from("orcamento_item")
     .insert(itens.map((item) => ({ ...item, orcamento_id: id })));
   if (erroInsert) {
-    redirect(`/orcamentos/${id}/editar?erro=Não foi possível salvar os itens.`);
+    return redirecionarComAviso(`/orcamentos/${id}/editar?erro=Não foi possível salvar os itens.`);
   }
 
   revalidatePath("/orcamentos");
@@ -130,14 +131,14 @@ export async function atualizarStatus(id: string, status: OrcamentoStatus) {
   const { supabase } = await getSessao();
 
   if (!STATUS_VALIDOS.includes(status)) {
-    redirect(`/orcamentos/${id}?erro=Status inválido.`);
+    return redirecionarComAviso(`/orcamentos/${id}?erro=Status inválido.`);
   }
 
   const { error } = await supabase
     .from("orcamento")
     .update({ status })
     .eq("id", id);
-  if (error) redirect(`/orcamentos/${id}?erro=Não foi possível atualizar o status.`);
+  if (error) return redirecionarComAviso(`/orcamentos/${id}?erro=Não foi possível atualizar o status.`);
 
   revalidatePath("/orcamentos");
   revalidatePath(`/orcamentos/${id}`);
@@ -148,7 +149,7 @@ export async function excluirOrcamento(id: string) {
   const { supabase } = await getSessao();
 
   const { error } = await supabase.from("orcamento").delete().eq("id", id);
-  if (error) redirect(`/orcamentos/${id}?erro=Não foi possível excluir.`);
+  if (error) return redirecionarComAviso(`/orcamentos/${id}?erro=Não foi possível excluir.`);
 
   revalidatePath("/orcamentos");
   redirect("/orcamentos");

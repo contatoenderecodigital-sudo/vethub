@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { redirecionarComAviso } from "@/lib/aviso";
 import { z } from "zod";
 import { getSessao } from "@/lib/auth";
 import { FORMAS_PAGAMENTO, type Papel } from "@/lib/types";
@@ -34,7 +35,7 @@ export async function criarTutor(formData: FormData) {
   const { supabase, usuario } = await getSessao();
 
   const dados = validarForm(formData);
-  if (!dados) redirect("/tutores/novo?erro=Verifique os campos destacados.");
+  if (!dados) return redirecionarComAviso("/tutores/novo?erro=Verifique os campos destacados.");
 
   const { data, error } = await supabase
     .from("tutor")
@@ -42,7 +43,7 @@ export async function criarTutor(formData: FormData) {
     .select("id")
     .single();
 
-  if (error) redirect("/tutores/novo?erro=Não foi possível salvar.");
+  if (error) return redirecionarComAviso("/tutores/novo?erro=Não foi possível salvar.");
 
   revalidatePath("/tutores");
   redirect(`/tutores/${data.id}`);
@@ -52,10 +53,10 @@ export async function atualizarTutor(id: string, formData: FormData) {
   const { supabase } = await getSessao();
 
   const dados = validarForm(formData);
-  if (!dados) redirect(`/tutores/${id}/editar?erro=Verifique os campos destacados.`);
+  if (!dados) return redirecionarComAviso(`/tutores/${id}/editar?erro=Verifique os campos destacados.`);
 
   const { error } = await supabase.from("tutor").update(dados).eq("id", id);
-  if (error) redirect(`/tutores/${id}/editar?erro=Não foi possível salvar.`);
+  if (error) return redirecionarComAviso(`/tutores/${id}/editar?erro=Não foi possível salvar.`);
 
   revalidatePath("/tutores");
   revalidatePath(`/tutores/${id}`);
@@ -65,7 +66,7 @@ export async function atualizarTutor(id: string, formData: FormData) {
 export async function excluirTutor(id: string) {
   const { supabase } = await getSessao();
   const { error } = await supabase.from("tutor").delete().eq("id", id);
-  if (error) redirect(`/tutores/${id}?erro=Não foi possível excluir.`);
+  if (error) return redirecionarComAviso(`/tutores/${id}?erro=Não foi possível excluir.`);
 
   revalidatePath("/tutores");
   redirect("/tutores");
@@ -110,7 +111,7 @@ export async function registrarLancamento(tutorId: string, formData: FormData) {
   const voltar = `/tutores/${tutorId}`;
 
   if (!PAPEIS_FINANCEIRO.includes(usuario.papel)) {
-    redirect(`${voltar}?erro=Seu perfil não pode lançar valores no financeiro.`);
+    return redirecionarComAviso(`${voltar}?erro=Seu perfil não pode lançar valores no financeiro.`);
   }
 
   const resultado = lancamentoSchema.safeParse({
@@ -123,7 +124,7 @@ export async function registrarLancamento(tutorId: string, formData: FormData) {
 
   if (!resultado.success) {
     const msg = resultado.error.issues[0]?.message ?? "Verifique os campos.";
-    redirect(`${voltar}?erro=${encodeURIComponent(msg)}`);
+    return redirecionarComAviso(`${voltar}?erro=${encodeURIComponent(msg)}`);
   }
 
   const { tipo, valor, descricao, forma_pagamento, data } = resultado.data;
@@ -140,7 +141,7 @@ export async function registrarLancamento(tutorId: string, formData: FormData) {
     registrado_por: usuario.id,
   });
 
-  if (error) redirect(`${voltar}?erro=Não foi possível salvar o lançamento.`);
+  if (error) return redirecionarComAviso(`${voltar}?erro=Não foi possível salvar o lançamento.`);
 
   revalidatePath("/tutores");
   revalidatePath(voltar);
@@ -152,7 +153,7 @@ export async function excluirLancamento(id: string, tutorId: string) {
   const voltar = `/tutores/${tutorId}`;
 
   if (!PAPEIS_FINANCEIRO.includes(usuario.papel)) {
-    redirect(`${voltar}?erro=Seu perfil não pode excluir lançamentos.`);
+    return redirecionarComAviso(`${voltar}?erro=Seu perfil não pode excluir lançamentos.`);
   }
 
   const { error } = await supabase
@@ -160,7 +161,7 @@ export async function excluirLancamento(id: string, tutorId: string) {
     .delete()
     .eq("id", id);
 
-  if (error) redirect(`${voltar}?erro=Não foi possível excluir o lançamento.`);
+  if (error) return redirecionarComAviso(`${voltar}?erro=Não foi possível excluir o lançamento.`);
 
   revalidatePath("/tutores");
   revalidatePath(voltar);

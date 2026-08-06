@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { redirecionarComAviso } from "@/lib/aviso";
 import { getSessao } from "@/lib/auth";
 import type { Usuario } from "@/lib/types";
 import {
@@ -23,13 +24,13 @@ import {
 type Supabase = Awaited<ReturnType<typeof getSessao>>["supabase"];
 
 /** Volta para a tela de execução com a mensagem de erro no topo. */
-function erroNaExecucao(agendamentoId: string, mensagem: string): never {
-  redirect(`/banho-tosa/${agendamentoId}?erro=${encodeURIComponent(mensagem)}`);
+async function erroNaExecucao(agendamentoId: string, mensagem: string): Promise<never> {
+  return redirecionarComAviso(`/banho-tosa/${agendamentoId}?erro=${encodeURIComponent(mensagem)}`);
 }
 
 /** Volta para a tela de onde a ficha foi editada, com a mensagem de erro. */
-function erroNoDestino(destino: string, mensagem: string): never {
-  redirect(`${destino}?erro=${encodeURIComponent(mensagem)}`);
+async function erroNoDestino(destino: string, mensagem: string): Promise<never> {
+  return redirecionarComAviso(`${destino}?erro=${encodeURIComponent(mensagem)}`);
 }
 
 /**
@@ -62,9 +63,9 @@ export async function salvarFicha(
     observacoes: String(formData.get("observacoes") ?? ""),
   });
 
-  if (!petId) erroNoDestino(destino, "Pet não identificado.");
+  if (!petId) return erroNoDestino(destino, "Pet não identificado.");
   if (!resultado.success) {
-    erroNoDestino(
+    return erroNoDestino(
       destino,
       resultado.error.issues[0]?.message ?? "Verifique os campos da ficha."
     );
@@ -78,7 +79,7 @@ export async function salvarFicha(
     .eq("clinica_id", usuario.clinica_id)
     .maybeSingle<{ id: string }>();
 
-  if (!pet) erroNoDestino(destino, "Pet não encontrado.");
+  if (!pet) return erroNoDestino(destino, "Pet não encontrado.");
 
   // pet_id é UNIQUE: upsert cria a ficha na primeira vez e atualiza depois.
   const { error } = await supabase.from("ficha_banho_tosa").upsert(
@@ -90,7 +91,7 @@ export async function salvarFicha(
     { onConflict: "pet_id" }
   );
 
-  if (error) erroNoDestino(destino, "Não foi possível salvar a ficha.");
+  if (error) return erroNoDestino(destino, "Não foi possível salvar a ficha.");
 
   revalidatePath("/banho-tosa");
   revalidatePath("/banho-tosa/fichas");
@@ -163,14 +164,14 @@ export async function iniciarExecucao(
     observacoes: String(formData.get("observacoes") ?? ""),
   });
   if (!resultado.success) {
-    erroNaExecucao(
+    return erroNaExecucao(
       agendamentoId,
       resultado.error.issues[0]?.message ?? "Verifique as observações."
     );
   }
 
   const execucao = await garantirExecucao(supabase, usuario, agendamentoId);
-  if (!execucao) erroNaExecucao(agendamentoId, "Atendimento não encontrado.");
+  if (!execucao) return erroNaExecucao(agendamentoId, "Atendimento não encontrado.");
 
   const { error } = await supabase
     .from("execucao_banho_tosa")
@@ -183,7 +184,7 @@ export async function iniciarExecucao(
     .eq("id", execucao.id)
     .eq("clinica_id", usuario.clinica_id);
 
-  if (error) erroNaExecucao(agendamentoId, "Não foi possível iniciar o serviço.");
+  if (error) return erroNaExecucao(agendamentoId, "Não foi possível iniciar o serviço.");
 
   revalidatePath("/banho-tosa");
   revalidatePath(`/banho-tosa/${agendamentoId}`);
@@ -203,14 +204,14 @@ export async function finalizarExecucao(
     observacoes: String(formData.get("observacoes") ?? ""),
   });
   if (!resultado.success) {
-    erroNaExecucao(
+    return erroNaExecucao(
       agendamentoId,
       resultado.error.issues[0]?.message ?? "Verifique as observações."
     );
   }
 
   const execucao = await garantirExecucao(supabase, usuario, agendamentoId);
-  if (!execucao) erroNaExecucao(agendamentoId, "Atendimento não encontrado.");
+  if (!execucao) return erroNaExecucao(agendamentoId, "Atendimento não encontrado.");
 
   const agora = new Date().toISOString();
 
@@ -224,7 +225,7 @@ export async function finalizarExecucao(
     .eq("id", execucao.id)
     .eq("clinica_id", usuario.clinica_id);
 
-  if (error) erroNaExecucao(agendamentoId, "Não foi possível finalizar o serviço.");
+  if (error) return erroNaExecucao(agendamentoId, "Não foi possível finalizar o serviço.");
 
   revalidatePath("/banho-tosa");
   revalidatePath(`/banho-tosa/${agendamentoId}`);
@@ -238,14 +239,14 @@ export async function salvarServicos(agendamentoId: string, formData: FormData) 
     servicos: formData.getAll("servicos").map((v) => String(v)),
   });
   if (!resultado.success) {
-    erroNaExecucao(
+    return erroNaExecucao(
       agendamentoId,
       resultado.error.issues[0]?.message ?? "Verifique os serviços marcados."
     );
   }
 
   const execucao = await garantirExecucao(supabase, usuario, agendamentoId);
-  if (!execucao) erroNaExecucao(agendamentoId, "Atendimento não encontrado.");
+  if (!execucao) return erroNaExecucao(agendamentoId, "Atendimento não encontrado.");
 
   // sem repetidos, na ordem da lista oficial
   const servicos = [...new Set(resultado.data.servicos)];
@@ -256,7 +257,7 @@ export async function salvarServicos(agendamentoId: string, formData: FormData) 
     .eq("id", execucao.id)
     .eq("clinica_id", usuario.clinica_id);
 
-  if (error) erroNaExecucao(agendamentoId, "Não foi possível salvar os serviços.");
+  if (error) return erroNaExecucao(agendamentoId, "Não foi possível salvar os serviços.");
 
   revalidatePath("/banho-tosa");
   revalidatePath(`/banho-tosa/${agendamentoId}`);

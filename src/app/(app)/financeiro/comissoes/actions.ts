@@ -1,5 +1,7 @@
 "use server";
 
+import { redirecionarComAviso } from "@/lib/aviso";
+
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getSessao } from "@/lib/auth";
@@ -84,12 +86,12 @@ export async function apurarComissoes(de: string, ate: string) {
   const { supabase, usuario } = await getSessao();
 
   if (!PAPEIS_ADMIN.includes(usuario.papel)) {
-    redirect(comErro(ROTA, "Só o administrador pode apurar comissões."));
+    return redirecionarComAviso(comErro(ROTA, "Só o administrador pode apurar comissões."));
   }
 
   const periodo = periodoSchema.safeParse({ de, ate });
   if (!periodo.success) {
-    redirect(comErro(ROTA, periodo.error.issues[0]?.message ?? "Período inválido."));
+    return redirecionarComAviso(comErro(ROTA, periodo.error.issues[0]?.message ?? "Período inválido."));
   }
 
   const janela = periodo.data;
@@ -205,7 +207,7 @@ export async function apurarComissoes(de: string, ate: string) {
 
   if (novas.length > 0) {
     const { error } = await supabase.from("comissao").insert(novas);
-    if (error) redirect(comErro(voltar, "Não foi possível gerar as comissões."));
+    if (error) return redirecionarComAviso(comErro(voltar, "Não foi possível gerar as comissões."));
   }
 
   revalidarComissoes();
@@ -221,11 +223,11 @@ export async function marcarComissaoPaga(id: string, voltarBruto: string) {
   const voltar = destinoSeguro(voltarBruto);
 
   if (!PAPEIS_ADMIN.includes(usuario.papel)) {
-    redirect(comErro(voltar, "Só o administrador pode pagar comissões."));
+    return redirecionarComAviso(comErro(voltar, "Só o administrador pode pagar comissões."));
   }
 
   if (!idSchema.safeParse(id).success) {
-    redirect(comErro(voltar, "Comissão inválida."));
+    return redirecionarComAviso(comErro(voltar, "Comissão inválida."));
   }
 
   const { error } = await supabase
@@ -234,7 +236,7 @@ export async function marcarComissaoPaga(id: string, voltarBruto: string) {
     .eq("id", id)
     .eq("pago", false);
 
-  if (error) redirect(comErro(voltar, "Não foi possível marcar a comissão como paga."));
+  if (error) return redirecionarComAviso(comErro(voltar, "Não foi possível marcar a comissão como paga."));
 
   revalidarComissoes();
   redirect(voltar);
@@ -245,11 +247,11 @@ export async function estornarComissao(id: string, voltarBruto: string) {
   const voltar = destinoSeguro(voltarBruto);
 
   if (!PAPEIS_ADMIN.includes(usuario.papel)) {
-    redirect(comErro(voltar, "Só o administrador pode estornar comissões."));
+    return redirecionarComAviso(comErro(voltar, "Só o administrador pode estornar comissões."));
   }
 
   if (!idSchema.safeParse(id).success) {
-    redirect(comErro(voltar, "Comissão inválida."));
+    return redirecionarComAviso(comErro(voltar, "Comissão inválida."));
   }
 
   const { error } = await supabase
@@ -257,7 +259,7 @@ export async function estornarComissao(id: string, voltarBruto: string) {
     .update({ pago: false, pago_em: null })
     .eq("id", id);
 
-  if (error) redirect(comErro(voltar, "Não foi possível estornar o pagamento."));
+  if (error) return redirecionarComAviso(comErro(voltar, "Não foi possível estornar o pagamento."));
 
   revalidarComissoes();
   redirect(voltar);
@@ -274,16 +276,16 @@ export async function pagarComissoesDoProfissional(
   const voltar = destinoSeguro(voltarBruto);
 
   if (!PAPEIS_ADMIN.includes(usuario.papel)) {
-    redirect(comErro(voltar, "Só o administrador pode pagar comissões."));
+    return redirecionarComAviso(comErro(voltar, "Só o administrador pode pagar comissões."));
   }
 
   if (!idSchema.safeParse(profissionalId).success) {
-    redirect(comErro(voltar, "Profissional inválido."));
+    return redirecionarComAviso(comErro(voltar, "Profissional inválido."));
   }
 
   const periodo = periodoSchema.safeParse({ de, ate });
   if (!periodo.success) {
-    redirect(comErro(voltar, periodo.error.issues[0]?.message ?? "Período inválido."));
+    return redirecionarComAviso(comErro(voltar, periodo.error.issues[0]?.message ?? "Período inválido."));
   }
 
   const { error } = await supabase
@@ -294,7 +296,7 @@ export async function pagarComissoesDoProfissional(
     .gte("data", periodo.data.de)
     .lte("data", periodo.data.ate);
 
-  if (error) redirect(comErro(voltar, "Não foi possível pagar as comissões."));
+  if (error) return redirecionarComAviso(comErro(voltar, "Não foi possível pagar as comissões."));
 
   revalidarComissoes();
   redirect(voltar);

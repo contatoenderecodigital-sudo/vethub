@@ -1,5 +1,7 @@
 "use server";
 
+import { redirecionarComAviso } from "@/lib/aviso";
+
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getSessao } from "@/lib/auth";
@@ -101,18 +103,18 @@ export async function criarConta(formData: FormData) {
   const voltar = `/financeiro/nova?tipo=${tipoBruto}`;
 
   if (!PAPEIS_CAIXA.includes(usuario.papel)) {
-    redirect(comErro(voltar, "Seu perfil não pode cadastrar contas."));
+    return redirecionarComAviso(comErro(voltar, "Seu perfil não pode cadastrar contas."));
   }
 
   const resultado = lerFormConta(formData);
   if (!resultado.success) {
-    redirect(comErro(voltar, resultado.error.issues[0]?.message ?? "Verifique os campos."));
+    return redirecionarComAviso(comErro(voltar, resultado.error.issues[0]?.message ?? "Verifique os campos."));
   }
 
   const dados = resultado.data;
 
   if (!(await categoriaCompativel(supabase, dados.categoria_id, dados.tipo))) {
-    redirect(comErro(voltar, "Categoria inválida para este tipo de conta."));
+    return redirecionarComAviso(comErro(voltar, "Categoria inválida para este tipo de conta."));
   }
 
   // Repetição: N contas iguais, uma por mês, a partir do vencimento informado.
@@ -134,7 +136,7 @@ export async function criarConta(formData: FormData) {
   }));
 
   const { error } = await supabase.from("conta").insert(linhas);
-  if (error) redirect(comErro(voltar, "Não foi possível salvar a conta."));
+  if (error) return redirecionarComAviso(comErro(voltar, "Não foi possível salvar a conta."));
 
   revalidarFinanceiro();
   redirect(`/financeiro/${dados.tipo}`);
@@ -145,18 +147,18 @@ export async function atualizarConta(id: string, formData: FormData) {
   const voltar = `/financeiro/${id}/editar`;
 
   if (!PAPEIS_CAIXA.includes(usuario.papel)) {
-    redirect(comErro(voltar, "Seu perfil não pode editar contas."));
+    return redirecionarComAviso(comErro(voltar, "Seu perfil não pode editar contas."));
   }
 
   const resultado = lerFormConta(formData);
   if (!resultado.success) {
-    redirect(comErro(voltar, resultado.error.issues[0]?.message ?? "Verifique os campos."));
+    return redirecionarComAviso(comErro(voltar, resultado.error.issues[0]?.message ?? "Verifique os campos."));
   }
 
   const dados = resultado.data;
 
   if (!(await categoriaCompativel(supabase, dados.categoria_id, dados.tipo))) {
-    redirect(comErro(voltar, "Categoria inválida para este tipo de conta."));
+    return redirecionarComAviso(comErro(voltar, "Categoria inválida para este tipo de conta."));
   }
 
   const { error } = await supabase
@@ -173,7 +175,7 @@ export async function atualizarConta(id: string, formData: FormData) {
     })
     .eq("id", id);
 
-  if (error) redirect(comErro(voltar, "Não foi possível salvar a conta."));
+  if (error) return redirecionarComAviso(comErro(voltar, "Não foi possível salvar a conta."));
 
   revalidarFinanceiro();
   redirect(`/financeiro/${dados.tipo}`);
@@ -189,7 +191,7 @@ export async function darBaixa(id: string, voltarBruto: string, formData: FormDa
   const voltar = destinoSeguro(voltarBruto);
 
   if (!PAPEIS_CAIXA.includes(usuario.papel)) {
-    redirect(comErro(voltar, "Seu perfil não pode dar baixa em contas."));
+    return redirecionarComAviso(comErro(voltar, "Seu perfil não pode dar baixa em contas."));
   }
 
   const resultado = baixaSchema.safeParse({
@@ -199,7 +201,7 @@ export async function darBaixa(id: string, voltarBruto: string, formData: FormDa
   });
 
   if (!resultado.success) {
-    redirect(comErro(voltar, resultado.error.issues[0]?.message ?? "Verifique os campos."));
+    return redirecionarComAviso(comErro(voltar, resultado.error.issues[0]?.message ?? "Verifique os campos."));
   }
 
   const { data: conta } = await supabase
@@ -208,9 +210,9 @@ export async function darBaixa(id: string, voltarBruto: string, formData: FormDa
     .eq("id", id)
     .single<{ id: string; valor: number; valor_pago: number; status: ContaStatus }>();
 
-  if (!conta) redirect(comErro(voltar, "Conta não encontrada."));
+  if (!conta) return redirecionarComAviso(comErro(voltar, "Conta não encontrada."));
   if (conta.status === "cancelada") {
-    redirect(comErro(voltar, "Conta cancelada não recebe baixa."));
+    return redirecionarComAviso(comErro(voltar, "Conta cancelada não recebe baixa."));
   }
 
   const totalPago = centavos(Number(conta.valor_pago) + resultado.data.valor_pago);
@@ -228,7 +230,7 @@ export async function darBaixa(id: string, voltarBruto: string, formData: FormDa
     })
     .eq("id", id);
 
-  if (error) redirect(comErro(voltar, "Não foi possível dar baixa na conta."));
+  if (error) return redirecionarComAviso(comErro(voltar, "Não foi possível dar baixa na conta."));
 
   revalidarFinanceiro();
   redirect(voltar);
@@ -240,7 +242,7 @@ export async function estornarBaixa(id: string, voltarBruto: string) {
   const voltar = destinoSeguro(voltarBruto);
 
   if (!PAPEIS_CAIXA.includes(usuario.papel)) {
-    redirect(comErro(voltar, "Seu perfil não pode estornar baixas."));
+    return redirecionarComAviso(comErro(voltar, "Seu perfil não pode estornar baixas."));
   }
 
   const { error } = await supabase
@@ -253,7 +255,7 @@ export async function estornarBaixa(id: string, voltarBruto: string) {
     })
     .eq("id", id);
 
-  if (error) redirect(comErro(voltar, "Não foi possível estornar a baixa."));
+  if (error) return redirecionarComAviso(comErro(voltar, "Não foi possível estornar a baixa."));
 
   revalidarFinanceiro();
   redirect(voltar);
@@ -264,7 +266,7 @@ export async function cancelarConta(id: string, voltarBruto: string) {
   const voltar = destinoSeguro(voltarBruto);
 
   if (!PAPEIS_ADMIN.includes(usuario.papel)) {
-    redirect(comErro(voltar, "Só o administrador pode cancelar contas."));
+    return redirecionarComAviso(comErro(voltar, "Só o administrador pode cancelar contas."));
   }
 
   const { error } = await supabase
@@ -272,7 +274,7 @@ export async function cancelarConta(id: string, voltarBruto: string) {
     .update({ status: "cancelada" })
     .eq("id", id);
 
-  if (error) redirect(comErro(voltar, "Não foi possível cancelar a conta."));
+  if (error) return redirecionarComAviso(comErro(voltar, "Não foi possível cancelar a conta."));
 
   revalidarFinanceiro();
   redirect(voltar);
@@ -283,11 +285,11 @@ export async function excluirConta(id: string, voltarBruto: string) {
   const voltar = destinoSeguro(voltarBruto);
 
   if (!PAPEIS_ADMIN.includes(usuario.papel)) {
-    redirect(comErro(voltar, "Só o administrador pode excluir contas."));
+    return redirecionarComAviso(comErro(voltar, "Só o administrador pode excluir contas."));
   }
 
   const { error } = await supabase.from("conta").delete().eq("id", id);
-  if (error) redirect(comErro(voltar, "Não foi possível excluir a conta."));
+  if (error) return redirecionarComAviso(comErro(voltar, "Não foi possível excluir a conta."));
 
   revalidarFinanceiro();
   redirect(voltar);
@@ -303,7 +305,7 @@ export async function criarCategoria(formData: FormData) {
   const { supabase, usuario } = await getSessao();
 
   if (!PAPEIS_CAIXA.includes(usuario.papel)) {
-    redirect(comErro(ROTA_CATEGORIAS, "Seu perfil não pode criar categorias."));
+    return redirecionarComAviso(comErro(ROTA_CATEGORIAS, "Seu perfil não pode criar categorias."));
   }
 
   const resultado = categoriaSchema.safeParse({
@@ -312,8 +314,7 @@ export async function criarCategoria(formData: FormData) {
   });
 
   if (!resultado.success) {
-    redirect(
-      comErro(ROTA_CATEGORIAS, resultado.error.issues[0]?.message ?? "Verifique os campos.")
+    return redirecionarComAviso(comErro(ROTA_CATEGORIAS, resultado.error.issues[0]?.message ?? "Verifique os campos.")
     );
   }
 
@@ -325,7 +326,7 @@ export async function criarCategoria(formData: FormData) {
 
   // unique (clinica_id, nome, tipo): nome repetido cai aqui
   if (error) {
-    redirect(comErro(ROTA_CATEGORIAS, "Já existe uma categoria com esse nome."));
+    return redirecionarComAviso(comErro(ROTA_CATEGORIAS, "Já existe uma categoria com esse nome."));
   }
 
   revalidatePath(ROTA_CATEGORIAS);
@@ -341,7 +342,7 @@ export async function renomearCategoria(
   const { supabase, usuario } = await getSessao();
 
   if (!PAPEIS_CAIXA.includes(usuario.papel)) {
-    redirect(comErro(ROTA_CATEGORIAS, "Seu perfil não pode editar categorias."));
+    return redirecionarComAviso(comErro(ROTA_CATEGORIAS, "Seu perfil não pode editar categorias."));
   }
 
   const resultado = categoriaSchema.safeParse({
@@ -350,8 +351,7 @@ export async function renomearCategoria(
   });
 
   if (!resultado.success) {
-    redirect(
-      comErro(ROTA_CATEGORIAS, resultado.error.issues[0]?.message ?? "Verifique os campos.")
+    return redirecionarComAviso(comErro(ROTA_CATEGORIAS, resultado.error.issues[0]?.message ?? "Verifique os campos.")
     );
   }
 
@@ -361,7 +361,7 @@ export async function renomearCategoria(
     .eq("id", id);
 
   if (error) {
-    redirect(comErro(ROTA_CATEGORIAS, "Já existe uma categoria com esse nome."));
+    return redirecionarComAviso(comErro(ROTA_CATEGORIAS, "Já existe uma categoria com esse nome."));
   }
 
   revalidatePath(ROTA_CATEGORIAS);
@@ -373,12 +373,12 @@ export async function excluirCategoria(id: string) {
   const { supabase, usuario } = await getSessao();
 
   if (!PAPEIS_ADMIN.includes(usuario.papel)) {
-    redirect(comErro(ROTA_CATEGORIAS, "Só o administrador pode excluir categorias."));
+    return redirecionarComAviso(comErro(ROTA_CATEGORIAS, "Só o administrador pode excluir categorias."));
   }
 
   // As contas que usavam a categoria ficam sem categoria (on delete set null).
   const { error } = await supabase.from("categoria_financeira").delete().eq("id", id);
-  if (error) redirect(comErro(ROTA_CATEGORIAS, "Não foi possível excluir a categoria."));
+  if (error) return redirecionarComAviso(comErro(ROTA_CATEGORIAS, "Não foi possível excluir a categoria."));
 
   revalidatePath(ROTA_CATEGORIAS);
   revalidarFinanceiro();

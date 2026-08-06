@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { redirecionarComAviso } from "@/lib/aviso";
 import { getSessao } from "@/lib/auth";
 import {
   loteSchema,
@@ -11,9 +12,9 @@ import {
 } from "./schema";
 
 /** Volta para a tela com a mensagem na barra de erro. */
-function comErro(destino: string, mensagem: string): never {
+async function comErro(destino: string, mensagem: string): Promise<never> {
   const separador = destino.includes("?") ? "&" : "?";
-  redirect(`${destino}${separador}erro=${encodeURIComponent(mensagem)}`);
+  return redirecionarComAviso(`${destino}${separador}erro=${encodeURIComponent(mensagem)}`);
 }
 
 interface ItemEstoque {
@@ -35,9 +36,9 @@ async function carregarItemComEstoque(
     .eq("id", itemId)
     .single<ItemEstoque>();
 
-  if (!item) comErro(destino, "Produto não encontrado.");
+  if (!item) return comErro(destino, "Produto não encontrado.");
   if (!item.controla_estoque) {
-    comErro(destino, `"${item.nome}" não tem controle de estoque ativado.`);
+    return comErro(destino, `"${item.nome}" não tem controle de estoque ativado.`);
   }
   return item;
 }
@@ -67,7 +68,7 @@ export async function registrarMovimentacao(formData: FormData) {
   });
 
   if (!resultado.success) {
-    comErro(destino, resultado.error.issues[0]?.message ?? "Verifique os campos.");
+    return comErro(destino, resultado.error.issues[0]?.message ?? "Verifique os campos.");
   }
 
   const v = resultado.data;
@@ -76,7 +77,7 @@ export async function registrarMovimentacao(formData: FormData) {
 
   // Saída, perda e ajuste nunca podem deixar o saldo negativo.
   if (v.tipo !== "entrada" && Number(item.estoque_atual) < quantidade) {
-    comErro(
+    return comErro(
       destino,
       `Saldo insuficiente: "${item.nome}" tem ${Number(item.estoque_atual)} em estoque.`
     );
@@ -105,10 +106,10 @@ export async function registrarMovimentacao(formData: FormData) {
         })
         .select("id")
         .single();
-      if (error || !novo) comErro(destino, "Não foi possível criar o lote.");
+      if (error || !novo) return comErro(destino, "Não foi possível criar o lote.");
       loteId = novo.id;
     } else {
-      comErro(destino, `Lote "${v.lote_codigo}" não existe para esse produto.`);
+      return comErro(destino, `Lote "${v.lote_codigo}" não existe para esse produto.`);
     }
   }
 
@@ -124,7 +125,7 @@ export async function registrarMovimentacao(formData: FormData) {
     registrado_por: usuario.id,
   });
 
-  if (error) comErro(destino, "Não foi possível registrar a movimentação.");
+  if (error) return comErro(destino, "Não foi possível registrar a movimentação.");
 
   revalidarEstoque(item.id);
   redirect("/estoque");
@@ -146,7 +147,7 @@ export async function cadastrarLote(formData: FormData) {
   });
 
   if (!resultado.success) {
-    comErro(destino, resultado.error.issues[0]?.message ?? "Verifique os campos.");
+    return comErro(destino, resultado.error.issues[0]?.message ?? "Verifique os campos.");
   }
 
   const v = resultado.data;
@@ -160,7 +161,7 @@ export async function cadastrarLote(formData: FormData) {
     .maybeSingle<{ id: string }>();
 
   if (existente) {
-    comErro(destino, `O lote "${v.codigo}" já está cadastrado para esse produto.`);
+    return comErro(destino, `O lote "${v.codigo}" já está cadastrado para esse produto.`);
   }
 
   const { data: lote, error: erroLote } = await supabase
@@ -175,7 +176,7 @@ export async function cadastrarLote(formData: FormData) {
     .select("id")
     .single();
 
-  if (erroLote || !lote) comErro(destino, "Não foi possível cadastrar o lote.");
+  if (erroLote || !lote) return comErro(destino, "Não foi possível cadastrar o lote.");
 
   const { error: erroMov } = await supabase.from("movimentacao_estoque").insert({
     clinica_id: usuario.clinica_id,
@@ -191,7 +192,7 @@ export async function cadastrarLote(formData: FormData) {
   if (erroMov) {
     // Sem a entrada o lote ficaria zerado e confuso. Desfaz o cadastro.
     await supabase.from("lote").delete().eq("id", lote.id);
-    comErro(destino, "Não foi possível registrar a entrada do lote.");
+    return comErro(destino, "Não foi possível registrar a entrada do lote.");
   }
 
   revalidarEstoque(item.id);
@@ -208,13 +209,13 @@ export async function excluirLote(id: string) {
     .eq("id", id)
     .single<{ id: string; item_id: string; quantidade: number }>();
 
-  if (!lote) comErro(destino, "Lote não encontrado.");
+  if (!lote) return comErro(destino, "Lote não encontrado.");
   if (Number(lote.quantidade) > 0) {
-    comErro(destino, "Dê baixa no saldo do lote antes de excluí-lo.");
+    return comErro(destino, "Dê baixa no saldo do lote antes de excluí-lo.");
   }
 
   const { error } = await supabase.from("lote").delete().eq("id", id);
-  if (error) comErro(destino, "Não foi possível excluir o lote.");
+  if (error) return comErro(destino, "Não foi possível excluir o lote.");
 
   revalidarEstoque(lote.item_id);
   redirect("/estoque/validade");

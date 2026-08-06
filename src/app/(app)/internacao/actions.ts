@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { redirecionarComAviso } from "@/lib/aviso";
 import { getSessao } from "@/lib/auth";
 import {
   evolucaoParaBanco,
@@ -14,8 +15,8 @@ import {
 import { dataSPde, somarDias, type InternacaoStatus } from "./tipos";
 
 /** Erro que volta para a própria tela do paciente internado. */
-function erroNoPaciente(id: string, mensagem: string): never {
-  redirect(`/internacao/${id}?erro=${encodeURIComponent(mensagem)}`);
+async function erroNoPaciente(id: string, mensagem: string): Promise<never> {
+  return redirecionarComAviso(`/internacao/${id}?erro=${encodeURIComponent(mensagem)}`);
 }
 
 // ==================================================================
@@ -40,7 +41,7 @@ export async function internarPet(formData: FormData) {
   if (!resultado.success) {
     const mensagem =
       resultado.error.issues[0]?.message ?? "Verifique os campos destacados.";
-    redirect(`/internacao/nova?erro=${encodeURIComponent(mensagem)}`);
+    return redirecionarComAviso(`/internacao/nova?erro=${encodeURIComponent(mensagem)}`);
   }
 
   const { data, error } = await supabase
@@ -53,7 +54,7 @@ export async function internarPet(formData: FormData) {
     .single<{ id: string }>();
 
   if (error || !data) {
-    redirect("/internacao/nova?erro=N%C3%A3o%20foi%20poss%C3%ADvel%20internar.");
+    return redirecionarComAviso("/internacao/nova?erro=N%C3%A3o%20foi%20poss%C3%ADvel%20internar.");
   }
 
   revalidatePath("/internacao");
@@ -78,7 +79,7 @@ export async function atualizarInternacao(id: string, formData: FormData) {
   if (!resultado.success) {
     const mensagem =
       resultado.error.issues[0]?.message ?? "Verifique os campos destacados.";
-    redirect(`/internacao/${id}/editar?erro=${encodeURIComponent(mensagem)}`);
+    return redirecionarComAviso(`/internacao/${id}/editar?erro=${encodeURIComponent(mensagem)}`);
   }
 
   // O pet da internação não muda na edição, só os demais campos.
@@ -103,7 +104,7 @@ export async function encerrarInternacao(id: string, status: InternacaoStatus) {
   const { supabase } = await getSessao();
 
   if (!STATUS_ENCERRAMENTO.includes(status)) {
-    erroNoPaciente(id, "Status inválido.");
+    return erroNoPaciente(id, "Status inválido.");
   }
 
   const { error } = await supabase
@@ -111,7 +112,7 @@ export async function encerrarInternacao(id: string, status: InternacaoStatus) {
     .update({ status, data_saida: new Date().toISOString() })
     .eq("id", id);
 
-  if (error) erroNoPaciente(id, "Não foi possível encerrar a internação.");
+  if (error) return erroNoPaciente(id, "Não foi possível encerrar a internação.");
 
   // Medicações ainda pendentes deixam de fazer sentido depois da saída.
   const { data: prescricoes } = await supabase
@@ -140,7 +141,7 @@ export async function excluirInternacao(id: string) {
   const { supabase } = await getSessao();
 
   const { error } = await supabase.from("internacao").delete().eq("id", id);
-  if (error) erroNoPaciente(id, "Não foi possível excluir a internação.");
+  if (error) return erroNoPaciente(id, "Não foi possível excluir a internação.");
 
   revalidatePath("/internacao");
   revalidatePath("/dashboard");
@@ -200,7 +201,7 @@ export async function criarPrescricao(internacaoId: string, formData: FormData) 
 
   // Recepção não prescreve.
   if (usuario.papel === "recepcao") {
-    erroNoPaciente(internacaoId, "Seu perfil não pode criar prescrições.");
+    return erroNoPaciente(internacaoId, "Seu perfil não pode criar prescrições.");
   }
 
   const resultado = prescricaoSchema.safeParse({
@@ -214,7 +215,7 @@ export async function criarPrescricao(internacaoId: string, formData: FormData) 
   });
 
   if (!resultado.success) {
-    erroNoPaciente(
+    return erroNoPaciente(
       internacaoId,
       resultado.error.issues[0]?.message ?? "Verifique os campos da prescrição."
     );
@@ -250,7 +251,7 @@ export async function criarPrescricao(internacaoId: string, formData: FormData) 
     .single<{ id: string }>();
 
   if (error || !prescricao) {
-    erroNoPaciente(internacaoId, "Não foi possível salvar a prescrição.");
+    return erroNoPaciente(internacaoId, "Não foi possível salvar a prescrição.");
   }
 
   // Com horários definidos, o checklist das próximas 48 h já nasce pronto.
@@ -273,12 +274,12 @@ export async function excluirPrescricao(id: string, internacaoId: string) {
   const { supabase, usuario } = await getSessao();
 
   if (usuario.papel === "recepcao") {
-    erroNoPaciente(internacaoId, "Seu perfil não pode excluir prescrições.");
+    return erroNoPaciente(internacaoId, "Seu perfil não pode excluir prescrições.");
   }
 
   // As administrações caem junto (on delete cascade).
   const { error } = await supabase.from("prescricao").delete().eq("id", id);
-  if (error) erroNoPaciente(internacaoId, "Não foi possível excluir a prescrição.");
+  if (error) return erroNoPaciente(internacaoId, "Não foi possível excluir a prescrição.");
 
   revalidatePath(`/internacao/${internacaoId}`);
 }
@@ -300,7 +301,7 @@ export async function marcarAplicado(id: string, internacaoId: string) {
     })
     .eq("id", id);
 
-  if (error) erroNoPaciente(internacaoId, "Não foi possível registrar a aplicação.");
+  if (error) return erroNoPaciente(internacaoId, "Não foi possível registrar a aplicação.");
 
   revalidatePath(`/internacao/${internacaoId}`);
 }
@@ -314,7 +315,7 @@ export async function desfazerAplicacao(id: string, internacaoId: string) {
     .update({ status: "pendente", horario_realizado: null, responsavel_id: null })
     .eq("id", id);
 
-  if (error) erroNoPaciente(internacaoId, "Não foi possível desfazer o registro.");
+  if (error) return erroNoPaciente(internacaoId, "Não foi possível desfazer o registro.");
 
   revalidatePath(`/internacao/${internacaoId}`);
 }
@@ -331,7 +332,7 @@ export async function registrarEvolucao(
 
   // Recepção não registra evolução clínica.
   if (usuario.papel === "recepcao") {
-    erroNoPaciente(internacaoId, "Seu perfil não pode registrar evoluções.");
+    return erroNoPaciente(internacaoId, "Seu perfil não pode registrar evoluções.");
   }
 
   const resultado = evolucaoSchema.safeParse({
@@ -342,7 +343,7 @@ export async function registrarEvolucao(
   });
 
   if (!resultado.success) {
-    erroNoPaciente(
+    return erroNoPaciente(
       internacaoId,
       resultado.error.issues[0]?.message ?? "Verifique os campos da evolução."
     );
@@ -355,7 +356,7 @@ export async function registrarEvolucao(
     responsavel_id: usuario.id,
   });
 
-  if (error) erroNoPaciente(internacaoId, "Não foi possível salvar a evolução.");
+  if (error) return erroNoPaciente(internacaoId, "Não foi possível salvar a evolução.");
 
   revalidatePath(`/internacao/${internacaoId}`);
 }

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { redirecionarComAviso } from "@/lib/aviso";
 import { getSessao } from "@/lib/auth";
 import type { CompraStatus, Papel } from "@/lib/types";
 import {
@@ -45,9 +46,9 @@ interface ItemCatalogo {
   estoque_atual: number;
 }
 
-function comErro(destino: string, mensagem: string): never {
+async function comErro(destino: string, mensagem: string): Promise<never> {
   const separador = destino.includes("?") ? "&" : "?";
-  redirect(`${destino}${separador}erro=${encodeURIComponent(mensagem)}`);
+  return redirecionarComAviso(`${destino}${separador}erro=${encodeURIComponent(mensagem)}`);
 }
 
 function primeiro<T>(valor: T | T[] | null | undefined): T | null {
@@ -112,11 +113,11 @@ export async function criarCompra(formData: FormData) {
   });
 
   if (!resultado.success) {
-    comErro(destino, resultado.error.issues[0]?.message ?? "Verifique os campos.");
+    return comErro(destino, resultado.error.issues[0]?.message ?? "Verifique os campos.");
   }
 
   const itens = itensDoForm(formData);
-  if (!itens) comErro(destino, ERRO_ITENS);
+  if (!itens) return comErro(destino, ERRO_ITENS);
 
   const v = resultado.data;
 
@@ -135,7 +136,7 @@ export async function criarCompra(formData: FormData) {
     .select("id")
     .single<{ id: string }>();
 
-  if (error || !compra) comErro(destino, "Não foi possível lançar a compra.");
+  if (error || !compra) return comErro(destino, "Não foi possível lançar a compra.");
 
   const { error: erroItens } = await supabase.from("compra_item").insert(
     itens.map((i) => ({
@@ -152,7 +153,7 @@ export async function criarCompra(formData: FormData) {
   if (erroItens) {
     // Evita compra órfã sem itens (e com total zerado).
     await supabase.from("compra").delete().eq("id", compra.id);
-    comErro(destino, "Não foi possível salvar os itens da compra.");
+    return comErro(destino, "Não foi possível salvar os itens da compra.");
   }
 
   revalidarCompras();
@@ -168,7 +169,7 @@ export async function receberCompra(id: string) {
   const destino = `/compras/${id}`;
 
   if (!PAPEIS_ADMIN.includes(usuario.papel)) {
-    comErro(destino, "Só o administrador pode receber mercadoria.");
+    return comErro(destino, "Só o administrador pode receber mercadoria.");
   }
 
   const { data: compra } = await supabase
@@ -186,14 +187,14 @@ export async function receberCompra(id: string) {
       fornecedor: { id: string; nome: string } | { id: string; nome: string }[] | null;
     }>();
 
-  if (!compra) comErro(destino, "Compra não encontrada.");
-  if (compra.status === "recebida") comErro(destino, "Esta compra já foi recebida.");
+  if (!compra) return comErro(destino, "Compra não encontrada.");
+  if (compra.status === "recebida") return comErro(destino, "Esta compra já foi recebida.");
   if (compra.status === "cancelada") {
-    comErro(destino, "Compra cancelada não pode ser recebida.");
+    return comErro(destino, "Compra cancelada não pode ser recebida.");
   }
 
   const { linhas, catalogo } = await carregarItens(supabase, id);
-  if (linhas.length === 0) comErro(destino, "A compra não tem itens para receber.");
+  if (linhas.length === 0) return comErro(destino, "A compra não tem itens para receber.");
 
   const rotulo = rotuloDaNota(compra.numero_nota);
 
@@ -247,7 +248,7 @@ export async function receberCompra(id: string) {
           .single<{ id: string }>();
 
         if (erroLote || !novo) {
-          comErro(destino, `Não foi possível criar o lote "${codigo}".`);
+          return comErro(destino, `Não foi possível criar o lote "${codigo}".`);
         }
         loteId = novo.id;
       }
@@ -271,7 +272,7 @@ export async function receberCompra(id: string) {
     const { error } = await supabase
       .from("movimentacao_estoque")
       .insert(movimentacoes);
-    if (error) comErro(destino, "Não foi possível dar entrada no estoque.");
+    if (error) return comErro(destino, "Não foi possível dar entrada no estoque.");
   }
 
   // 3) Compra recebida
@@ -280,7 +281,7 @@ export async function receberCompra(id: string) {
     .update({ status: "recebida" })
     .eq("id", id);
 
-  if (erroStatus) comErro(destino, "Não foi possível atualizar a compra.");
+  if (erroStatus) return comErro(destino, "Não foi possível atualizar a compra.");
 
   // 4) Conta a pagar do fornecedor, com vencimento em 30 dias
   const fornecedor = primeiro(compra.fornecedor);
@@ -299,7 +300,7 @@ export async function receberCompra(id: string) {
   revalidarEstoqueEFinanceiro();
 
   if (erroConta) {
-    comErro(
+    return comErro(
       destino,
       "Mercadoria recebida, mas a conta a pagar não foi gerada. Lance manualmente."
     );
@@ -317,7 +318,7 @@ export async function cancelarCompra(id: string) {
   const destino = `/compras/${id}`;
 
   if (!PAPEIS_ADMIN.includes(usuario.papel)) {
-    comErro(destino, "Só o administrador pode cancelar compras.");
+    return comErro(destino, "Só o administrador pode cancelar compras.");
   }
 
   const { data: compra } = await supabase
@@ -331,8 +332,8 @@ export async function cancelarCompra(id: string) {
       fornecedor: { id: string; nome: string } | { id: string; nome: string }[] | null;
     }>();
 
-  if (!compra) comErro(destino, "Compra não encontrada.");
-  if (compra.status === "cancelada") comErro(destino, "Esta compra já está cancelada.");
+  if (!compra) return comErro(destino, "Compra não encontrada.");
+  if (compra.status === "cancelada") return comErro(destino, "Esta compra já está cancelada.");
 
   const rotulo = rotuloDaNota(compra.numero_nota);
 
@@ -356,7 +357,7 @@ export async function cancelarCompra(id: string) {
       const item = catalogo.get(itemId);
       if (!item) continue;
       if (Number(item.estoque_atual) < quantidade) {
-        comErro(
+        return comErro(
           destino,
           `Saldo insuficiente para estornar "${item.nome}": a entrada foi de ${quantidade} e há ${Number(item.estoque_atual)} em estoque. Ajuste o estoque antes de cancelar.`
         );
@@ -396,7 +397,7 @@ export async function cancelarCompra(id: string) {
 
     if (saidas.length > 0) {
       const { error } = await supabase.from("movimentacao_estoque").insert(saidas);
-      if (error) comErro(destino, "Não foi possível estornar o estoque.");
+      if (error) return comErro(destino, "Não foi possível estornar o estoque.");
     }
 
     // A conta a pagar gerada no recebimento também sai dos totais. Não existe
@@ -417,7 +418,7 @@ export async function cancelarCompra(id: string) {
     .update({ status: "cancelada" })
     .eq("id", id);
 
-  if (error) comErro(destino, "Não foi possível cancelar a compra.");
+  if (error) return comErro(destino, "Não foi possível cancelar a compra.");
 
   revalidarCompras(id);
   revalidarEstoqueEFinanceiro();

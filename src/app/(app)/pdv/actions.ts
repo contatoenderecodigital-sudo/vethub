@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { redirecionarComAviso } from "@/lib/aviso";
 import { getSessao } from "@/lib/auth";
 import { formatBRL, hojeISO } from "@/lib/format";
 import { FORMAS_PARCELAVEIS, type ItemVenda } from "@/lib/types";
@@ -22,8 +23,8 @@ function somarDias(dataISO: string, dias: number): string {
   return new Date(Date.UTC(ano, mes - 1, dia + dias)).toISOString().slice(0, 10);
 }
 
-function voltarComErro(rota: string, mensagem: string): never {
-  redirect(`${rota}?erro=${encodeURIComponent(mensagem)}`);
+async function voltarComErro(rota: string, mensagem: string): Promise<never> {
+  return redirecionarComAviso(`${rota}?erro=${encodeURIComponent(mensagem)}`);
 }
 
 // ==================================================================
@@ -39,7 +40,7 @@ export async function abrirCaixa(formData: FormData) {
   });
 
   if (!resultado.success) {
-    voltarComErro("/pdv", primeiroErro(resultado.error, "Verifique os campos."));
+    return voltarComErro("/pdv", primeiroErro(resultado.error, "Verifique os campos."));
   }
 
   // O índice único do banco já garante um caixa aberto por clínica; a
@@ -62,7 +63,7 @@ export async function abrirCaixa(formData: FormData) {
     observacao: resultado.data.observacao || null,
   });
 
-  if (error) voltarComErro("/pdv", "Não foi possível abrir o caixa.");
+  if (error) return voltarComErro("/pdv", "Não foi possível abrir o caixa.");
 
   revalidatePath("/pdv");
   revalidatePath("/pdv/caixa");
@@ -79,7 +80,7 @@ export async function fecharCaixa(caixaId: string, formData: FormData) {
   });
 
   if (!resultado.success) {
-    voltarComErro(
+    return voltarComErro(
       "/pdv/caixa",
       primeiroErro(resultado.error, "Verifique os campos.")
     );
@@ -97,7 +98,7 @@ export async function fecharCaixa(caixaId: string, formData: FormData) {
     .eq("id", caixaId)
     .eq("status", "aberto");
 
-  if (error) voltarComErro("/pdv/caixa", "Não foi possível fechar o caixa.");
+  if (error) return voltarComErro("/pdv/caixa", "Não foi possível fechar o caixa.");
 
   revalidatePath("/pdv");
   revalidatePath("/pdv/caixa");
@@ -404,7 +405,7 @@ export async function cancelarVenda(id: string) {
   const voltar = `/vendas/${id}`;
 
   if (usuario.papel !== "admin") {
-    voltarComErro(voltar, "Só o administrador pode cancelar vendas.");
+    return voltarComErro(voltar, "Só o administrador pode cancelar vendas.");
   }
 
   const { data: venda } = await supabase
@@ -419,9 +420,9 @@ export async function cancelarVenda(id: string) {
       valor_total: number;
     }>();
 
-  if (!venda) voltarComErro("/vendas", "Venda não encontrada.");
+  if (!venda) return voltarComErro("/vendas", "Venda não encontrada.");
   if (venda.status === "cancelada") {
-    voltarComErro(voltar, "Esta venda já está cancelada.");
+    return voltarComErro(voltar, "Esta venda já está cancelada.");
   }
 
   const { error } = await supabase
@@ -429,7 +430,7 @@ export async function cancelarVenda(id: string) {
     .update({ status: "cancelada" })
     .eq("id", id);
 
-  if (error) voltarComErro(voltar, "Não foi possível cancelar a venda.");
+  if (error) return voltarComErro(voltar, "Não foi possível cancelar a venda.");
 
   // Estorno do estoque: entrada com a mesma quantidade que saiu.
   const { data: itens } = await supabase

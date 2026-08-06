@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { redirecionarComAviso } from "@/lib/aviso";
 import { getSessao } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Papel } from "@/lib/types";
@@ -27,7 +28,7 @@ export async function criarUsuario(formData: FormData) {
     papel: String(formData.get("papel") ?? ""),
   });
   if (!resultado.success) {
-    redirect("/configuracoes/usuarios/novo?erro=Verifique os campos destacados.");
+    return redirecionarComAviso("/configuracoes/usuarios/novo?erro=Verifique os campos destacados.");
   }
 
   const { nome, senha, papel } = resultado.data;
@@ -60,7 +61,7 @@ export async function criarUsuario(formData: FormData) {
   });
   if (erroPerfil) {
     await admin.auth.admin.deleteUser(criado.user.id); // rollback
-    redirect("/configuracoes/usuarios/novo?erro=Erro ao criar o perfil.");
+    return redirecionarComAviso("/configuracoes/usuarios/novo?erro=Erro ao criar o perfil.");
   }
 
   revalidatePath("/configuracoes/usuarios");
@@ -75,7 +76,7 @@ export async function alterarPapel(id: string, formData: FormData) {
 
   // Admin não rebaixa a si mesmo (evita clínica sem admin).
   if (id === usuario.id) {
-    redirect("/configuracoes/usuarios?erro=Você não pode alterar o próprio papel.");
+    return redirecionarComAviso("/configuracoes/usuarios?erro=Você não pode alterar o próprio papel.");
   }
 
   await supabase.from("usuario").update({ papel }).eq("id", id);
@@ -87,7 +88,7 @@ export async function removerUsuario(id: string) {
   const { usuario } = await exigirAdmin();
 
   if (id === usuario.id) {
-    redirect("/configuracoes/usuarios?erro=Você não pode remover a si mesmo.");
+    return redirecionarComAviso("/configuracoes/usuarios?erro=Você não pode remover a si mesmo.");
   }
 
   // Confirma que o alvo pertence à mesma clínica antes de usar o service_role.
@@ -98,7 +99,7 @@ export async function removerUsuario(id: string) {
     .eq("id", id)
     .single();
   if (!alvo || alvo.clinica_id !== usuario.clinica_id) {
-    redirect("/configuracoes/usuarios?erro=Usuário não encontrado.");
+    return redirecionarComAviso("/configuracoes/usuarios?erro=Usuário não encontrado.");
   }
 
   await admin.auth.admin.deleteUser(id); // cascade apaga o perfil

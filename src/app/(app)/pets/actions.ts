@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { redirecionarComAviso } from "@/lib/aviso";
 import { z } from "zod";
 import { getSessao } from "@/lib/auth";
 import {
@@ -38,8 +39,8 @@ function validarForm(formData: FormData) {
 }
 
 /** Volta para a ficha do pet com a mensagem de erro na barra do topo. */
-function voltarComErro(petId: string, erro: string): never {
-  redirect(`/pets/${petId}?erro=${encodeURIComponent(erro)}`);
+async function voltarComErro(petId: string, erro: string): Promise<never> {
+  return redirecionarComAviso(`/pets/${petId}?erro=${encodeURIComponent(erro)}`);
 }
 
 export async function criarPet(formData: FormData) {
@@ -50,7 +51,7 @@ export async function criarPet(formData: FormData) {
   const tutorId = String(formData.get("tutor_id") ?? "").trim();
   const tutorParam = tutorId ? `&tutor=${tutorId}` : "";
 
-  if (!dados) redirect(`/pets/novo?erro=Verifique os campos.${tutorParam}`);
+  if (!dados) return redirecionarComAviso(`/pets/novo?erro=Verifique os campos.${tutorParam}`);
 
   const { data, error } = await supabase
     .from("pet")
@@ -58,7 +59,7 @@ export async function criarPet(formData: FormData) {
     .select("id")
     .single();
 
-  if (error) redirect(`/pets/novo?erro=Não foi possível salvar.${tutorParam}`);
+  if (error) return redirecionarComAviso(`/pets/novo?erro=Não foi possível salvar.${tutorParam}`);
 
   revalidatePath("/pets");
   redirect(`/pets/${data.id}`);
@@ -68,10 +69,10 @@ export async function atualizarPet(id: string, formData: FormData) {
   const { supabase } = await getSessao();
   const dados = validarForm(formData);
 
-  if (!dados) redirect(`/pets/${id}/editar?erro=Verifique os campos.`);
+  if (!dados) return redirecionarComAviso(`/pets/${id}/editar?erro=Verifique os campos.`);
 
   const { error } = await supabase.from("pet").update(dados).eq("id", id);
-  if (error) redirect(`/pets/${id}/editar?erro=Não foi possível salvar.`);
+  if (error) return redirecionarComAviso(`/pets/${id}/editar?erro=Não foi possível salvar.`);
 
   revalidatePath("/pets");
   revalidatePath(`/pets/${id}`);
@@ -81,7 +82,7 @@ export async function atualizarPet(id: string, formData: FormData) {
 export async function excluirPet(id: string) {
   const { supabase } = await getSessao();
   const { error } = await supabase.from("pet").delete().eq("id", id);
-  if (error) redirect(`/pets/${id}?erro=Não foi possível excluir.`);
+  if (error) return redirecionarComAviso(`/pets/${id}?erro=Não foi possível excluir.`);
 
   revalidatePath("/pets");
   redirect("/pets");
@@ -140,7 +141,7 @@ export async function registrarPesagem(petId: string, formData: FormData) {
   });
 
   if (!resultado.success) {
-    voltarComErro(
+    return voltarComErro(
       petId,
       resultado.error.issues[0]?.message ?? "Verifique os campos da pesagem."
     );
@@ -155,7 +156,7 @@ export async function registrarPesagem(petId: string, formData: FormData) {
     registrado_por: usuario.id,
   });
 
-  if (error) voltarComErro(petId, "Não foi possível registrar a pesagem.");
+  if (error) return voltarComErro(petId, "Não foi possível registrar a pesagem.");
 
   revalidatePath("/pets");
   revalidatePath(`/pets/${petId}`);
@@ -165,7 +166,7 @@ export async function excluirPesagem(id: string, petId: string) {
   const { supabase } = await getSessao();
 
   const { error } = await supabase.from("pesagem").delete().eq("id", id);
-  if (error) voltarComErro(petId, "Não foi possível excluir a pesagem.");
+  if (error) return voltarComErro(petId, "Não foi possível excluir a pesagem.");
 
   revalidatePath("/pets");
   revalidatePath(`/pets/${petId}`);
@@ -190,7 +191,7 @@ export async function registrarProtocolo(petId: string, formData: FormData) {
   });
 
   if (!resultado.success) {
-    voltarComErro(
+    return voltarComErro(
       petId,
       resultado.error.issues[0]?.message ?? "Verifique os campos do protocolo."
     );
@@ -212,7 +213,7 @@ export async function registrarProtocolo(petId: string, formData: FormData) {
     veterinario_id: usuario.papel === "veterinario" ? usuario.id : null,
   });
 
-  if (error) voltarComErro(petId, "Não foi possível registrar o protocolo.");
+  if (error) return voltarComErro(petId, "Não foi possível registrar o protocolo.");
 
   revalidatePath(`/pets/${petId}`);
 }
@@ -221,7 +222,7 @@ export async function excluirProtocolo(id: string, petId: string) {
   const { supabase } = await getSessao();
 
   const { error } = await supabase.from("protocolo_saude").delete().eq("id", id);
-  if (error) voltarComErro(petId, "Não foi possível excluir o protocolo.");
+  if (error) return voltarComErro(petId, "Não foi possível excluir o protocolo.");
 
   revalidatePath(`/pets/${petId}`);
 }

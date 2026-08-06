@@ -271,6 +271,11 @@ export function CompraItensEditor({
                     title="Use apenas números, com vírgula para os centavos (ex.: 89,90)."
                     aria-invalid={!!erroValor}
                     value={linha.valor_unitario}
+                    // O campo já vem preenchido com o custo do catálogo. Sem
+                    // selecionar o conteúdo ao focar, o clique deixa o cursor
+                    // no fim e digitar 42,50 sobre 45,00 produzia
+                    // "45,0042,50". Selecionado, digitar substitui.
+                    onFocus={(e) => e.currentTarget.select()}
                     onChange={(e) =>
                       atualizar(
                         linha.chave,

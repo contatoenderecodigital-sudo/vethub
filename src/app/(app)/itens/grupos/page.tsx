@@ -131,7 +131,7 @@ export default async function GruposPage({
   const raizes = [...principais, ...orfaos];
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="mx-auto max-w-2xl">
       <PageHeader
         titulo="Grupos e subgrupos"
         subtitulo={plural(grupos.length, "grupo") + " cadastrado" + (grupos.length === 1 ? "" : "s")}

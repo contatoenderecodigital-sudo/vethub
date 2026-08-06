@@ -88,7 +88,7 @@ export function FotoExecucao({
   }
 
   return (
-    <div className="min-w-0">
+    <div className="group min-w-0">
       <p className="mb-1.5 text-sm font-medium text-ink">{rotulo}</p>
 
       <button
@@ -147,9 +147,15 @@ export function FotoExecucao({
           <CircleAlert className="size-3.5 shrink-0" aria-hidden />
           {erro}
         </p>
+      ) : enviando ? (
+        <p className="mt-1 text-xs text-ink-muted">Enviando…</p>
       ) : (
-        <p className="mt-1 text-xs text-ink-muted">
-          {enviando ? "Enviando…" : "JPG, PNG ou WebP · até 5 MB"}
+        /* O aviso de formato só interessa a quem está prestes a enviar. Fixo
+           embaixo da foto ele virava ruído permanente numa tela que o
+           profissional abre dezenas de vezes por dia. Fica no title, para
+           aparecer ao pousar o mouse, e no group-hover para quem usa toque. */
+        <p className="mt-1 text-xs text-ink-muted opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
+          JPG, PNG ou WebP · até 5 MB
         </p>
       )}
     </div>

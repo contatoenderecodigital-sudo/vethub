@@ -121,7 +121,9 @@ export function diasInternado(entrada: string, saida: string | null): number {
 /** "Hoje", "1 dia", "5 dias": texto curto para o cartão do paciente. */
 export function rotuloDiasInternado(entrada: string, saida: string | null): string {
   const dias = diasInternado(entrada, saida);
-  if (dias === 0) return "Hoje";
+  // A frase na tela é "Internado há …". "Internado há Hoje" não existe em
+  // português: quem deu entrada hoje está internado há menos de um dia.
+  if (dias === 0) return "menos de um dia";
   return `${dias} ${dias === 1 ? "dia" : "dias"}`;
 }
 

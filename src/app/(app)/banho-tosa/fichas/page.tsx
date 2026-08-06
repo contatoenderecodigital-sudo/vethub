@@ -127,7 +127,11 @@ export default async function FichasBanhoTosaPage({
         </p>
       )}
 
-      <Card className="mb-4">
+      {/* `relative z-20` não é enfeite: `.glass` usa backdrop-filter, e isso
+          cria contexto de empilhamento. O dropdown do seletor de pet ficava
+          preso dentro deste card e o card seguinte pintava por cima dele.
+          Elevando o card inteiro, a lista de sugestões aparece por completo. */}
+      <Card className="relative z-20 mb-4">
         <p className="mb-2 flex items-center gap-2 text-sm font-medium text-ink">
           <Plus className="size-4 text-ink-muted" aria-hidden />
           Nova ficha
@@ -140,21 +144,29 @@ export default async function FichasBanhoTosaPage({
         </div>
       </Card>
 
-      <form
-        method="get"
-        className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center"
-      >
-        <Input
-          type="search"
-          name="q"
-          defaultValue={termo}
-          placeholder="Buscar por pet ou tutor…"
-          className="min-h-11 sm:max-w-md"
-        />
-        <Button type="submit" variante="secondary" className="min-h-11">
-          <Search className="size-4" />
-          Buscar
-        </Button>
+      {/* As duas caixas ficavam empilhadas e pareciam a mesma coisa: uma cria
+          ficha, a outra filtra a lista. O rótulo diz qual é qual. */}
+      <form method="get" className="mb-4">
+        <label
+          htmlFor="filtro-fichas"
+          className="mb-1.5 block text-sm font-medium text-ink"
+        >
+          Filtrar as fichas já cadastradas
+        </label>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <Input
+            id="filtro-fichas"
+            type="search"
+            name="q"
+            defaultValue={termo}
+            placeholder="Nome do pet ou do tutor…"
+            className="min-h-11 sm:max-w-md"
+          />
+          <Button type="submit" variante="secondary" className="min-h-11">
+            <Search className="size-4" />
+            Filtrar
+          </Button>
+        </div>
       </form>
 
       {lista.length === 0 ? (

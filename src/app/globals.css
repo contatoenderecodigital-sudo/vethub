@@ -343,3 +343,61 @@ select option {
   font-weight: 700;
   letter-spacing: -0.02em;
 }
+
+/* Listas de mês e ano dentro do calendário. O react-day-picker desenha
+   <select> nativos; sem isto eles herdam o visual do sistema e destoam do
+   vidro. */
+.calendario-vidro .rdp-dropdowns {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.calendario-vidro .rdp-dropdown_root {
+  position: relative;
+}
+
+.calendario-vidro .rdp-dropdown {
+  appearance: none;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(255 255 255 / 0.3);
+  background: rgb(255 255 255 / 0.15);
+  padding: 0.25rem 1.6rem 0.25rem 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #fff;
+  text-transform: capitalize;
+}
+
+.calendario-vidro .rdp-dropdown:hover {
+  background: rgb(255 255 255 / 0.25);
+}
+
+/* A setinha some junto com o appearance: desenhamos de novo. */
+.calendario-vidro .rdp-dropdown_root::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 0.5rem;
+  width: 0.4rem;
+  height: 0.4rem;
+  transform: translateY(-70%) rotate(45deg);
+  border-right: 1.5px solid rgb(255 255 255 / 0.7);
+  border-bottom: 1.5px solid rgb(255 255 255 / 0.7);
+  pointer-events: none;
+}
+
+/* Dia fora do intervalo permitido precisa PARECER bloqueado. Antes ficava
+   igual aos outros: a pessoa clicava, nada acontecia e ela achava que o
+   calendário tinha travado. */
+.calendario-vidro .rdp-day_button:disabled,
+.calendario-vidro .rdp-disabled .rdp-day_button {
+  cursor: not-allowed;
+  opacity: 0.25;
+  text-decoration: line-through;
+}
+
+.calendario-vidro .rdp-day_button:disabled:hover,
+.calendario-vidro .rdp-disabled .rdp-day_button:hover {
+  background: transparent;
+}

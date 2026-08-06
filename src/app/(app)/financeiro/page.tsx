@@ -291,8 +291,8 @@ export default async function PainelFinanceiroPage({
             altura={260}
             empilhado={false}
             series={[
-              { chave: "recebido", rotulo: "Recebido", cor: "#6ee7b7" },
-              { chave: "pago", rotulo: "Pago", cor: "#fcd34d" },
+              { chave: "recebido", rotulo: "Recebido", cor: "#10b981" },
+              { chave: "pago", rotulo: "Pago", cor: "#f59e0b" },
             ]}
           />
         ) : (

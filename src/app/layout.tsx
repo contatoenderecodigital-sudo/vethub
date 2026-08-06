@@ -25,7 +25,7 @@ export const viewport: Viewport = {
  * Aplica o tema salvo antes da primeira pintura. Sem isso a tela
  * aparece verde por um instante e depois muda de cor.
  */
-const APLICAR_TEMA = `try{var t=localStorage.getItem("vethub:tema");if(t)document.documentElement.dataset.tema=t}catch(e){}`;
+const APLICAR_TEMA = `try{var d=document.documentElement,t=localStorage.getItem("vethub:tema"),m=localStorage.getItem("vethub:modo");if(t)d.dataset.tema=t;if(m)d.dataset.modo=m}catch(e){}`;
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   // Nonce gerado pelo proxy para o script inline passar na CSP

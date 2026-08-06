@@ -401,3 +401,190 @@ select option {
 .calendario-vidro .rdp-disabled .rdp-day_button:hover {
   background: transparent;
 }
+
+/* ==================================================================
+ * MODO CLARO
+ *
+ * O sistema nasceu só escuro: vidro branco translúcido sobre o degradê da
+ * marca, com texto branco. Recepção em ambiente iluminado sofre com isso, e
+ * foi o pedido mais repetido.
+ *
+ * A implementação é deliberadamente CENTRALIZADA AQUI, e não espalhada pelos
+ * componentes. O app tem 489 usos de branco fixo (bg-white/15, text-white,
+ * border-white/20…) em 103 arquivos. Reescrever tudo para variáveis seria uma
+ * migração enorme, arriscada e difícil de revisar — e cada `bg-white/15`
+ * significa a MESMA coisa em todo lugar: "um véu sobre o fundo".
+ *
+ * Então o véu é redefinido de uma vez: no claro ele passa a ser escuro sobre
+ * fundo claro, mantendo exatamente as mesmas opacidades relativas. Um bloco
+ * de CSS, zero alteração nos componentes, e reverter é apagar este trecho.
+ *
+ * As exceções (branco sobre botão colorido) estão no fim do bloco.
+ * ================================================================== */
+
+[data-modo="claro"] {
+  /* Tinta escura sobre fundo claro. */
+  --color-ink: #0f172a;
+  --color-ink-muted: rgb(15 23 42 / 0.72);
+  --color-edge: rgb(15 23 42 / 0.14);
+  --color-surface: rgb(255 255 255 / 0.75);
+  --color-page: #f1f5f9;
+}
+
+/* Fundo: em vez do degradê forte da marca, um papel claro com um sopro da
+   cor do tema. O vidro precisa de algo por baixo para desfocar, senão vira
+   um retângulo cinza sem graça. */
+[data-modo="claro"] body::before {
+  background:
+    radial-gradient(circle 24rem at 82% 8%, color-mix(in srgb, var(--tema-claro) 22%, transparent) 0 55%, transparent 62%),
+    radial-gradient(circle 30rem at 8% 88%, color-mix(in srgb, var(--tema-medio) 16%, transparent) 0 58%, transparent 66%),
+    radial-gradient(circle 18rem at 100% 65%, color-mix(in srgb, var(--tema-menta) 26%, transparent) 0 55%, transparent 64%),
+    linear-gradient(135deg, #eef2f7 0%, #f8fafc 55%, #eaf3ef 100%);
+}
+
+/* ---- o vidro vira branco opaco com borda escura ---- */
+[data-modo="claro"] .glass {
+  background: rgb(255 255 255 / 0.72);
+  border-color: rgb(15 23 42 / 0.1);
+  box-shadow:
+    0 8px 32px rgb(15 23 42 / 0.08),
+    inset 0 1px 0 rgb(255 255 255 / 0.9);
+}
+
+[data-modo="claro"] .glass-forte {
+  background: rgb(255 255 255 / 0.88);
+  border-color: rgb(15 23 42 / 0.12);
+  box-shadow: 0 12px 40px rgb(15 23 42 / 0.12);
+}
+
+/* O menu escuro existia para garantir contraste com texto branco. No claro
+   ele vira branco sólido, que é o que um menu de contexto deve ser. */
+[data-modo="claro"] .glass-menu {
+  background: rgb(255 255 255 / 0.97);
+  border-color: rgb(15 23 42 / 0.12);
+  box-shadow: 0 20px 50px rgb(15 23 42 / 0.18);
+  color: #0f172a;
+}
+
+/* O cabeçalho mantém a cor da marca: é a faixa de identidade da clínica. */
+[data-modo="claro"] header.sticky {
+  background: color-mix(in srgb, var(--tema-medio) 92%, transparent);
+  border-bottom-color: rgb(15 23 42 / 0.08);
+}
+
+/* ---- o véu branco vira véu escuro, com as mesmas proporções ---- */
+[data-modo="claro"] .bg-white\/4 { background-color: rgb(15 23 42 / 0.02); }
+[data-modo="claro"] .bg-white\/5 { background-color: rgb(15 23 42 / 0.03); }
+[data-modo="claro"] .bg-white\/8 { background-color: rgb(15 23 42 / 0.04); }
+[data-modo="claro"] .bg-white\/10 { background-color: rgb(15 23 42 / 0.05); }
+[data-modo="claro"] .bg-white\/15 { background-color: rgb(15 23 42 / 0.07); }
+[data-modo="claro"] .bg-white\/20 { background-color: rgb(15 23 42 / 0.09); }
+[data-modo="claro"] .bg-white\/25 { background-color: rgb(15 23 42 / 0.12); }
+[data-modo="claro"] .bg-white\/35 { background-color: rgb(15 23 42 / 0.16); }
+[data-modo="claro"] .bg-white\/40 { background-color: rgb(15 23 42 / 0.18); }
+
+/* Acima de 50% o branco era fundo de verdade (impressão, destaque), não
+   véu: continua branco. */
+
+[data-modo="claro"] .border-white\/15 { border-color: rgb(15 23 42 / 0.08); }
+[data-modo="claro"] .border-white\/20 { border-color: rgb(15 23 42 / 0.1); }
+[data-modo="claro"] .border-white\/25 { border-color: rgb(15 23 42 / 0.12); }
+[data-modo="claro"] .border-white\/30 { border-color: rgb(15 23 42 / 0.14); }
+[data-modo="claro"] .border-white\/40 { border-color: rgb(15 23 42 / 0.18); }
+[data-modo="claro"] .border-white\/50 { border-color: rgb(15 23 42 / 0.22); }
+[data-modo="claro"] .border-white\/60 { border-color: rgb(15 23 42 / 0.28); }
+[data-modo="claro"] .border-white\/70 { border-color: rgb(15 23 42 / 0.34); }
+[data-modo="claro"] .divide-white\/15 > * + * { border-color: rgb(15 23 42 / 0.08); }
+
+[data-modo="claro"] .text-white { color: #0f172a; }
+[data-modo="claro"] .text-white\/50 { color: rgb(15 23 42 / 0.5); }
+[data-modo="claro"] .text-white\/55 { color: rgb(15 23 42 / 0.55); }
+[data-modo="claro"] .text-white\/60 { color: rgb(15 23 42 / 0.6); }
+[data-modo="claro"] .text-white\/70 { color: rgb(15 23 42 / 0.68); }
+[data-modo="claro"] .text-white\/75 { color: rgb(15 23 42 / 0.7); }
+[data-modo="claro"] .text-white\/80 { color: rgb(15 23 42 / 0.74); }
+[data-modo="claro"] .text-white\/85 { color: rgb(15 23 42 / 0.78); }
+[data-modo="claro"] .text-white\/90 { color: rgb(15 23 42 / 0.82); }
+
+[data-modo="claro"] .placeholder\:text-white\/50::placeholder,
+[data-modo="claro"] .placeholder\:text-white\/55::placeholder {
+  color: rgb(15 23 42 / 0.45);
+}
+
+/* Campos: no escuro o texto digitado é branco. */
+[data-modo="claro"] input,
+[data-modo="claro"] select,
+[data-modo="claro"] textarea {
+  color-scheme: light;
+}
+
+/* A sombra de texto existia para o branco descolar do degradê; no claro ela
+   suja a leitura. */
+[data-modo="claro"] .drop-shadow-sm {
+  filter: none;
+}
+
+/* ---- exceções: branco que é FOREGROUND, não véu ----
+   Texto e ícone sobre botão colorido continuam brancos, senão somem. O
+   cabeçalho segue com a cor da marca, então o que está dentro dele também. */
+[data-modo="claro"] .bg-danger,
+[data-modo="claro"] .bg-brand,
+[data-modo="claro"] .bg-success,
+[data-modo="claro"] header.sticky,
+[data-modo="claro"] header.sticky .text-white,
+[data-modo="claro"] .bg-danger .text-white,
+[data-modo="claro"] .bg-brand .text-white {
+  color: #fff;
+}
+
+/* Dentro do cabeçalho o véu volta a ser branco: o fundo ali é colorido. */
+[data-modo="claro"] header.sticky .bg-white\/15 { background-color: rgb(255 255 255 / 0.15); }
+[data-modo="claro"] header.sticky .bg-white\/20 { background-color: rgb(255 255 255 / 0.2); }
+[data-modo="claro"] header.sticky .bg-white\/25 { background-color: rgb(255 255 255 / 0.25); }
+
+/* Calendário e barra de rolagem acompanham. */
+[data-modo="claro"] .calendario-vidro { color: #0f172a; }
+[data-modo="claro"] .calendario-vidro .rdp-weekday { color: rgb(15 23 42 / 0.6); }
+[data-modo="claro"] .calendario-vidro .rdp-chevron { fill: rgb(15 23 42 / 0.75); }
+[data-modo="claro"] .calendario-vidro .rdp-dropdown {
+  background: rgb(15 23 42 / 0.06);
+  border-color: rgb(15 23 42 / 0.15);
+  color: #0f172a;
+}
+[data-modo="claro"] .calendario-vidro .rdp-dropdown_root::after {
+  border-color: rgb(15 23 42 / 0.6);
+}
+[data-modo="claro"] .calendario-vidro .rdp-selected .rdp-day_button {
+  background: var(--tema-medio);
+  color: #fff;
+}
+[data-modo="claro"] * {
+  scrollbar-color: rgb(15 23 42 / 0.25) transparent;
+}
+
+/* Vermelho de erro, âmbar de atenção e verde de sucesso foram escolhidos
+   claros para descolar do fundo escuro. Sobre papel branco eles somem: no
+   modo claro voltam para os tons fortes. */
+[data-modo="claro"] .text-red-50,
+[data-modo="claro"] .text-red-100 { color: #b91c1c; }
+[data-modo="claro"] .text-amber-50,
+[data-modo="claro"] .text-amber-100 { color: #b45309; }
+[data-modo="claro"] .text-emerald-50,
+[data-modo="claro"] .text-emerald-100 { color: #047857; }
+[data-modo="claro"] .bg-red-400\/25,
+[data-modo="claro"] .bg-red-400\/30 { background-color: rgb(220 38 38 / 0.08); }
+[data-modo="claro"] .bg-amber-300\/25 { background-color: rgb(217 119 6 / 0.1); }
+[data-modo="claro"] .bg-emerald-300\/30 { background-color: rgb(5 150 105 / 0.1); }
+[data-modo="claro"] .border-red-300\/40,
+[data-modo="claro"] .border-red-300\/50 { border-color: rgb(220 38 38 / 0.3); }
+[data-modo="claro"] .border-amber-200\/60 { border-color: rgb(217 119 6 / 0.35); }
+
+/* A janela de diálogo e o balão do gráfico usam glass-menu, que no claro é
+   branco: o texto dentro precisa acompanhar. */
+[data-modo="claro"] .glass-menu .text-white,
+[data-modo="claro"] .glass-menu .text-white\/90,
+[data-modo="claro"] .glass-menu .text-white\/85,
+[data-modo="claro"] .glass-menu .text-white\/80,
+[data-modo="claro"] .glass-menu .text-white\/75 {
+  color: #0f172a;
+}

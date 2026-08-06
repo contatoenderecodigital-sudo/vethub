@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Check, Palette } from "lucide-react";
+import { Check, Moon, Palette, Sun } from "lucide-react";
 
 /**
  * Troca a cor do sistema. A identidade da marca continua verde: isto é
@@ -22,6 +22,18 @@ export const TEMAS = [
 ] as const;
 
 export const CHAVE_TEMA = "vethub:tema";
+export const CHAVE_MODO = "vethub:modo";
+
+/**
+ * Claro ou escuro. São coisas diferentes da cor: a cor é a identidade da
+ * clínica, o modo é a luz da sala. Recepção com janela grande pede claro;
+ * consultório com luz baixa pede escuro. Por isso os dois convivem no mesmo
+ * menu, mas em linhas separadas.
+ */
+const MODOS = [
+  { id: "escuro", nome: "Escuro", icone: Moon },
+  { id: "claro", nome: "Claro", icone: Sun },
+] as const;
 
 export function SeletorTema() {
   const [aberto, setAberto] = useState(false);
@@ -32,6 +44,11 @@ export function SeletorTema() {
     typeof document === "undefined"
       ? "esmeralda"
       : document.documentElement.dataset.tema || "esmeralda"
+  );
+  const [modo, setModo] = useState<string>(() =>
+    typeof document === "undefined"
+      ? "escuro"
+      : document.documentElement.dataset.modo || "escuro"
   );
   const raiz = useRef<HTMLDivElement>(null);
 
@@ -44,6 +61,15 @@ export function SeletorTema() {
       // navegador com armazenamento bloqueado: o tema vale só nesta aba
     }
   }, [atual]);
+
+  useEffect(() => {
+    document.documentElement.dataset.modo = modo;
+    try {
+      localStorage.setItem(CHAVE_MODO, modo);
+    } catch {
+      // navegador com armazenamento bloqueado: o modo vale só nesta aba
+    }
+  }, [modo]);
 
   useEffect(() => {
     function aoClicarFora(e: MouseEvent) {
@@ -112,6 +138,32 @@ export function SeletorTema() {
                 >
                   {tema.nome}
                 </span>
+              </button>
+            ))}
+          </div>
+
+          <p className="mt-3 mb-2 border-t border-white/20 pt-3 text-[11px] font-semibold uppercase tracking-wider text-white/75 drop-shadow-sm">
+            Claro ou escuro
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            {MODOS.map((m) => (
+              <button
+                key={m.id}
+                type="button"
+                role="menuitemradio"
+                aria-checked={modo === m.id}
+                onClick={() => {
+                  setModo(m.id);
+                  setAberto(false);
+                }}
+                className={`flex cursor-pointer items-center justify-center gap-2 rounded-xl border px-2 py-2 text-xs font-medium transition-colors ${
+                  modo === m.id
+                    ? "border-white/60 bg-white/25 text-white"
+                    : "border-white/25 text-white/80 hover:bg-white/15 hover:text-white"
+                }`}
+              >
+                <m.icone className="size-4 shrink-0" strokeWidth={1.8} aria-hidden />
+                {m.nome}
               </button>
             ))}
           </div>

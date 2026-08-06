@@ -37,24 +37,33 @@ import { formatBRL } from "@/lib/format";
  * para saltar sobre qualquer fundo colorido: verde, azul, roxo ou
  * vermelho, mantendo contraste de leitura.
  */
+/**
+ * Tons MÉDIOS de propósito. As cores claras anteriores foram escolhidas para
+ * descolar do degradê escuro, e funcionavam bem lá — mas no modo claro uma
+ * linha amarelo-pastel sobre papel branco praticamente desaparece. Estes
+ * tons têm contraste suficiente nos dois fundos, então o gráfico não precisa
+ * saber em que modo está.
+ */
 export const CORES_SERIE = [
-  "#fcd34d", // âmbar
-  "#5eead4", // turquesa
-  "#fda4af", // rosa
-  "#bef264", // limão
-  "#a5b4fc", // lavanda
-  "#fdba74", // laranja
+  "#f59e0b", // âmbar
+  "#14b8a6", // turquesa
+  "#f43f5e", // rosa
+  "#84cc16", // limão
+  "#818cf8", // lavanda
+  "#fb7185", // coral
 ] as const;
 
+// currentColor deixa o eixo seguir a cor do texto do sistema, que muda
+// entre o modo escuro e o claro sem este componente saber de nada.
 const EIXO = {
-  stroke: "rgb(255 255 255 / 0.8)",
+  stroke: "currentColor",
   fontSize: 11,
   tickLine: false,
   axisLine: false,
 } as const;
 
 /** Grade discreta, mas visível o bastante para servir de referência. */
-const COR_GRADE = "rgb(255 255 255 / 0.22)";
+const COR_GRADE = "currentColor";
 
 type Formato = "moeda" | "numero";
 
@@ -119,7 +128,7 @@ export function GraficoBarras({
   empilhado?: boolean;
 }) {
   return (
-    <ResponsiveContainer width="100%" height={altura}>
+    <ResponsiveContainer width="100%" height={altura} className="text-ink-muted">
       <BarChart data={dados} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
         <defs>
           {series.map((s, i) => {
@@ -132,7 +141,12 @@ export function GraficoBarras({
             );
           })}
         </defs>
-        <CartesianGrid strokeDasharray="3 3" stroke={COR_GRADE} vertical={false} />
+        <CartesianGrid
+          strokeDasharray="3 3"
+          stroke={COR_GRADE}
+          strokeOpacity={0.25}
+          vertical={false}
+        />
         <XAxis dataKey={eixoX} {...EIXO} />
         <YAxis {...EIXO} tickFormatter={compacto} width={52} />
         <Tooltip
@@ -170,7 +184,7 @@ export function GraficoArea({
   formato = "numero",
 }: BaseProps & { series: { chave: string; rotulo: string; cor?: string }[] }) {
   return (
-    <ResponsiveContainer width="100%" height={altura}>
+    <ResponsiveContainer width="100%" height={altura} className="text-ink-muted">
       <AreaChart data={dados} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
         <defs>
           {series.map((s, i) => {
@@ -227,7 +241,7 @@ export function GraficoLinha({
   formato = "numero",
 }: BaseProps & { chave: string; rotulo: string }) {
   return (
-    <ResponsiveContainer width="100%" height={altura}>
+    <ResponsiveContainer width="100%" height={altura} className="text-ink-muted">
       <LineChart data={dados} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
         <CartesianGrid strokeDasharray="3 3" stroke={COR_GRADE} vertical={false} />
         <XAxis dataKey={eixoX} {...EIXO} />
@@ -262,7 +276,7 @@ export function GraficoRosca({
   formato?: Formato;
 }) {
   return (
-    <ResponsiveContainer width="100%" height={altura}>
+    <ResponsiveContainer width="100%" height={altura} className="text-ink-muted">
       <PieChart>
         <defs>
           {CORES_SERIE.map((cor, i) => (

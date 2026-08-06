@@ -8,6 +8,7 @@ import {
   formatEndereco,
   formatTelefone,
 } from "@/lib/format";
+import { mascaraCNPJ } from "@/lib/validacao";
 import { rotuloFormaVenda, type Clinica, type VendaStatus } from "@/lib/types";
 import { BotaoImprimir } from "./botao-imprimir";
 
@@ -133,7 +134,7 @@ export default async function ComprovantePage({
       <div className="cupom mx-auto max-w-[80mm] rounded-lg bg-white p-4 font-mono text-[11px] leading-snug text-black shadow-xl">
         <header className="text-center">
           <h1 className="text-sm font-bold uppercase">{clinica?.nome ?? "Clínica"}</h1>
-          {clinica?.cnpj && <p>CNPJ {clinica.cnpj}</p>}
+          {clinica?.cnpj && <p>CNPJ {mascaraCNPJ(clinica.cnpj)}</p>}
           {endereco !== "—" && <p>{endereco}</p>}
           {clinica?.telefone && <p>Tel. {formatTelefone(clinica.telefone)}</p>}
         </header>
@@ -169,24 +170,24 @@ export default async function ComprovantePage({
           <thead>
             <tr className="border-b border-dashed border-black text-left">
               <th className="py-1 font-bold">Item</th>
-              <th className="py-1 text-right font-bold">Qtd</th>
-              <th className="py-1 text-right font-bold">Unit.</th>
-              <th className="py-1 text-right font-bold">Total</th>
+              <th className="py-1 pl-2 text-right font-bold">Qtd</th>
+              <th className="py-1 pl-2 text-right font-bold">Unit.</th>
+              <th className="py-1 pl-2 text-right font-bold">Total</th>
             </tr>
           </thead>
           <tbody>
             {(itens ?? []).map((item) => (
               <tr key={item.id} className="align-top">
                 <td className="py-0.5 pr-1">{item.descricao}</td>
-                <td className="py-0.5 text-right tabular-nums">
+                <td className="py-0.5 pl-2 text-right tabular-nums">
                   {Number(item.quantidade).toLocaleString("pt-BR", {
                     maximumFractionDigits: 3,
                   })}
                 </td>
-                <td className="py-0.5 text-right tabular-nums">
+                <td className="py-0.5 pl-2 text-right tabular-nums">
                   {formatBRL(item.valor_unitario)}
                 </td>
-                <td className="py-0.5 text-right tabular-nums">
+                <td className="py-0.5 pl-2 text-right tabular-nums">
                   {formatBRL(
                     Number(item.quantidade) * Number(item.valor_unitario) -
                       Number(item.desconto)

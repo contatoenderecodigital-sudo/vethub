@@ -21,6 +21,7 @@ import { ButtonLink } from "@/components/ui/button";
 import { Card, CardTitulo } from "@/components/ui/card";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { EmptyState } from "@/components/ui/empty-state";
+import { MenuAcoes } from "@/components/ui/menu-acoes";
 import { IconeEspecie } from "@/components/icone-especie";
 import { excluirTutor } from "../actions";
 import { CardFinanceiro } from "./financeiro";
@@ -64,10 +65,14 @@ export default async function TutorPage({
       <PageHeader
         titulo={tutor.nome}
         subtitulo="Tutor"
+        // Excluir não fica solto em vermelho ao lado de Editar: os dois têm
+        // o mesmo tamanho e o mesmo alvo de clique, e apagar um tutor leva os
+        // pets e o histórico junto. Dentro do menu "⋯" a ação continua a um
+        // clique de distância, mas ninguém acerta ela por engano.
         acao={
-          <>
-            <ButtonLink href={`/tutores/${id}/editar`} variante="secondary">
-              <Pencil className="size-4" />
+          <MenuAcoes>
+            <ButtonLink href={`/tutores/${id}/editar`} variante="ghost">
+              <Pencil className="size-4 shrink-0" />
               Editar
             </ButtonLink>
             <form action={excluirComId}>
@@ -75,11 +80,11 @@ export default async function TutorPage({
                 variante="danger"
                 mensagem="Excluir este tutor apaga também os pets e o histórico dele. Tem certeza?"
               >
-                <Trash2 className="size-4" />
+                <Trash2 className="size-4 shrink-0" />
                 Excluir
               </ConfirmButton>
             </form>
-          </>
+          </MenuAcoes>
         }
       />
 

@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { redirecionarComAviso } from "@/lib/aviso";
 import { z } from "zod";
 import { getSessao } from "@/lib/auth";
+import { hojeISO } from "@/lib/format";
 import {
   pesagemSchema,
   petParaBanco,
@@ -60,6 +61,21 @@ export async function criarPet(formData: FormData) {
     .single();
 
   if (error) return redirecionarComAviso(`/pets/novo?erro=Não foi possível salvar.${tutorParam}`);
+
+  // O peso digitado no cadastro precisa virar a PRIMEIRA pesagem do
+  // histórico. Sem isto, quem cadastrava o pet com 32,5 kg via a ficha dizer
+  // "Primeira pesagem registrada" na consulta seguinte, com outro valor — o
+  // peso inicial simplesmente não existia na curva.
+  if (dados.peso != null) {
+    await supabase.from("pesagem").insert({
+      clinica_id: usuario.clinica_id,
+      pet_id: data.id,
+      peso: dados.peso,
+      data: hojeISO(),
+      observacao: "Peso informado no cadastro",
+      registrado_por: usuario.id,
+    });
+  }
 
   revalidatePath("/pets");
   redirect(`/pets/${data.id}`);

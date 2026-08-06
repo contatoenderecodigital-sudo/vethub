@@ -20,6 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardTitulo } from "@/components/ui/card";
 import { ConfirmButton } from "@/components/ui/confirm-button";
+import { MenuAcoes } from "@/components/ui/menu-acoes";
 import { PageHeader } from "@/components/ui/page-header";
 import { abaixoDoMinimo, formatPercentual, formatQuantidade } from "../formato";
 import { excluirItem } from "../actions";
@@ -114,20 +115,34 @@ export default async function ItemPage({
         ]
           .filter(Boolean)
           .join(" · ")}
+        // Editar e Excluir moram no menu "⋯"; Movimentar, que é a ação do
+        // dia a dia, fica visível. Excluir estava solto no rodapé da ficha,
+        // longe do resto e sem contexto nenhum.
         acao={
           podeEditar ? (
-            <>
-              {controla && (
-                <ButtonLink href={`/estoque?item=${item.id}`} variante="secondary">
-                  <ArrowLeftRight className="size-4" />
-                  Movimentar
-                </ButtonLink>
-              )}
-              <ButtonLink href={`/itens/${item.id}/editar`} variante="secondary">
-                <Pencil className="size-4" />
+            <MenuAcoes>
+              <ButtonLink href={`/itens/${item.id}/editar`} variante="ghost">
+                <Pencil className="size-4 shrink-0" />
                 Editar
               </ButtonLink>
-            </>
+              <form action={excluirComId}>
+                <ConfirmButton
+                  variante="danger"
+                  mensagem={`Excluir "${item.nome}" do catálogo? Essa ação não pode ser desfeita.`}
+                >
+                  <Trash2 className="size-4 shrink-0" />
+                  Excluir
+                </ConfirmButton>
+              </form>
+            </MenuAcoes>
+          ) : undefined
+        }
+        acaoPrincipal={
+          podeEditar && controla ? (
+            <ButtonLink href={`/estoque?item=${item.id}`} variante="secondary">
+              <ArrowLeftRight className="size-4" />
+              Movimentar
+            </ButtonLink>
           ) : undefined
         }
       />
@@ -276,18 +291,6 @@ export default async function ItemPage({
         </Card>
       )}
 
-      {podeEditar && (
-        <form action={excluirComId}>
-          <ConfirmButton
-            variante="danger"
-            tamanho="sm"
-            mensagem={`Excluir "${item.nome}" do catálogo? Essa ação não pode ser desfeita.`}
-          >
-            <Trash2 className="size-4" />
-            Excluir item
-          </ConfirmButton>
-        </form>
-      )}
     </div>
   );
 }

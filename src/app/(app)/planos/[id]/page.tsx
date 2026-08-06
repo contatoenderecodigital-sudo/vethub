@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardTitulo } from "@/components/ui/card";
 import { ConfirmButton } from "@/components/ui/confirm-button";
+import { MenuAcoes } from "@/components/ui/menu-acoes";
 import { PageHeader } from "@/components/ui/page-header";
 import { excluirPlano } from "../actions";
 import { primeiro } from "../schema";
@@ -99,22 +100,35 @@ export default async function PlanoPage({
       <PageHeader
         titulo={plano.nome}
         subtitulo={`${formatBRL(plano.preco_venda)} por mês`}
+        // Excluir sai do rodapé e entra no menu "⋯", junto de Editar. A
+        // ação do dia a dia (nova assinatura) é a que fica visível.
         acao={
-          <>
-            <ButtonLink
-              href={`/planos/assinaturas/nova?plano=${plano.id}`}
-              variante="secondary"
-            >
-              <Plus className="size-4" />
-              Nova assinatura
-            </ButtonLink>
-            {podeEditar && (
-              <ButtonLink href={`/planos/${plano.id}/editar`} variante="secondary">
-                <Pencil className="size-4" />
+          podeEditar ? (
+            <MenuAcoes>
+              <ButtonLink href={`/planos/${plano.id}/editar`} variante="ghost">
+                <Pencil className="size-4 shrink-0" />
                 Editar
               </ButtonLink>
-            )}
-          </>
+              <form action={excluirPlano.bind(null, plano.id)}>
+                <ConfirmButton
+                  variante="danger"
+                  mensagem={`Excluir o plano "${plano.nome}"? Só é possível enquanto ele não tiver assinaturas.`}
+                >
+                  <Trash2 className="size-4 shrink-0" />
+                  Excluir
+                </ConfirmButton>
+              </form>
+            </MenuAcoes>
+          ) : undefined
+        }
+        acaoPrincipal={
+          <ButtonLink
+            href={`/planos/assinaturas/nova?plano=${plano.id}`}
+            variante="secondary"
+          >
+            <Plus className="size-4" />
+            Nova assinatura
+          </ButtonLink>
         }
       />
 
@@ -282,18 +296,6 @@ export default async function PlanoPage({
         )}
       </Card>
 
-      {podeEditar && (
-        <form action={excluirPlano.bind(null, plano.id)}>
-          <ConfirmButton
-            variante="danger"
-            tamanho="sm"
-            mensagem={`Excluir o plano "${plano.nome}"? Só é possível enquanto ele não tiver assinaturas.`}
-          >
-            <Trash2 className="size-4" />
-            Excluir plano
-          </ConfirmButton>
-        </form>
-      )}
     </div>
   );
 }

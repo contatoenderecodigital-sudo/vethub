@@ -92,7 +92,12 @@ export function PrescricaoForm({
 
       {/* Larguras mínimas por coluna + gap maior: "Frequência (h)" e
           "Duração (dias)" param de encostar uma na outra no painel estreito. */}
-      <div className="grid gap-3 sm:grid-cols-[minmax(7rem,0.8fr)_minmax(9rem,1fr)_minmax(9rem,1fr)] sm:gap-x-4">
+      {/* O card de prescrições vive numa coluna de 1/3 da tela. Com larguras
+          mínimas em rem, os três campos somavam mais que o espaço disponível
+          e o rótulo "Duração (dias)" e o select "Via" apareciam cortados
+          ("— Não in!"). Em coluna estreita eles empilham; a partir do lg,
+          quando há largura de sobra, voltam para a linha. */}
+      <div className="grid gap-3 lg:grid-cols-3 lg:gap-x-4">
         <Campo rotulo="Via" htmlFor="via" erro={errors.via?.message}>
           <Select id="via" {...register("via")}>
             <option value="">— Não informada —</option>

@@ -615,7 +615,7 @@ select option {
 [data-modo="claro"] .text-red-50,
 [data-modo="claro"] .text-red-100 { color: #b91c1c; }
 [data-modo="claro"] .text-amber-50,
-[data-modo="claro"] .text-amber-100 { color: #b45309; }
+[data-modo="claro"] .text-amber-100 { color: #92400e; }
 [data-modo="claro"] .text-emerald-50,
 [data-modo="claro"] .text-emerald-100 { color: #047857; }
 /* O ciano faltava na lista, e as etiquetas de "tipo" no histórico de

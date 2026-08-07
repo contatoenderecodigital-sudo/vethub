@@ -255,10 +255,13 @@ export default async function VendasPage({
                     </form>
                   )}
 
+                  {/* A seta tem 16px; o alvo clicável precisa ter 24 (mínimo
+                      da norma) e ganha 44 no toque. O ícone continua do mesmo
+                      tamanho — o que cresce é a área ao redor dele. */}
                   <Link
                     href={`/vendas/${v.id}`}
                     aria-label={`Abrir venda nº ${v.numero}`}
-                    className="text-ink-muted transition-colors hover:text-white"
+                    className="inline-flex size-11 shrink-0 items-center justify-center rounded-lg text-ink-muted transition-colors hover:bg-white/15 hover:text-white sm:size-8"
                   >
                     <ChevronRight className="size-4 shrink-0" />
                   </Link>

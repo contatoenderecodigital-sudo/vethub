@@ -323,7 +323,21 @@ function auditarNaPagina({ AA_NORMAL, AA_GRANDE, ALVO_MIN, ALVO_AA, exigirToque 
       // não o quadradinho: clicar no texto marca a caixa. Medir só o input
       // acusava dezenas de "alvos pequenos" que o dedo acerta sem esforço.
       const rotulo = el.closest("label");
-      const caixa = rotulo && /^(checkbox|radio)$/.test(el.type) ? rotulo : el;
+      let caixa = rotulo && /^(checkbox|radio)$/.test(el.type) ? rotulo : el;
+
+      // Campo de texto costuma ser um <input> baixo dentro de uma moldura
+      // com borda e recuo — é a MOLDURA que a pessoa acerta com o dedo, e o
+      // foco cai no input de qualquer jeito. O campo de data aparecia como
+      // "20px de altura" por causa disso.
+      if (caixa === el && /^(input|textarea)$/.test(el.tagName.toLowerCase())) {
+        const pai = el.parentElement;
+        if (pai) {
+          const sp = getComputedStyle(pai);
+          const temMoldura = sp.borderTopWidth !== "0px" || parseFloat(sp.paddingTop) > 0;
+          const cresce = pai.getBoundingClientRect().height > el.getBoundingClientRect().height;
+          if (temMoldura && cresce) caixa = pai;
+        }
+      }
 
       const r = caixa.getBoundingClientRect();
       const menor = Math.min(r.width, r.height);

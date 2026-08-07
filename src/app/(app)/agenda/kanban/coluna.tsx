@@ -29,7 +29,12 @@ export function Coluna({
     <Zona
       id={status}
       rotulo={`${titulo} (${contador})`}
-      className={`flex min-w-[80vw] snap-start flex-col rounded-2xl border-t-4 ${corBorda} bg-white/10 backdrop-blur-md sm:min-w-72 sm:flex-1`}
+      // A largura mínima cai de 18rem para 13rem a partir do xl. Com cinco
+      // colunas de 18rem, a última ("Cancelado") ficava cortada na borda em
+      // telas de 1400px — a resolução de notebook mais comum — e ninguém
+      // percebia que havia mais coisa à direita. Em 13rem as cinco cabem, e
+      // o flex-1 deixa cada uma crescer quando há espaço de sobra.
+      className={`flex min-w-[80vw] snap-start flex-col rounded-2xl border-t-4 ${corBorda} bg-white/10 backdrop-blur-md sm:min-w-72 sm:flex-1 xl:min-w-52`}
     >
       <header className="flex items-center justify-between gap-2 px-3 py-2.5">
         <h2 className="flex min-w-0 items-center gap-2 text-sm font-semibold text-ink">

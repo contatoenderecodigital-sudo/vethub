@@ -279,7 +279,12 @@ export default async function BanhoTosaPage({
                                     strokeWidth={1.8}
                                     aria-hidden
                                   />
-                                  <span className="truncate">
+                                  {/* Em coluna estreita "Maria Aparecida da
+                                      Silva" virava "Maria Aparecid…", e o
+                                      atendente não sabe de quem é o pet.
+                                      Quebrar em duas linhas cabe: o cartão
+                                      tem altura de sobra, largura é que não. */}
+                                  <span className="min-w-0 [overflow-wrap:anywhere]">
                                     {pet?.tutor?.nome ?? "Sem tutor"}
                                   </span>
                                 </p>

@@ -85,15 +85,18 @@ export default async function PainelFinanceiroPage({
   const inicioGrafico = `${chavesMeses[0]}-01`;
 
   const [{ data: abertas }, { data: pagas }] = await Promise.all([
-    // Tudo que ainda não foi quitado até o fim do mês: serve para os cards do
-    // mês e para as listas de vencidas/vencendo hoje (que vêm de meses atrás).
+    // TUDO que ainda não foi quitado, sem recortar por vencimento.
+    //
+    // Antes esta consulta parava no fim do mês corrente, e como todo fiado
+    // nasce vencendo em 30 dias, a venda fiada de hoje caía no mês seguinte e
+    // sumia do painel: a clínica vendia o dia inteiro e via R$ 0,00. O recorte
+    // por data agora é feito depois, por card, e não na origem.
     supabase
       .from("conta")
       .select(
         "id, tipo, descricao, valor, valor_pago, vencimento, status, fornecedor, tutor:tutor_id (nome)"
       )
       .in("status", ["aberta", "parcial"])
-      .lte("vencimento", mes.fim)
       .order("vencimento")
       .limit(LIMITE)
       .returns<ContaAberta[]>(),
@@ -120,8 +123,8 @@ export default async function PainelFinanceiroPage({
 
   const contas = abertas ?? [];
 
-  let aReceber = 0;
-  let aPagar = 0;
+  let emAbertoReceber = 0;
+  let emAbertoPagar = 0;
   let vencidoReceber = 0;
   let vencidoPagar = 0;
   const vencidas: ContaAberta[] = [];
@@ -130,11 +133,10 @@ export default async function PainelFinanceiroPage({
   for (const c of contas) {
     const saldo = saldoDaConta(c);
 
-    // Cards do mês: só o que vence dentro do mês corrente.
-    if (c.vencimento >= mes.inicio && c.vencimento <= mes.fim) {
-      if (c.tipo === "receber") aReceber += saldo;
-      else aPagar += saldo;
-    }
+    // O que ainda não entrou/saiu, vença quando vencer. É a resposta para
+    // "quanto me devem" — a pergunta que o dono faz olhando o painel.
+    if (c.tipo === "receber") emAbertoReceber += saldo;
+    else emAbertoPagar += saldo;
 
     if (c.vencimento < hoje) {
       vencidas.push(c);
@@ -146,7 +148,6 @@ export default async function PainelFinanceiroPage({
   }
 
   const totalVencido = vencidoReceber + vencidoPagar;
-  const saldoPrevisto = aReceber - aPagar;
 
   // Gráfico: soma o que foi pago em cada mês, separando entrada de saída.
   const porMes = new Map(
@@ -175,36 +176,48 @@ export default async function PainelFinanceiroPage({
   }));
   const temMovimento = barras.some((b) => b.recebido > 0 || b.pago > 0);
 
+  // O movimento do mês corrente sai do mesmo agrupamento do gráfico — no
+  // regime que o usuário escolheu —, então os cards e as barras nunca contam
+  // histórias diferentes, e não custa nenhuma consulta a mais.
+  const doMes = porMes.get(hoje.slice(0, 7)) ?? { receita: 0, despesa: 0 };
+  const saldoDoMes = doMes.receita - doMes.despesa;
+  const caixa = regime === "caixa";
+
   const cards: EstatisticaProps[] = [
     {
-      rotulo: "A receber no mês",
-      valor: formatBRL(aReceber),
-      href: "/financeiro/receber?status=abertas",
+      rotulo: caixa ? "Recebido no mês" : "Vendido no mês",
+      valor: formatBRL(doMes.receita),
+      href: "/financeiro/receber",
       icone: ArrowUpRight,
       tom: "positivo",
+      detalhe: caixa ? "Pela data da baixa" : "Pela data da venda",
     },
     {
-      rotulo: "A pagar no mês",
-      valor: formatBRL(aPagar),
-      href: "/financeiro/pagar?status=abertas",
+      rotulo: caixa ? "Pago no mês" : "Comprado no mês",
+      valor: formatBRL(doMes.despesa),
+      href: "/financeiro/pagar",
       icone: ArrowDownRight,
       tom: "atencao",
+      detalhe: caixa ? "Pela data da baixa" : "Pela data da despesa",
     },
     {
-      rotulo: "Vencidas",
-      valor: formatBRL(totalVencido),
-      href: "/financeiro/receber?status=vencidas",
-      icone: TriangleAlert,
-      tom: totalVencido > 0 ? "critico" : "neutro",
-      detalhe: `${formatBRL(vencidoReceber)} a receber · ${formatBRL(vencidoPagar)} a pagar`,
-    },
-    {
-      rotulo: "Saldo previsto",
-      valor: formatBRL(saldoPrevisto),
+      rotulo: caixa ? "Saldo do mês" : "Resultado do mês",
+      valor: formatBRL(saldoDoMes),
       href: "/financeiro/receber",
       icone: Scale,
-      tom: saldoPrevisto < 0 ? "critico" : "neutro",
-      detalhe: "A receber menos a pagar no mês",
+      tom: saldoDoMes < 0 ? "critico" : "neutro",
+      detalhe: caixa ? "Entrou menos saiu" : "Vendido menos comprado",
+    },
+    {
+      rotulo: "A receber em aberto",
+      valor: formatBRL(emAbertoReceber),
+      href: "/financeiro/receber?status=abertas",
+      icone: TriangleAlert,
+      tom: totalVencido > 0 ? "critico" : "neutro",
+      detalhe:
+        totalVencido > 0
+          ? `${formatBRL(vencidoReceber)} já vencido · ${formatBRL(emAbertoPagar)} a pagar`
+          : `Nada vencido · ${formatBRL(emAbertoPagar)} a pagar`,
     },
   ];
 
@@ -226,6 +239,18 @@ export default async function PainelFinanceiroPage({
           </>
         }
       />
+
+      {/* O alternador fica ACIMA dos cards porque agora é ele que decide o
+          que eles contam. Escondido lá embaixo no gráfico, o dono trocava de
+          regime sem perceber que os números de cima mudavam junto. */}
+      <div className="mb-4 flex flex-wrap items-center gap-3">
+        <AlternadorRegime regime={regime} />
+        <p className="text-xs text-ink-muted">
+          {regime === "caixa"
+            ? "Caixa: o dinheiro que entrou e saiu de verdade, pela data do pagamento."
+            : "Competência: o que foi vendido e comprado, pela data do fato, tenha sido pago ou não."}
+        </p>
+      </div>
 
       <GradeEstatisticas colunas={4} className="mb-6">
         {cards.map((c) => (
@@ -252,35 +277,6 @@ export default async function PainelFinanceiroPage({
       <Card>
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
           <CardTitulo className="mb-0">Últimos {MESES_GRAFICO} meses</CardTitulo>
-
-          {/* A mesma pergunta tem duas respostas certas. "Quanto entrou" e
-              "quanto vendi" só coincidem quando não há fiado nem parcelado. */}
-          <div
-            role="group"
-            aria-label="Como contar o movimento"
-            className="flex shrink-0 rounded-lg border border-white/30 bg-white/10 p-0.5 text-xs"
-          >
-            {(
-              [
-                ["caixa", "Caixa", "pela data em que o dinheiro entrou ou saiu"],
-                ["competencia", "Competência", "pela data em que a venda aconteceu"],
-              ] as const
-            ).map(([valor, rotulo, dica]) => (
-              <Link
-                key={valor}
-                href={valor === "caixa" ? "/financeiro" : `/financeiro?regime=${valor}`}
-                title={dica}
-                aria-current={regime === valor ? "true" : undefined}
-                className={`rounded-md px-2.5 py-1 font-medium transition-colors ${
-                  regime === valor
-                    ? "bg-white text-brand-dark"
-                    : "text-ink-muted hover:bg-white/15 hover:text-ink"
-                }`}
-              >
-                {rotulo}
-              </Link>
-            ))}
-          </div>
         </div>
 
         {temMovimento ? (
@@ -305,6 +301,41 @@ export default async function PainelFinanceiroPage({
             : "Valores pela data em que a venda ou a despesa aconteceu, tenha sido paga ou não."}
         </p>
       </Card>
+    </div>
+  );
+}
+
+/**
+ * Caixa ou Competência. A mesma pergunta tem duas respostas certas: "quanto
+ * entrou" e "quanto vendi" só coincidem quando não há fiado nem parcelado.
+ */
+function AlternadorRegime({ regime }: { regime: Regime }) {
+  return (
+    <div
+      role="group"
+      aria-label="Como contar o movimento"
+      className="flex shrink-0 rounded-lg border border-white/30 bg-white/10 p-0.5 text-xs"
+    >
+      {(
+        [
+          ["caixa", "Caixa", "pela data em que o dinheiro entrou ou saiu"],
+          ["competencia", "Competência", "pela data em que a venda aconteceu"],
+        ] as const
+      ).map(([valor, rotulo, dica]) => (
+        <Link
+          key={valor}
+          href={valor === "caixa" ? "/financeiro" : `/financeiro?regime=${valor}`}
+          title={dica}
+          aria-current={regime === valor ? "true" : undefined}
+          className={`rounded-md px-2.5 py-1 font-medium transition-colors ${
+            regime === valor
+              ? "bg-white text-brand-dark"
+              : "text-ink-muted hover:bg-white/15 hover:text-ink"
+          }`}
+        >
+          {rotulo}
+        </Link>
+      ))}
     </div>
   );
 }

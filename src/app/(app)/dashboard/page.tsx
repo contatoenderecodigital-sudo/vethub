@@ -16,7 +16,6 @@ import {
 import { getSessao } from "@/lib/auth";
 import { formatBRL, formatHora, hojeISO, ROTULO_TIPO } from "@/lib/format";
 import { saldoDaConta, type Agendamento, type Conta } from "@/lib/types";
-import { limitesDoMes } from "../financeiro/schema";
 import { BadgeAgendamento } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardTitulo } from "@/components/ui/card";
@@ -51,9 +50,6 @@ export default async function DashboardPage() {
 
   // Janela do gráfico: os 7 dias que terminam hoje, mesmo fuso.
   const inicioSemana = deslocarDia(hoje, -(DIAS_GRAFICO - 1));
-
-  // Contas ainda em aberto até o fim do mês: alimentam o card do financeiro.
-  const mes = limitesDoMes(hoje);
 
   const [
     agendaHoje,
@@ -92,11 +88,14 @@ export default async function DashboardPage() {
         .from("orcamento")
         .select("id", { count: "exact", head: true })
         .eq("status", "aberto"),
+      // Sem recorte por vencimento: os cards abaixo se chamam "A receber" e
+      // "A pagar", e é isso que precisam mostrar. Parando no fim do mês, a
+      // venda fiada de hoje (que vence em 30 dias) ficava de fora e o painel
+      // dizia R$ 0,00 num dia de R$ 300 vendidos.
       supabase
         .from("conta")
         .select("tipo, valor, valor_pago, vencimento")
         .in("status", ["aberta", "parcial"])
-        .lte("vencimento", mes.fim)
         .limit(500)
         .returns<
           Pick<Conta, "tipo" | "valor" | "valor_pago" | "vencimento">[]
@@ -118,10 +117,8 @@ export default async function DashboardPage() {
   let vencidas = 0;
   for (const c of contasAbertas.data ?? []) {
     const saldo = saldoDaConta(c);
-    if (c.vencimento >= mes.inicio) {
-      if (c.tipo === "receber") aReceber += saldo;
-      else aPagar += saldo;
-    }
+    if (c.tipo === "receber") aReceber += saldo;
+    else aPagar += saldo;
     if (c.vencimento < hoje) vencidas += saldo;
   }
 
@@ -226,12 +223,13 @@ export default async function DashboardPage() {
         ))}
       </GradeEstatisticas>
 
-      {/* Financeiro do mês */}
+      {/* Financeiro: o que está em aberto, não o que vence neste mês —
+          senão o fiado de hoje, que vence em 30 dias, não aparece. */}
       <div className="mb-6">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <h2 className="flex items-center gap-2 text-base font-semibold text-ink">
             <Wallet className="size-4" strokeWidth={1.8} aria-hidden />
-            Financeiro do mês
+            Financeiro em aberto
           </h2>
           <Link
             href="/financeiro"

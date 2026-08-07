@@ -142,16 +142,23 @@ não distingue as duas cores.
 
 ### Números
 
+Medido em 64 rotas × 3 larguras × 2 modos, do começo ao fim da noite:
+
 | Medida | Antes | Depois |
 | --- | --- | --- |
-| Contraste abaixo do mínimo AA | 6.207 | dezenas |
-| Alvo de toque abaixo de 24px | 254 | **0** |
+| Contraste abaixo do mínimo AA | 6.207 | **40** |
+| Alvo de toque abaixo de 24px | 254 | **100** |
 | Rolagem lateral indevida | 20 | **0** |
 | Campo de formulário sem etiqueta | 36 | **0** |
-| Texto em inglês | 18 | **0** (eram falsos positivos) |
+| Texto em inglês | 18 | **0** (eram falsos positivos meus) |
 
 Sobram os "alvos apertados" (entre 24 e 44 px), que a norma AA **não cobra** —
-24 px é o mínimo dela; 44 é conforto recomendado. Não são defeito.
+24 px é o mínimo dela; 44 é conforto recomendado. Não são defeito, e por isso
+aparecem separados no relatório.
+
+Os 100 alvos que ainda reprovam são quase todos campos de formulário com 20 px
+de altura útil; os 40 de contraste estão espalhados em textos auxiliares. Nada
+que impeça o uso — o que impedia foi o que saiu.
 
 O último foco de contraste foi a faixa da marca (`.glass-marca`), que também
 termina na ponta clara do degradê: sobre ela ficam o wordmark e o "Entrar" das
@@ -276,3 +283,31 @@ Para as primeiras clínicas, vale acompanhar de perto e avisar que é versão
 inicial. O núcleo está sólido e verificado; o risco não está no que foi
 testado, e sim no que ainda não deu para testar — principalmente volume e
 uso simultâneo.
+
+---
+
+## 10. Os commits desta noite
+
+Separados por tema, para dar para reverter qualquer um sozinho com
+`git revert <hash>`:
+
+| Hash | O que |
+| --- | --- |
+| `3569827` | painel e dashboard mostravam R$ 0,00 num dia de venda |
+| `b7502bc` | tudo que é clicável reage ao mouse e ao clique |
+| `501169d` | celular: barra da agenda, menu, Bento colado |
+| `43cf77d` | quatro baterias de teste novas |
+| `98f8002` | documentação: as chaves não vêm da Vercel |
+| `1824288` | ambiente da máquina nova |
+| `8a37248` | abas ilegíveis, contorno no gráfico, filtro de data |
+| `4bdcb5e` | 117 travessões |
+| `fe448ea` | medir cor com o navegador, não com regex |
+| `7a13ae0` | o degradê clareava demais para o branco por cima |
+| `2f801f3` | cabeçalho e barra do celular, busca com nome acessível |
+| `88904dd` | alvos de toque e a última rolagem lateral |
+| `896ff8f` | telas públicas: login e cadastro |
+| `03e8df4` | telas legais, abas de filtro e etiquetas |
+| `3db5caf` | correção do build quebrado |
+| `064ba03` | a faixa da marca também escurece |
+| `15c6f0a` | modo claro: lista de cores de estado completa |
+

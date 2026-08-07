@@ -161,6 +161,30 @@ reintroduza ao mexer:
    tudo contra 44 gera milhares de "falhas" que norma nenhuma cobra. O
    relatório separa: abaixo de 24 **reprova**; entre 24 e 44 é só aperto.
 
+3. **Caixa de seleção dentro de `<label>` tem o RÓTULO como alvo**, não o
+   quadradinho: clicar no texto marca a caixa. Medir só o `input` acusa
+   dezenas de alvos pequenos que o dedo acerta sem esforço.
+
+## A armadilha do modo claro
+
+O modo claro é um bloco de CSS que reescreve as classes **pelo nome**
+(`.bg-white/15`, `.text-emerald-50`, …). Isso é o que permitiu implementá-lo
+sem tocar em 103 arquivos, mas cobra um preço: **a lista envelhece calada**.
+
+Três coisas já escaparam por aí:
+
+- `hover:bg-white/20` gera um seletor DIFERENTE de `bg-white/20`, e nenhuma
+  regra o alcançava: o hover simplesmente não existia no modo claro;
+- as variantes `sm:` também geram outra classe (`sm:bg-white/15`), e o
+  alternador da agenda ficou de fora da correção de contraste;
+- `text-cyan-50` e `bg-emerald-300/25` nunca entraram na lista, e as
+  etiquetas que os usam ficavam em 1.09:1 — texto quase branco sobre papel
+  branco.
+
+Ao criar um tom novo de etiqueta, ou usar um véu com prefixo de tela, procure
+a classe no `globals.css` e acrescente a conversão. A `design.mjs` pega o
+esquecimento, mas só quando alguém a roda.
+
 ## `conferir-banco.mjs` — o árbitro
 
 ```bash

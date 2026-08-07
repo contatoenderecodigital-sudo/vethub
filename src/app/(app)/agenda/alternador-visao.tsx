@@ -54,18 +54,22 @@ export function AlternadorVisao({
       },
     ];
 
-  // No celular sobra só o ícone (4 pílulas com rótulo não cabem em 360px),
-  // mas o rótulo continua no HTML para leitor de tela e nome acessível.
+  // No celular troca-se o ÍCONE pelo RÓTULO, não o contrário.
   //
-  // E ali os quatro viram UM controle segmentado, não quatro bolinhas soltas:
-  // a moldura é do grupo, os itens dividem a largura em quatro e o ativo é o
-  // único com fundo. Solto, cada botão tinha borda própria e um vão entre
-  // eles, e a barra parecia quatro enfeites jogados acima da agenda.
+  // Antes sobravam quatro ícones sem palavra nenhuma: um calendário com um
+  // dia, um calendário com uma semana e um calendário com um mês são
+  // praticamente o mesmo desenho, e ninguém adivinha qual é qual. Escrito,
+  // "Dia · Semana · Mês · Kanban" cabe em 390px — são quatro palavras curtas
+  // dividindo a largura.
+  //
+  // Os quatro formam UM controle segmentado: a moldura é do grupo, os itens
+  // dividem a largura e só o ativo tem fundo. Soltos, cada botão tinha borda
+  // própria e um vão entre eles, e a barra parecia enfeite jogado ali.
   const base =
     "inline-flex h-9 items-center justify-center gap-2 rounded-full px-4 text-sm " +
     "font-medium transition-colors focus-visible:outline-2 " +
     "focus-visible:outline-offset-2 focus-visible:outline-white " +
-    "max-sm:h-10 max-sm:flex-1 max-sm:px-0";
+    "max-sm:h-10 max-sm:flex-1 max-sm:gap-0 max-sm:px-1 max-sm:text-xs";
   const ativo = "bg-white text-brand-dark font-semibold shadow-lg shadow-black/10";
   // No celular a borda e o vidro são do grupo, então o item inativo fica limpo.
   const inativo =
@@ -89,8 +93,12 @@ export function AlternadorVisao({
           aria-current={visao === item.visao ? "page" : undefined}
           className={`${base} ${visao === item.visao ? ativo : inativo}`}
         >
-          <item.icone className="size-4 shrink-0" strokeWidth={1.8} aria-hidden />
-          <span className="max-sm:sr-only">{item.rotulo}</span>
+          <item.icone
+            className="size-4 shrink-0 max-sm:hidden"
+            strokeWidth={1.8}
+            aria-hidden
+          />
+          <span className="truncate">{item.rotulo}</span>
         </Link>
       ))}
     </nav>

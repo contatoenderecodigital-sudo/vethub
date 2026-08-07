@@ -140,7 +140,7 @@ export default function CadastroPage() {
         </p>
       </div>
 
-      <p className="mt-8 text-center text-xs text-white/70">
+      <p className="mt-8 text-center text-xs text-white/90">
         <Link href="/termos-de-uso" className="hover:text-white hover:underline">
           Termos de Uso
         </Link>

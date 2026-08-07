@@ -23,7 +23,7 @@
      fixo para a marca continuar acompanhando a cor que a clínica escolher,
      seja ela verde, azul ou violeta; a proporção foi calibrada medindo o
      contraste real contra o cabeçalho nos dois modos, claro e escuro. */
-  --color-wordmark: color-mix(in srgb, var(--tema-claro) 12%, #ffffff);
+  --color-wordmark: color-mix(in srgb, var(--tema-claro) 8%, #ffffff);
 
   /* Neutros — tema vidro sobre o degradê da marca: texto BRANCO.
      ink-muted em 88% (não 72%): abaixo disso o texto secundário
@@ -247,13 +247,16 @@ select option {
   box-shadow: inset 0 -1px 0 rgb(255 255 255 / 0.25);
 }
 
-/* Gradiente da marca: de #047857 para #34D399, na diagonal */
+/* Gradiente da marca: de #047857 para #34D399, na diagonal.
+ *
+ * O véu escuro segue o mesmo raciocínio do fundo da página: a ponta clara do
+ * degradê deixava o texto branco por cima em 3.87:1, e é sobre este bloco que
+ * ficam a chamada do login e o cabeçalho de cadastro. A cor da marca continua
+ * reconhecível; só para de apagar o que está escrito nela. */
 .bg-brand-gradient {
-  background-image: linear-gradient(
-    135deg,
-    var(--color-brand-dark),
-    var(--color-brand-light)
-  );
+  background-image:
+    linear-gradient(rgb(2 20 15 / 0.14), rgb(2 20 15 / 0.14)),
+    linear-gradient(135deg, var(--color-brand-dark), var(--color-brand-light));
 }
 
 /* ------------------------------------------------------------------

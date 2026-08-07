@@ -109,11 +109,11 @@ export default function LoginPage() {
         </p>
       </div>
 
-      <p className="mt-8 text-center text-sm text-white/80">
+      <p className="mt-8 text-center text-sm text-white">
         Agenda, prontuário, internação e estoque em um só lugar.
       </p>
 
-      <p className="mt-3 text-center text-xs text-white/70">
+      <p className="mt-3 text-center text-xs text-white/90">
         <Link href="/termos-de-uso" className="hover:text-white hover:underline">
           Termos de Uso
         </Link>

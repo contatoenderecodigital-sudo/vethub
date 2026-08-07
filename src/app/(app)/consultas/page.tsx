@@ -82,6 +82,7 @@ export default async function ConsultasPage({
             name="q"
             defaultValue={q ?? ""}
             placeholder="Buscar pelo nome do pet…"
+            aria-label="Buscar consulta"
             className="pl-9"
           />
         </div>

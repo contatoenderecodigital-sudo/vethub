@@ -198,6 +198,7 @@ export default async function AssinaturasPage({
             name="q"
             defaultValue={q ?? ""}
             placeholder="Buscar por tutor ou pet…"
+            aria-label="Buscar assinatura"
           />
         </div>
         <div className="min-w-40 flex-1">

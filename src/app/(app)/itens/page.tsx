@@ -129,6 +129,7 @@ export default async function ItensPage({
           name="q"
           defaultValue={q ?? ""}
           placeholder="Buscar por nome ou código…"
+            aria-label="Buscar produto ou serviço"
           className="min-w-56 flex-1 sm:max-w-md"
         />
         <Select

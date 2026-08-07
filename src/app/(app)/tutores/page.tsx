@@ -93,6 +93,7 @@ export default async function TutoresPage({
             name="q"
             defaultValue={q ?? ""}
             placeholder="Buscar por nome, telefone ou CPF…"
+            aria-label="Buscar tutor"
             className="pl-9"
           />
         </div>

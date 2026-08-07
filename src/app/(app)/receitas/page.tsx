@@ -99,6 +99,7 @@ export default async function ReceitasPage({
             name="q"
             defaultValue={q ?? ""}
             placeholder="Buscar pelo nome do pet…"
+            aria-label="Buscar receita"
             className="pl-9"
           />
         </div>

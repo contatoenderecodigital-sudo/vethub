@@ -68,6 +68,7 @@ export default async function PetsPage({
           name="q"
           defaultValue={q ?? ""}
           placeholder="Buscar pelo nome do pet…"
+            aria-label="Buscar pet"
           className="min-w-56 flex-1 sm:max-w-md"
         />
         <Select

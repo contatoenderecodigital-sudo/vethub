@@ -160,6 +160,7 @@ export default async function FichasBanhoTosaPage({
             name="q"
             defaultValue={termo}
             placeholder="Nome do pet ou do tutor…"
+            aria-label="Buscar ficha de tosa"
             className="min-h-11 sm:max-w-md"
           />
           <Button type="submit" variante="secondary" className="min-h-11">

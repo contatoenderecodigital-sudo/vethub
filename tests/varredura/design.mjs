@@ -381,7 +381,14 @@ function auditarNaPagina({ AA_NORMAL, AA_GRANDE, ALVO_MIN, ALVO_AA, exigirToque 
   }
 
   // ---------- inglês vazando ----------
-  const INGLES = /\b(Loading|Submit|Cancel|Delete|Edit|Save|Search|Name|Email|Password|Settings|Dashboard|Error|Success|Failed|Required|Optional|Next|Previous|Close|Back|Yes|No)\b/;
+  // Palavras que em português NÃO existem com esse sentido. Ficaram de fora:
+  //   "No"   -> preposição em português ("No dia 5", "No total");
+  //   "Next" -> aparecia só no botão "Open Next.js Dev Tools", que existe
+  //             apenas no servidor de desenvolvimento e nunca vai ao ar;
+  //   "Email"/"Error" -> usados em português corrente e em nome de campo.
+  // Sem esses recortes o relatório acusava 18 "textos em inglês" que não
+  // existem no sistema.
+  const INGLES = /\b(Loading|Submit|Cancel|Delete|Edit|Save|Search|Password|Settings|Dashboard|Success|Failed|Required|Optional|Previous|Close|Back|Yes)\b/;
   const corpo = document.body.innerText;
   const eng = corpo.match(INGLES);
   if (eng) reg("ingles", `"${eng[0]}" aparece na tela`);

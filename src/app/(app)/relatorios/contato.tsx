@@ -15,7 +15,7 @@ export function TelefoneTutor({ telefone }: { telefone: string | null | undefine
       href={`https://wa.me/${digitos}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="whitespace-nowrap font-medium text-ink underline decoration-white/40 underline-offset-2 hover:decoration-white print:no-underline"
+      className="inline-flex min-h-6 items-center whitespace-nowrap font-medium text-ink underline decoration-white/40 underline-offset-2 hover:decoration-white print:no-underline"
     >
       {formatado}
     </a>

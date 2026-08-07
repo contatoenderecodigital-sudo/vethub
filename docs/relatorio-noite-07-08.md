@@ -286,6 +286,45 @@ uso simultâneo.
 
 ---
 
+## 9b. A segunda rodada: o que só o olho pegou
+
+Depois de tudo acima, o dono abriu o app e encontrou, em uma hora, uma lista
+de defeitos que a auditoria não tinha visto — e um deles fora **causado pela
+correção da noite**:
+
+| O que aparecia | O que era |
+| --- | --- |
+| Quadrado no lugar da seta de todos os `<select>` | o véu escuro do contraste usa `background-image`, e num select essa propriedade é o DESENHO da seta. O quadrado era o meu gradiente ocupando o tamanho e a posição dela |
+| Menu de ações cortado na ficha do pet | `.glass` usa `backdrop-filter`, que cria contexto de empilhamento próprio; o cartão SEGUINTE da página passava por cima do menu. Nenhum z-index dentro do menu resolveria |
+| Comprovante impresso com o fundo do app na folha | havia CSS de impressão só para os relatórios |
+| Página rolando atrás do menu do celular | faltava travar a rolagem |
+| Barra do último mês cortada no gráfico | margem direita apertada demais |
+| Legendas "Pago"/"Recebido" invisíveis no claro | cor branca FIXA escrita no componente: 1.02:1 |
+| Não dava para escolher data em tela nenhuma | as cinco telas de período só tinham setas e "Hoje" |
+
+**Por que a auditoria não pegou nada disso.** Ela mede a tela PARADA. Não abre
+menu, não clica, não imprime, não repara se um ícone virou quadrado. Rodou
+dezenas de vezes com os números melhorando enquanto os problemas de verdade
+estavam à vista de quem abrisse o app.
+
+Número de auditoria mede o que alguém ensinou a medir.
+
+### Duas vezes o instrumento mentiu
+
+**HTTP 500 na ficha do pet e no comprovante.** Foram investigados como
+defeito da aplicação. Era o `npm run dev` esgotado depois de horas e dezenas
+de edições ("Jest worker encountered child process exceptions"). Reiniciar
+devolveu 200 nos dois.
+
+**190 problemas de contraste numa rodada.** Eram 183 do wordmark "em 61
+rotas", com 36px — o tamanho dele na tela de LOGIN. A sessão tinha morrido no
+meio e a auditoria mediu a tela de entrada 61 vezes. Com sessão válida: 26.
+
+A auditoria agora **para e avisa** quando uma rota cai em `/login`, em vez de
+entregar número inventado.
+
+---
+
 ## 10. Os commits desta noite
 
 Separados por tema, para dar para reverter qualquer um sozinho com

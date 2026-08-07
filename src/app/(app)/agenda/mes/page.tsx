@@ -170,7 +170,7 @@ export default async function AgendaMesPage({
                 <div className="pointer-events-none relative flex h-full flex-col gap-1">
                   <span
                     className={`inline-flex size-6 shrink-0 items-center justify-center self-end rounded-full text-xs font-semibold tabular-nums ${
-                      ehHoje ? "ring-2 ring-white text-white" : "text-ink-muted"
+                      ehHoje ? "ring-2 ring-white text-white" : "text-ink"
                     }`}
                   >
                     {Number(celula.data.slice(8))}

@@ -52,6 +52,9 @@ SaaS multi-tenant: cada clínica é um tenant, isolado no banco via Row Level Se
 
    Acesse http://localhost:3000, crie sua clínica em **/cadastro** e pronto.
 
+> **Backup:** o procedimento de restauração e o teste que vale fazer uma vez
+> estão em [docs/backup-e-restauracao.md](docs/backup-e-restauracao.md).
+
 > **Trocando de computador?** O passo a passo completo (inclusive como
 > recuperar as chaves sem passar arquivo à mão) está em
 > [docs/TROCANDO-DE-PC.md](docs/TROCANDO-DE-PC.md).

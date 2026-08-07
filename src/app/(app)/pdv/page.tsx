@@ -7,6 +7,7 @@ import { Campo, Input } from "@/components/ui/form";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { abrirCaixa } from "./actions";
 import { CampoMoeda } from "./campo-moeda";
+import { AvisoCaixaAntigo } from "./aviso-caixa";
 import { PdvTerminal } from "./pdv-terminal";
 
 export const metadata = { title: "PDV" };
@@ -173,6 +174,7 @@ export default async function PdvPage({
         }
       />
       {alerta}
+      <AvisoCaixaAntigo abertura={caixa.abertura} />
 
       <PdvTerminal vendedor={usuario.nome} orcamento={orcamentoCarregado} />
     </div>

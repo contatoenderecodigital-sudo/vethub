@@ -8,6 +8,7 @@ import { Card, CardTitulo } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ButtonLink } from "@/components/ui/button";
 import { FecharCaixaForm } from "./fechar-caixa-form";
+import { AvisoCaixaAntigo } from "../aviso-caixa";
 
 export const metadata = { title: "Caixa" };
 
@@ -155,6 +156,7 @@ export default async function CaixaPage({
         }
       />
       {alerta}
+      {caixa && <AvisoCaixaAntigo abertura={caixa.abertura} />}
 
       {!caixa ? (
         <EmptyState

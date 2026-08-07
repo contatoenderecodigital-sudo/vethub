@@ -167,7 +167,7 @@ export default async function ReceitasPage({
                     <IconeEspecie especie={r.pet?.especie} tamanho="sm" />
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-medium text-ink">
-                        {r.pet?.nome ?? "—"}
+                        {r.pet?.nome ?? "-"}
                         <span className="font-normal text-ink-muted">
                           {r.pet?.tutor?.nome ? ` · ${r.pet.tutor.nome}` : ""}
                         </span>

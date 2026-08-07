@@ -128,7 +128,7 @@ export function EnderecoCampos<T extends FieldValues & EnderecoValores>() {
         </Campo>
         <Campo rotulo="UF" htmlFor="uf" erro={erroDe("uf")}>
           <Select id="uf" {...register(campo("uf"))}>
-            <option value="">—</option>
+            <option value="">-</option>
             {UFS.map((uf) => (
               <option key={uf} value={uf}>
                 {uf}

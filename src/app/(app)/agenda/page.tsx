@@ -228,7 +228,7 @@ export default async function AgendaPage({
                       <span className="truncate">
                         {a.pet?.tutor
                           ? `${a.pet.tutor.nome} · ${formatTelefone(a.pet.tutor.telefone)}`
-                          : "—"}
+                          : "-"}
                       </span>
                     </span>
                     <span className="inline-flex items-center gap-1">

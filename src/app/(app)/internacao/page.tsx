@@ -135,7 +135,7 @@ export default async function InternacaoPage({
                       {i.pet?.nome ?? "Pet removido"}
                     </p>
                     <p className="truncate text-xs text-ink-muted">
-                      {i.pet?.especie ?? "—"}
+                      {i.pet?.especie ?? "-"}
                       {i.box ? ` · ${i.box}` : ""}
                     </p>
                   </div>
@@ -153,7 +153,7 @@ export default async function InternacaoPage({
                       <span className="sr-only">Tutor</span>
                     </dt>
                     <dd className="min-w-0 flex-1 truncate">
-                      {i.pet?.tutor?.nome ?? "—"}
+                      {i.pet?.tutor?.nome ?? "-"}
                     </dd>
                   </div>
                   <div className="flex items-center gap-2">

@@ -168,7 +168,7 @@ export default async function RelatorioClientesPage({
       chave: `p-${p.id}`,
       o_que: "Pet",
       nome: `${p.nome} (${p.especie})`,
-      tutor: p.tutor?.nome ?? "—",
+      tutor: p.tutor?.nome ?? "-",
       telefone: p.tutor?.telefone ?? null,
       quando: p.created_at,
     })),
@@ -244,12 +244,12 @@ export default async function RelatorioClientesPage({
       celula: (p) =>
         p.data_nascimento
           ? `${p.data_nascimento.slice(8, 10)}/${p.data_nascimento.slice(5, 7)}`
-          : "—",
+          : "-",
     },
     { rotulo: "Pet", celula: (p) => p.nome },
     { rotulo: "Espécie", celula: (p) => p.especie },
     { rotulo: "Idade que faz", celula: (p) => idadeDoPet(p.data_nascimento) },
-    { rotulo: "Tutor", celula: (p) => p.tutor?.nome ?? "—" },
+    { rotulo: "Tutor", celula: (p) => p.tutor?.nome ?? "-" },
     {
       rotulo: "Telefone",
       celula: (p) => <TelefoneTutor telefone={p.tutor?.telefone} />,
@@ -272,7 +272,7 @@ export default async function RelatorioClientesPage({
     { rotulo: "Pet", celula: (p) => p.nome },
     { rotulo: "Espécie", celula: (p) => p.especie },
     { rotulo: "Idade", celula: (p) => idadeDoPet(p.data_nascimento) },
-    { rotulo: "Tutor", celula: (p) => p.tutor?.nome ?? "—" },
+    { rotulo: "Tutor", celula: (p) => p.tutor?.nome ?? "-" },
     {
       rotulo: "Telefone",
       celula: (p) => <TelefoneTutor telefone={p.tutor?.telefone} />,

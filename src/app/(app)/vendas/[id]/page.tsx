@@ -175,7 +175,7 @@ export default async function VendaPage({
                   {formatBRL(item.valor_unitario)}
                 </td>
                 <td className="px-4 py-3 text-right text-ink-muted tabular-nums">
-                  {Number(item.desconto) > 0 ? `− ${formatBRL(item.desconto)}` : "—"}
+                  {Number(item.desconto) > 0 ? `− ${formatBRL(item.desconto)}` : "-"}
                 </td>
                 <td className="px-4 py-3 text-right font-medium text-ink tabular-nums">
                   {formatBRL(

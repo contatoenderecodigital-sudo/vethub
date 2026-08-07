@@ -117,7 +117,7 @@ export function MovimentacaoForm({
         </Campo>
 
         {/* Lote criado por aqui nascia SEM validade e nunca aparecia no
-            Controle de validade — estoque vencendo sem ninguém ser avisado.
+            Controle de validade, estoque vencendo sem ninguém ser avisado.
             Era o furo do terceiro caminho de criar lote: compras pedia a
             validade, esta tela não. */}
         <Campo

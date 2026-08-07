@@ -113,7 +113,7 @@ export default async function ComprovantePage({
 
   const tutor = primeiro(venda.tutor);
   const vendedor = primeiro(venda.vendedor);
-  const endereco = clinica ? formatEndereco(clinica) : "—";
+  const endereco = clinica ? formatEndereco(clinica) : "-";
 
   return (
     <div className="cupom-area">
@@ -135,7 +135,7 @@ export default async function ComprovantePage({
         <header className="text-center">
           <h1 className="text-sm font-bold uppercase">{clinica?.nome ?? "Clínica"}</h1>
           {clinica?.cnpj && <p>CNPJ {mascaraCNPJ(clinica.cnpj)}</p>}
-          {endereco !== "—" && <p>{endereco}</p>}
+          {endereco !== "-" && <p>{endereco}</p>}
           {clinica?.telefone && <p>Tel. {formatTelefone(clinica.telefone)}</p>}
         </header>
 

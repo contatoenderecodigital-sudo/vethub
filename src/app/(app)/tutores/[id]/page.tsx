@@ -119,7 +119,7 @@ export default async function TutorPage({
                 <Mail className="size-4" />
                 E-mail
               </dt>
-              <dd className="min-w-0 truncate font-medium text-ink">{tutor.email ?? "—"}</dd>
+              <dd className="min-w-0 truncate font-medium text-ink">{tutor.email ?? "-"}</dd>
             </div>
             <div className="flex items-center justify-between gap-4">
               <dt className="flex items-center gap-2 text-ink-muted">
@@ -127,7 +127,7 @@ export default async function TutorPage({
                 CPF
               </dt>
               <dd className="font-medium text-ink">
-                {tutor.cpf ? mascaraCPF(tutor.cpf) : "—"}
+                {tutor.cpf ? mascaraCPF(tutor.cpf) : "-"}
               </dd>
             </div>
             <div className="flex items-center justify-between gap-4">

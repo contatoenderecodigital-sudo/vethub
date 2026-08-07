@@ -105,7 +105,7 @@ async function executar(request: NextRequest) {
       const { error: erroInsert } = await db.from("conta").insert({
         clinica_id: a.clinica_id,
         tipo: "receber",
-        descricao: `${nome} — mensalidade ${vencimento.slice(0, 7)}`,
+        descricao: `${nome}, mensalidade ${vencimento.slice(0, 7)}`,
         tutor_id: a.tutor_id,
         assinatura_id: a.id,
         valor: a.valor_mensal,

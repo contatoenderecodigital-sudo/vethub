@@ -80,7 +80,7 @@ export function ReceitaForm({
             name="veterinario_id"
             defaultValue={receita?.veterinario_id ?? vetPadrao ?? ""}
           >
-            <option value="">— Sem veterinário —</option>
+            <option value="">Sem veterinário</option>
             {veterinarios.map((v) => (
               <option key={v.id} value={v.id}>
                 {v.nome}

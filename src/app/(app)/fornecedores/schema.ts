@@ -88,5 +88,5 @@ export function fornecedorParaForm(
 /** CNPJ do banco (só dígitos) já formatado para exibir. */
 export function formatCNPJ(cnpj: string | null | undefined): string {
   const d = soDigitos(cnpj);
-  return d.length === 14 ? mascaraCNPJ(d) : d || "—";
+  return d.length === 14 ? mascaraCNPJ(d) : d || "-";
 }

@@ -256,7 +256,7 @@ export default async function ItemPage({
                     <span className="min-w-0 flex-1 truncate text-sm text-ink-muted">
                       {[m.motivo, m.origem, lote ? `Lote ${lote}` : null, responsavel]
                         .filter(Boolean)
-                        .join(" · ") || "—"}
+                        .join(" · ") || "-"}
                     </span>
                     <span className="text-xs text-ink-muted tabular-nums">
                       {formatDataHora(m.data)}

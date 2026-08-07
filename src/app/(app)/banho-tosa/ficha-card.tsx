@@ -17,7 +17,7 @@ function Linha({ rotulo, valor }: { rotulo: string; valor: string | null }) {
   return (
     <div className="flex justify-between gap-4">
       <dt className="text-ink-muted">{rotulo}</dt>
-      <dd className="text-right font-medium text-ink">{valor || "—"}</dd>
+      <dd className="text-right font-medium text-ink">{valor || "-"}</dd>
     </div>
   );
 }
@@ -87,7 +87,7 @@ export function FichaCard({
                     {temperamento.rotulo}
                   </Badge>
                 ) : (
-                  <span className="font-medium text-ink">—</span>
+                  <span className="font-medium text-ink">-</span>
                 )}
               </dd>
             </div>

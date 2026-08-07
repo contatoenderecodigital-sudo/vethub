@@ -334,7 +334,7 @@ export function ItemForm({
 
           {/* O intervalo do reforço vive no item porque é característica do
               produto, não da aplicação: V10 anual = 365, giárdia = 21. É o
-              que faz a ficha do pet preencher a próxima dose sozinha — sem
+              que faz a ficha do pet preencher a próxima dose sozinha, sem
               ele, ninguém calcula reforço de cabeça no balcão e o relatório
               de vacinas a vencer fica vazio. */}
           {ehVacina && (

@@ -206,7 +206,7 @@ export default async function ExecucaoBanhoTosaPage({
               </div>
 
               <p className="mt-0.5 truncate text-sm text-ink-muted">
-                {pet?.especie ?? "—"}
+                {pet?.especie ?? "-"}
                 {pet?.raca ? ` · ${pet.raca}` : ""}
               </p>
 
@@ -299,13 +299,13 @@ export default async function ExecucaoBanhoTosaPage({
                 Início
               </dt>
               <dd className="mt-0.5 font-medium text-ink tabular-nums">
-                {execucao?.inicio ? formatHora(execucao.inicio) : "—"}
+                {execucao?.inicio ? formatHora(execucao.inicio) : "-"}
               </dd>
             </div>
             <div>
               <dt className="text-xs uppercase tracking-wide text-ink-muted">Fim</dt>
               <dd className="mt-0.5 font-medium text-ink tabular-nums">
-                {execucao?.fim ? formatHora(execucao.fim) : "—"}
+                {execucao?.fim ? formatHora(execucao.fim) : "-"}
               </dd>
             </div>
             <div>
@@ -319,7 +319,7 @@ export default async function ExecucaoBanhoTosaPage({
                     fim={execucao.fim ?? null}
                   />
                 ) : (
-                  <span className="text-ink">—</span>
+                  <span className="text-ink">-</span>
                 )}
               </dd>
             </div>

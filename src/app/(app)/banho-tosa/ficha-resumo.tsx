@@ -35,24 +35,24 @@ export async function FichaBanhoTosaResumo({ petId }: { petId: string }) {
           <dl className="space-y-2 text-sm">
             <div className="flex justify-between gap-4">
               <dt className="text-ink-muted">Tipo de tosa</dt>
-              <dd className="text-right font-medium text-ink">{tosa ?? "—"}</dd>
+              <dd className="text-right font-medium text-ink">{tosa ?? "-"}</dd>
             </div>
             <div className="flex justify-between gap-4">
               <dt className="text-ink-muted">Altura da máquina</dt>
               <dd className="text-right font-medium text-ink">
-                {ficha.altura_maquina ?? "—"}
+                {ficha.altura_maquina ?? "-"}
               </dd>
             </div>
             <div className="flex justify-between gap-4">
               <dt className="text-ink-muted">Shampoo</dt>
               <dd className="text-right font-medium text-ink">
-                {ficha.shampoo ?? "—"}
+                {ficha.shampoo ?? "-"}
               </dd>
             </div>
             <div className="flex justify-between gap-4">
               <dt className="text-ink-muted">Perfume</dt>
               <dd className="text-right font-medium text-ink">
-                {ficha.perfume ?? "—"}
+                {ficha.perfume ?? "-"}
               </dd>
             </div>
             <div className="flex justify-between gap-4">
@@ -63,7 +63,7 @@ export async function FichaBanhoTosaResumo({ petId }: { petId: string }) {
                     {temperamento.rotulo}
                   </Badge>
                 ) : (
-                  <span className="font-medium text-ink">—</span>
+                  <span className="font-medium text-ink">-</span>
                 )}
               </dd>
             </div>

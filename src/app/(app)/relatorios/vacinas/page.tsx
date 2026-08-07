@@ -153,9 +153,9 @@ export default async function RelatorioVacinasPage({
       className: "whitespace-nowrap",
       celula: (p) => <BadgeSituacao proxima={p.proxima_dose} janela={dias} />,
     },
-    { rotulo: "Pet", celula: (p) => p.pet?.nome ?? "—" },
-    { rotulo: "Espécie", celula: (p) => p.pet?.especie ?? "—" },
-    { rotulo: "Tutor", celula: (p) => p.pet?.tutor?.nome ?? "—" },
+    { rotulo: "Pet", celula: (p) => p.pet?.nome ?? "-" },
+    { rotulo: "Espécie", celula: (p) => p.pet?.especie ?? "-" },
+    { rotulo: "Tutor", celula: (p) => p.pet?.tutor?.nome ?? "-" },
     {
       rotulo: "Telefone",
       celula: (p) => <TelefoneTutor telefone={p.pet?.tutor?.telefone} />,

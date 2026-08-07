@@ -171,8 +171,8 @@ export default async function RelatorioAtendimentosPage({
     ...(agendamentos ?? []).map((a) => ({
       id: `ag-${a.id}`,
       quando: a.data_hora,
-      pet: a.pet?.nome ?? "—",
-      tutor: a.pet?.tutor?.nome ?? "—",
+      pet: a.pet?.nome ?? "-",
+      tutor: a.pet?.tutor?.nome ?? "-",
       tipo: a.tipo,
       veterinario: a.veterinario?.nome ?? "Sem veterinário",
       status: a.status,
@@ -181,8 +181,8 @@ export default async function RelatorioAtendimentosPage({
     ...(avulsas ?? []).map((c) => ({
       id: `co-${c.id}`,
       quando: c.data,
-      pet: c.pet?.nome ?? "—",
-      tutor: c.pet?.tutor?.nome ?? "—",
+      pet: c.pet?.nome ?? "-",
+      tutor: c.pet?.tutor?.nome ?? "-",
       tipo: "consulta" as AgendamentoTipo,
       veterinario: c.veterinario?.nome ?? "Sem veterinário",
       status: "atendido" as AgendamentoStatus,

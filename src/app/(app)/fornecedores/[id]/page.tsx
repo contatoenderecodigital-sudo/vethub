@@ -149,22 +149,22 @@ export default async function FornecedorPage({
             <Dado
               icone={<Building2 className="size-4" />}
               rotulo="Razão social"
-              valor={fornecedor.razao_social ?? "—"}
+              valor={fornecedor.razao_social ?? "-"}
             />
             <Dado
               icone={<Phone className="size-4" />}
               rotulo="Telefone"
-              valor={fornecedor.telefone ? formatTelefone(fornecedor.telefone) : "—"}
+              valor={fornecedor.telefone ? formatTelefone(fornecedor.telefone) : "-"}
             />
             <Dado
               icone={<Mail className="size-4" />}
               rotulo="E-mail"
-              valor={fornecedor.email ?? "—"}
+              valor={fornecedor.email ?? "-"}
             />
             <Dado
               icone={<User className="size-4" />}
               rotulo="Contato"
-              valor={fornecedor.contato ?? "—"}
+              valor={fornecedor.contato ?? "-"}
             />
             <Dado
               icone={<MapPin className="size-4" />}

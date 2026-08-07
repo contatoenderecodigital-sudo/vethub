@@ -170,14 +170,14 @@ export default async function ReceitaPage({
                     {pet.tutor.nome}
                   </Link>
                 ) : (
-                  "—"
+                  "-"
                 )}
               </dd>
             </div>
             <div className="flex items-center justify-between gap-4">
               <dt className="text-ink-muted">Veterinário</dt>
               <dd className="min-w-0 truncate font-medium text-ink">
-                {receita.veterinario?.nome ?? "—"}
+                {receita.veterinario?.nome ?? "-"}
               </dd>
             </div>
             {receita.retorno_em && (

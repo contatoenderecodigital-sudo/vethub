@@ -197,9 +197,9 @@ export default async function CompraPage({
                     </span>
                   )}
                 </td>
-                <td className="px-4 py-3 text-ink-muted">{i.lote ?? "—"}</td>
+                <td className="px-4 py-3 text-ink-muted">{i.lote ?? "-"}</td>
                 <td className="px-4 py-3 text-ink-muted tabular-nums">
-                  {i.validade ? formatDataISO(i.validade) : "—"}
+                  {i.validade ? formatDataISO(i.validade) : "-"}
                 </td>
                 <td className="px-4 py-3 text-right text-ink tabular-nums">
                   {formatQuantidade(i.quantidade)}

@@ -83,7 +83,7 @@ const rotuloCampo = (c: string) =>
 
 /** Deixa o valor legível: dinheiro como dinheiro, vazio como travessão. */
 function legivel(campo: string, valor: unknown): string {
-  if (valor === null || valor === undefined || valor === "") return "—";
+  if (valor === null || valor === undefined || valor === "") return "-";
   if (typeof valor === "boolean") return valor ? "sim" : "não";
   if (/preco|valor/.test(campo) && !Number.isNaN(Number(valor))) {
     return formatBRL(Number(valor));
@@ -158,7 +158,7 @@ export default async function AuditoriaPage({
             Tudo que mexe em dinheiro, preço, cadastro de cliente e equipe fica
             registrado aqui, com quem fez e quando. O registro é feito pelo
             banco de dados e <strong className="text-ink">não pode ser apagado
-            por ninguém</strong> — inclusive por quem tem acesso de
+            por ninguém</strong>, inclusive por quem tem acesso de
             administrador.
           </span>
         </p>

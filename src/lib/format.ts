@@ -6,12 +6,12 @@ export function formatBRL(valor: number | string | null | undefined): string {
 }
 
 export function formatData(iso: string | null | undefined): string {
-  if (!iso) return "—";
+  if (!iso) return "-";
   return new Date(iso).toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" });
 }
 
 export function formatDataHora(iso: string | null | undefined): string {
-  if (!iso) return "—";
+  if (!iso) return "-";
   return new Date(iso).toLocaleString("pt-BR", {
     timeZone: "America/Sao_Paulo",
     day: "2-digit",
@@ -23,7 +23,7 @@ export function formatDataHora(iso: string | null | undefined): string {
 }
 
 export function formatHora(iso: string | null | undefined): string {
-  if (!iso) return "—";
+  if (!iso) return "-";
   return new Date(iso).toLocaleTimeString("pt-BR", {
     timeZone: "America/Sao_Paulo",
     hour: "2-digit",
@@ -32,7 +32,7 @@ export function formatHora(iso: string | null | undefined): string {
 }
 
 export function formatTelefone(tel: string | null | undefined): string {
-  if (!tel) return "—";
+  if (!tel) return "-";
   let d = tel.replace(/\D/g, "");
   // números guardados com DDI 55 (padrão do banco, pronto p/ WhatsApp)
   if ((d.length === 12 || d.length === 13) && d.startsWith("55")) d = d.slice(2);
@@ -42,14 +42,14 @@ export function formatTelefone(tel: string | null | undefined): string {
 }
 
 export function idadeDoPet(nascimento: string | null | undefined): string {
-  if (!nascimento) return "—";
+  if (!nascimento) return "-";
   const nasc = new Date(nascimento + "T12:00:00");
   const agora = new Date();
   let meses =
     (agora.getFullYear() - nasc.getFullYear()) * 12 +
     (agora.getMonth() - nasc.getMonth());
   if (agora.getDate() < nasc.getDate()) meses -= 1;
-  if (meses < 0) return "—";
+  if (meses < 0) return "-";
   if (meses < 12) return `${meses} ${meses === 1 ? "mês" : "meses"}`;
   const anos = Math.floor(meses / 12);
   const resto = meses % 12;
@@ -62,7 +62,7 @@ export function idadeDoPet(nascimento: string | null | undefined): string {
  * com meses de tamanhos diferentes nem com horário de verão.
  */
 export function idadeDetalhada(nascimento: string | null | undefined): string {
-  if (!nascimento || !/^\d{4}-\d{2}-\d{2}$/.test(nascimento)) return "—";
+  if (!nascimento || !/^\d{4}-\d{2}-\d{2}$/.test(nascimento)) return "-";
 
   const [anoN, mesN, diaN] = nascimento.split("-").map(Number);
   const [anoH, mesH, diaH] = hojeISO().split("-").map(Number);
@@ -80,7 +80,7 @@ export function idadeDetalhada(nascimento: string | null | undefined): string {
     anos -= 1;
     meses += 12;
   }
-  if (anos < 0) return "—";
+  if (anos < 0) return "-";
 
   const partes: string[] = [];
   if (anos > 0) partes.push(`${anos} ${anos === 1 ? "ano" : "anos"}`);
@@ -94,9 +94,9 @@ export function idadeDetalhada(nascimento: string | null | undefined): string {
 
 /** Peso em quilos no padrão pt-BR: 4,5 kg · 40 kg. */
 export function formatPeso(valor: number | string | null | undefined): string {
-  if (valor === null || valor === undefined || valor === "") return "—";
+  if (valor === null || valor === undefined || valor === "") return "-";
   const n = typeof valor === "string" ? parseFloat(valor) : valor;
-  if (!Number.isFinite(n)) return "—";
+  if (!Number.isFinite(n)) return "-";
   return `${n.toLocaleString("pt-BR", { maximumFractionDigits: 2 })} kg`;
 }
 
@@ -106,7 +106,7 @@ export function formatPeso(valor: number | string | null | undefined): string {
  * para America/Sao_Paulo.
  */
 export function formatDataISO(iso: string | null | undefined): string {
-  if (!iso) return "—";
+  if (!iso) return "-";
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
   return m ? `${m[3]}/${m[2]}/${m[1]}` : formatData(iso);
 }
@@ -167,7 +167,7 @@ export function formatEndereco(e: {
   const cep =
     e.cep && e.cep.length === 8 ? `CEP ${e.cep.slice(0, 5)}-${e.cep.slice(5)}` : null;
   const partes = [comComplemento, e.bairro, cidadeUf, cep].filter(Boolean);
-  return partes.length > 0 ? partes.join(" · ") : "—";
+  return partes.length > 0 ? partes.join(" · ") : "-";
 }
 
 /**

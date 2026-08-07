@@ -86,7 +86,7 @@ function Secao({
         {titulo}
       </h3>
       <p className="mt-1 whitespace-pre-wrap text-sm text-ink">
-        {texto?.trim() ? texto : "—"}
+        {texto?.trim() ? texto : "-"}
       </p>
     </div>
   );
@@ -221,7 +221,7 @@ export default async function ConsultaPage({
                     {pet.tutor.nome}
                   </Link>
                 ) : (
-                  "—"
+                  "-"
                 )}
               </dd>
             </div>

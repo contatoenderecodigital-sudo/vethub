@@ -437,7 +437,7 @@ export const ROTULO_STATUS_VENDA: Record<VendaStatus, string> = {
 
 /** Rótulo da forma no PDV (inclui "fiado"; valor desconhecido cai no texto). */
 export function rotuloFormaVenda(valor: string | null | undefined): string {
-  if (!valor) return "—";
+  if (!valor) return "-";
   return FORMAS_PAGAMENTO_VENDA.find((f) => f.valor === valor)?.rotulo ?? valor;
 }
 

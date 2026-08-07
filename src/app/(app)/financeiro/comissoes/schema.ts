@@ -152,7 +152,7 @@ export function centavos(valor: number): number {
 /** Percentual no padrão pt-BR: "12,5%". */
 export function formatPercentual(valor: number | string | null | undefined): string {
   const n = typeof valor === "string" ? Number(valor) : valor ?? 0;
-  if (!Number.isFinite(n)) return "—";
+  if (!Number.isFinite(n)) return "-";
   return `${n.toLocaleString("pt-BR", { maximumFractionDigits: 2 })}%`;
 }
 

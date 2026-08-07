@@ -146,7 +146,7 @@ export default async function PacienteInternadoPage({
     <div>
       <PageHeader
         titulo={pet?.nome ?? "Paciente"}
-        subtitulo={`${pet?.especie ?? "—"}${internacao.box ? ` · ${internacao.box}` : ""} · Internado há ${rotuloDiasInternado(
+        subtitulo={`${pet?.especie ?? "-"}${internacao.box ? ` · ${internacao.box}` : ""} · Internado há ${rotuloDiasInternado(
           internacao.data_entrada,
           internacao.data_saida
         )}`}
@@ -220,7 +220,7 @@ export default async function PacienteInternadoPage({
                 ) : (
                   <p className="text-lg font-semibold text-ink">Pet removido</p>
                 )}
-                <p className="truncate text-xs text-ink-muted">{pet?.especie ?? "—"}</p>
+                <p className="truncate text-xs text-ink-muted">{pet?.especie ?? "-"}</p>
               </div>
             </div>
 
@@ -237,7 +237,7 @@ export default async function PacienteInternadoPage({
                     {pet.tutor.nome}
                   </Link>
                 ) : (
-                  "—"
+                  "-"
                 )}
               </Info>
               <Info icone={Stethoscope} rotulo="Veterinário">
@@ -270,7 +270,7 @@ export default async function PacienteInternadoPage({
                 Diagnóstico
               </dt>
               <dd className="mt-0.5 whitespace-pre-wrap text-ink">
-                {internacao.diagnostico?.trim() || "—"}
+                {internacao.diagnostico?.trim() || "-"}
               </dd>
             </div>
             <div>
@@ -278,7 +278,7 @@ export default async function PacienteInternadoPage({
                 Observações
               </dt>
               <dd className="mt-0.5 whitespace-pre-wrap text-ink">
-                {internacao.observacoes?.trim() || "—"}
+                {internacao.observacoes?.trim() || "-"}
               </dd>
             </div>
           </dl>
@@ -333,7 +333,7 @@ export default async function PacienteInternadoPage({
                           aplicado ? "line-through" : ""
                         }`}
                       >
-                        {a.prescricao?.medicamento ?? "—"}
+                        {a.prescricao?.medicamento ?? "-"}
                         <span className="font-normal text-ink-muted">
                           {a.prescricao?.dose ? ` · ${a.prescricao.dose}` : ""}
                           {a.prescricao?.via ? ` · ${a.prescricao.via}` : ""}

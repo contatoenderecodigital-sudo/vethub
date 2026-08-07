@@ -241,7 +241,7 @@ export default async function PetPage({
                     {pet.tutor.nome}
                   </Link>
                 ) : (
-                  "—"
+                  "-"
                 )}
               </dd>
             </div>
@@ -251,15 +251,15 @@ export default async function PetPage({
             </div>
             <div className="flex justify-between gap-4">
               <dt className="text-ink-muted">Raça</dt>
-              <dd className="font-medium text-ink">{pet.raca ?? "—"}</dd>
+              <dd className="font-medium text-ink">{pet.raca ?? "-"}</dd>
             </div>
             <div className="flex justify-between gap-4">
               <dt className="text-ink-muted">Porte</dt>
-              <dd className="font-medium text-ink">{porte ?? "—"}</dd>
+              <dd className="font-medium text-ink">{porte ?? "-"}</dd>
             </div>
             <div className="flex justify-between gap-4">
               <dt className="text-ink-muted">Pelagem</dt>
-              <dd className="font-medium text-ink">{pet.pelagem ?? "—"}</dd>
+              <dd className="font-medium text-ink">{pet.pelagem ?? "-"}</dd>
             </div>
             <div className="flex justify-between gap-4">
               <dt className="flex items-center gap-1.5 text-ink-muted">
@@ -268,7 +268,7 @@ export default async function PetPage({
                 Sexo
               </dt>
               <dd className="font-medium text-ink">
-                {pet.sexo ? ROTULO_SEXO[pet.sexo] : "—"}
+                {pet.sexo ? ROTULO_SEXO[pet.sexo] : "-"}
               </dd>
             </div>
             <div className="flex justify-between gap-4">
@@ -285,7 +285,7 @@ export default async function PetPage({
                 <ScanLine className="size-3.5" aria-hidden />
                 Microchip
               </dt>
-              <dd className="font-medium text-ink">{pet.microchip ?? "—"}</dd>
+              <dd className="font-medium text-ink">{pet.microchip ?? "-"}</dd>
             </div>
             <div className="flex justify-between gap-4">
               <dt className="text-ink-muted">Castrado</dt>

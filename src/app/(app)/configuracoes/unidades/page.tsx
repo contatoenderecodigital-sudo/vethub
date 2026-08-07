@@ -91,7 +91,7 @@ export default async function UnidadesPage({
       <Card className="mb-4">
         <p className="mb-3 text-sm text-ink-muted">
           Tutores, pets e o catálogo de produtos são compartilhados entre todas
-          as unidades — o cliente é atendido em qualquer uma. O que fica
+          as unidades: o cliente é atendido em qualquer uma. O que fica
           separado é o que é físico: <strong className="text-ink">estoque,
           caixa, agenda e internação</strong>.
         </p>
@@ -199,7 +199,7 @@ export default async function UnidadesPage({
       <Card>
         <CardTitulo>Onde cada pessoa trabalha</CardTitulo>
         <p className="mb-3 text-xs text-ink-muted">
-          Deixe em branco para quem precisa enxergar a clínica inteira — dono,
+          Deixe em branco para quem precisa enxergar a clínica inteira: dono,
           gerente, quem cuida do financeiro.
         </p>
 

@@ -131,7 +131,7 @@ export default async function OrcamentosPage({
                       {o.pet?.nome ?? "Pet removido"}
                     </p>
                     <p className="truncate text-sm text-ink-muted">
-                      {nomeDoTutor(o.pet) ?? "—"} · {formatDataHora(o.created_at)}
+                      {nomeDoTutor(o.pet) ?? "-"} · {formatDataHora(o.created_at)}
                     </p>
                   </div>
                   <BadgeOrcamento status={o.status} />

@@ -131,7 +131,7 @@ export default async function ImprimirReceitaPage({
         </h1>
         <p className="mt-1 text-[11px] leading-relaxed text-zinc-700">
           {clinica?.cnpj && <>CNPJ {mascaraCNPJ(clinica.cnpj)} · </>}
-          {clinica ? formatEndereco(clinica) : "—"}
+          {clinica ? formatEndereco(clinica) : "-"}
         </p>
         {clinica?.telefone && (
           <p className="text-[11px] text-zinc-700">
@@ -155,9 +155,9 @@ export default async function ImprimirReceitaPage({
       <section className="mt-3 grid gap-3 border border-zinc-300 p-3 text-[12px] sm:grid-cols-2">
         <div>
           <Rotulo>Paciente</Rotulo>
-          <p className="font-semibold text-zinc-900">{pet?.nome ?? "—"}</p>
+          <p className="font-semibold text-zinc-900">{pet?.nome ?? "-"}</p>
           <p className="text-zinc-700">
-            {pet?.especie ?? "—"}
+            {pet?.especie ?? "-"}
             {pet?.raca ? ` · ${pet.raca}` : ""}
           </p>
           <p className="text-zinc-700">
@@ -167,11 +167,11 @@ export default async function ImprimirReceitaPage({
         </div>
         <div>
           <Rotulo>Tutor responsável</Rotulo>
-          <p className="font-semibold text-zinc-900">{tutor?.nome ?? "—"}</p>
+          <p className="font-semibold text-zinc-900">{tutor?.nome ?? "-"}</p>
           {tutor?.cpf && (
             <p className="text-zinc-700">CPF {mascaraCPF(tutor.cpf)}</p>
           )}
-          <p className="text-zinc-700">{tutor ? formatEndereco(tutor) : "—"}</p>
+          <p className="text-zinc-700">{tutor ? formatEndereco(tutor) : "-"}</p>
         </div>
         <div className="sm:col-span-2">
           <Rotulo>Data da prescrição</Rotulo>{" "}

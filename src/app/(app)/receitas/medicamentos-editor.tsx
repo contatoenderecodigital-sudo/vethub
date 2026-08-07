@@ -162,7 +162,7 @@ export function MedicamentosEditor({
                       atualizar(linha.chave, "forma_farmaceutica", e.target.value)
                     }
                   >
-                    <option value="">— Não informar —</option>
+                    <option value="">Não informar</option>
                     {FORMAS_FARMACEUTICAS.map((f) => (
                       <option key={f.valor} value={f.valor}>
                         {f.rotulo}
@@ -189,7 +189,7 @@ export function MedicamentosEditor({
                     value={linha.via}
                     onChange={(e) => atualizar(linha.chave, "via", e.target.value)}
                   >
-                    <option value="">— Não informar —</option>
+                    <option value="">Não informar</option>
                     {VIAS_ADMINISTRACAO.map((v) => (
                       <option key={v.valor} value={v.valor}>
                         {v.rotulo}

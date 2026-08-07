@@ -85,7 +85,7 @@ export default async function WhatsappPage() {
                 Número
               </dt>
               <dd className="font-medium text-ink">
-                {conexao.numero_exibicao ?? "—"}
+                {conexao.numero_exibicao ?? "-"}
               </dd>
             </div>
             <div className="flex items-center justify-between gap-4">
@@ -94,7 +94,7 @@ export default async function WhatsappPage() {
                 Nome verificado
               </dt>
               <dd className="font-medium text-ink">
-                {conexao.nome_verificado ?? "—"}
+                {conexao.nome_verificado ?? "-"}
               </dd>
             </div>
             <div className="flex items-center justify-between gap-4">

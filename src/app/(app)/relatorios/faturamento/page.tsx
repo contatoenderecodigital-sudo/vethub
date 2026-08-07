@@ -203,7 +203,7 @@ export default async function RelatorioFaturamentoPage({
     },
     { rotulo: "Nº", numerica: true, celula: (v) => v.numero },
     { rotulo: "Tutor", celula: (v) => v.tutor?.nome ?? "Venda avulsa" },
-    { rotulo: "Vendedor", celula: (v) => v.vendedor?.nome ?? "—" },
+    { rotulo: "Vendedor", celula: (v) => v.vendedor?.nome ?? "-" },
     {
       rotulo: "Itens",
       numerica: true,

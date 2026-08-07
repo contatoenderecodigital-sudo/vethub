@@ -63,7 +63,7 @@ export function formatQuantidade(
   sigla?: string | null
 ): string {
   const n = typeof valor === "string" ? parseFloat(valor) : (valor ?? 0);
-  if (!Number.isFinite(n)) return "—";
+  if (!Number.isFinite(n)) return "-";
   const texto = n.toLocaleString("pt-BR", { maximumFractionDigits: 3 });
   return sigla ? `${texto} ${sigla}` : texto;
 }
@@ -71,7 +71,7 @@ export function formatQuantidade(
 /** Percentual no padrão pt-BR: "12,5%". */
 export function formatPercentual(valor: number | string | null | undefined): string {
   const n = typeof valor === "string" ? parseFloat(valor) : (valor ?? 0);
-  if (!Number.isFinite(n)) return "—";
+  if (!Number.isFinite(n)) return "-";
   return `${n.toLocaleString("pt-BR", { maximumFractionDigits: 2 })}%`;
 }
 

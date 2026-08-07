@@ -162,7 +162,7 @@ export default async function RelatorioFinanceiroPage({
     { rotulo: "Tipo", celula: (c) => ROTULO_TIPO_CONTA[c.tipo] },
     {
       rotulo: "Tutor / fornecedor",
-      celula: (c) => c.tutor?.nome ?? c.fornecedor ?? "—",
+      celula: (c) => c.tutor?.nome ?? c.fornecedor ?? "-",
     },
     { rotulo: "Status", celula: (c) => ROTULO_STATUS_CONTA[c.status] },
     { rotulo: "Valor", numerica: true, celula: (c) => formatBRL(c.valor) },
@@ -171,7 +171,7 @@ export default async function RelatorioFinanceiroPage({
       rotulo: "Em aberto",
       numerica: true,
       celula: (c) =>
-        c.status === "cancelada" ? "—" : formatBRL(saldoDaConta(c)),
+        c.status === "cancelada" ? "-" : formatBRL(saldoDaConta(c)),
     },
   ];
 

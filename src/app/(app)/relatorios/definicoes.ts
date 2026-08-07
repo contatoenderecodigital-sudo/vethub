@@ -229,7 +229,7 @@ export function idDaUrl(valor: string | undefined): string | undefined {
 /** Quantidade de estoque (numeric(12,3)) no padrão pt-BR: 1.250,5 */
 export function formatQuantidade(valor: number | string | null | undefined): string {
   const n = typeof valor === "string" ? Number(valor) : valor ?? 0;
-  if (!Number.isFinite(n)) return "—";
+  if (!Number.isFinite(n)) return "-";
   return n.toLocaleString("pt-BR", { maximumFractionDigits: 3 });
 }
 

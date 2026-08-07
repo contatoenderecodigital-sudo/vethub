@@ -185,7 +185,7 @@ export default async function CaixaPage({
               <div className="flex items-center justify-between gap-3">
                 <dt className="text-ink-muted">Aberto por</dt>
                 <dd className="text-right font-medium text-ink">
-                  {nomeDe(caixa.abriu) ?? "—"}
+                  {nomeDe(caixa.abriu) ?? "-"}
                 </dd>
               </div>
               <div className="flex items-center justify-between gap-3">
@@ -294,16 +294,16 @@ export default async function CaixaPage({
                         </span>
                       </td>
                       <td className="px-4 py-3 text-ink-muted">
-                        Abriu: {nomeDe(c.abriu) ?? "—"}
+                        Abriu: {nomeDe(c.abriu) ?? "-"}
                         <span className="block">
-                          Fechou: {nomeDe(c.fechou) ?? "—"}
+                          Fechou: {nomeDe(c.fechou) ?? "-"}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-right text-ink tabular-nums">
                         {formatBRL(c.valor_abertura)}
                       </td>
                       <td className="px-4 py-3 text-right text-ink tabular-nums">
-                        {contado == null ? "—" : formatBRL(contado)}
+                        {contado == null ? "-" : formatBRL(contado)}
                       </td>
                       <td
                         className={`px-4 py-3 text-right font-medium tabular-nums ${
@@ -315,7 +315,7 @@ export default async function CaixaPage({
                         }`}
                       >
                         {diferenca == null
-                          ? "—"
+                          ? "-"
                           : diferenca === 0
                             ? "Bateu"
                             : `${diferenca > 0 ? "+" : "−"}${formatBRL(

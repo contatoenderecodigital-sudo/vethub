@@ -111,7 +111,7 @@ export function ConsultaForm({
         </Campo>
         <Campo rotulo="Veterinário" htmlFor="veterinario_id">
           <Select id="veterinario_id" {...register("veterinario_id")}>
-            <option value="">— Sem veterinário —</option>
+            <option value="">Sem veterinário</option>
             {veterinarios.map((v) => (
               <option key={v.id} value={v.id}>
                 {v.nome}

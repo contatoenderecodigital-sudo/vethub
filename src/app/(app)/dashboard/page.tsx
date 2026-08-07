@@ -223,7 +223,7 @@ export default async function DashboardPage() {
         ))}
       </GradeEstatisticas>
 
-      {/* Financeiro: o que está em aberto, não o que vence neste mês —
+      {/* Financeiro: o que está em aberto, não o que vence neste mês -
           senão o fiado de hoje, que vence em 30 dias, não aparece. */}
       <div className="mb-6">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
@@ -301,7 +301,7 @@ export default async function DashboardPage() {
                   <IconeEspecie especie={a.pet?.especie} tamanho="sm" />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-ink">
-                      {a.pet?.nome ?? "—"}
+                      {a.pet?.nome ?? "-"}
                       <span className="font-normal text-ink-muted">
                         {" "}
                         · {ROTULO_TIPO[a.tipo]}

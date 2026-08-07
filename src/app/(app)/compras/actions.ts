@@ -341,7 +341,7 @@ export async function receberCompra(id: string) {
   const contas = Array.from({ length: parcelas }, (_, i) => ({
     clinica_id: usuario.clinica_id,
     tipo: "pagar",
-    descricao: parcelas > 1 ? `${rotulo} — parcela ${i + 1}/${parcelas}` : rotulo,
+    descricao: parcelas > 1 ? `${rotulo}, parcela ${i + 1}/${parcelas}` : rotulo,
     categoria_id: categoria?.id ?? null,
     fornecedor: fornecedor?.nome ?? null,
     valor: i === parcelas - 1 ? centavos(base + sobra) : base,

@@ -34,7 +34,7 @@ export function AvisoCaixaAntigo({ abertura }: { abertura: string }) {
       <TriangleAlert className="mt-0.5 size-4 shrink-0" strokeWidth={2} aria-hidden />
       <span>
         Este caixa está aberto desde {formatDataHora(abertura)}
-        {dias === 1 ? " (ontem)" : ` — há ${dias} dias`}. O movimento de mais
+        {dias === 1 ? " (ontem)" : `, há ${dias} dias`}. O movimento de mais
         de um dia está somando no mesmo turno, e a conferência do fechamento
         vai comparar a gaveta de hoje com as vendas de todos esses dias.
         Feche o caixa e abra um novo.

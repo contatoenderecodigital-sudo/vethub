@@ -228,7 +228,7 @@ export default async function AssinaturaPage({
                   {tutor.nome}
                 </Link>
               ) : (
-                <span className="text-ink">—</span>
+                <span className="text-ink">-</span>
               )}
             </dd>
           </div>
@@ -258,7 +258,7 @@ export default async function AssinaturaPage({
                   {plano.nome}
                 </Link>
               ) : (
-                <span className="text-ink">—</span>
+                <span className="text-ink">-</span>
               )}
             </dd>
           </div>
@@ -356,7 +356,7 @@ export default async function AssinaturaPage({
                   </div>
 
                   {/* Marcar o banho errado queimava a franquia do mês e não
-                      havia volta — o atendente teria que pedir para o tutor
+                      havia volta, o atendente teria que pedir para o tutor
                       "usar a mais" no mês seguinte, o que não existe. Erro de
                       digitação no balcão é rotina. */}
                   <form

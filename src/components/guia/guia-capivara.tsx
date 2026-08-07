@@ -244,7 +244,7 @@ function Guia({ chave, passos }: { chave: string; passos: Passo[] }) {
 
   return (
     <>
-      {/* Camada que escurece a página de trás — e SÓ escurece.
+      {/* Camada que escurece a página de trás, e SÓ escurece.
           `pointer-events-none` é o detalhe que importa: como o guia abre
           sozinho na primeira visita de cada página, uma camada que segurasse
           o clique roubaria o primeiro clique de toda tela nova. Quem mirou em
@@ -280,13 +280,13 @@ function Guia({ chave, passos }: { chave: string; passos: Passo[] }) {
         {/* O Bento fica MAIS ALTO que o balão: como o alinhamento é pelo pé
             (`items-end`), ele cresce para cima e a cabeça passa da borda de
             cima da caixa. Caixa quadrada com object-contain, então ele nunca
-            é cortado — só encolhe se a tela apertar.
+            é cortado, só encolhe se a tela apertar.
 
             A margem negativa existe porque a arte vem com espaço vazio dos
             lados, e sem ela o balão parece solto. Mas no CELULAR ela custava
             caro: o balão tem fundo opaco e cobria parte do Bento, que ficava
             espremido contra o card. Lá ele agora fica um pouco menor e sem
-            sobreposição — respira ao lado do balão em vez de brigar com ele.
+            sobreposição, respira ao lado do balão em vez de brigar com ele.
             No desktop sobra largura, então a aproximação continua. */}
         <div className="relative size-32 shrink-0 sm:-mr-6 sm:size-64">
           {semImagem[pose] ? (

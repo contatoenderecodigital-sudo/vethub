@@ -8,7 +8,7 @@ import { soDigitos } from "@/lib/validacao";
 export function TelefoneTutor({ telefone }: { telefone: string | null | undefined }) {
   const digitos = soDigitos(telefone);
   const formatado = formatTelefone(telefone);
-  if (!digitos) return <>—</>;
+  if (!digitos) return <>-</>;
 
   return (
     <a

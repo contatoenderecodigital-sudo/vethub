@@ -150,7 +150,7 @@ export default async function ConsultasPage({
                   <IconeEspecie especie={c.pet?.especie} tamanho="sm" />
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-medium text-ink">
-                      {c.pet?.nome ?? "—"}
+                      {c.pet?.nome ?? "-"}
                       <span className="font-normal text-ink-muted">
                         {c.pet?.tutor?.nome ? ` · ${c.pet.tutor.nome}` : ""}
                       </span>

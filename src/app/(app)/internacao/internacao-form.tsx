@@ -87,7 +87,7 @@ export function InternacaoForm({
         >
           {edicao ? (
             <p className="flex h-10 items-center rounded-lg border border-white/20 bg-white/10 px-3 text-sm text-ink-muted">
-              {petInicial?.rotulo ?? "—"}
+              {petInicial?.rotulo ?? "-"}
             </p>
           ) : (
             <BuscaCombobox
@@ -110,7 +110,7 @@ export function InternacaoForm({
           erro={errors.veterinario_id?.message}
         >
           <Select id="veterinario_id" {...register("veterinario_id")}>
-            <option value="">— Sem veterinário —</option>
+            <option value="">Sem veterinário</option>
             {veterinarios.map((v) => (
               <option key={v.id} value={v.id}>
                 {v.nome}

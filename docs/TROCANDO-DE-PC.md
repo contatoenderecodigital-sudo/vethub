@@ -24,6 +24,13 @@ cd vethub
 npm install
 ```
 
+> **Copiar a pasta de documentos não é trazer o projeto.** O zip de `.md`
+> gerado para envio contém só a documentação, achatada numa pasta só — sem
+> `src/`, sem `supabase/`, sem `.git`. Quem copia esse zip para a máquina nova
+> fica com 19 arquivos de texto e nenhum sistema. O código vem do clone acima,
+> sempre. Para conferir que veio inteiro: `git ls-files | wc -l` tem que
+> passar de 300.
+
 ## 2. Instalar o navegador dos testes
 
 Só é preciso se você for rodar os testes de tela (veja
@@ -35,17 +42,38 @@ npx playwright install chromium
 
 ## 3. Recuperar as chaves
 
-O jeito limpo é puxar da Vercel, que já tem todas:
+> **Puxar da Vercel NÃO traz as chaves.** Elas estão marcadas como
+> **Sensitive** lá, e isso é *write-only* por design: nem o painel nem o CLI
+> conseguem ler o valor de volta. O `vercel env pull` baixa um arquivo com a
+> palavra `encrypted` no lugar de cada valor, e o erro que aparece depois é um
+> confuso `Invalid supabaseUrl`. Vale a pena rodar mesmo assim, porque traz o
+> `VERCEL_OIDC_TOKEN`, mas as chaves vêm do Supabase.
+
+Copie `.env.example` para `.env.local` e preencha:
+
+| Variável | Onde pegar |
+| --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase → Settings → API → *Project URL* |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase → Settings → API → chave *anon* |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Settings → API → chave *service_role* |
+| `SUPABASE_DB_URL` | Supabase → Settings → Database → *Connection string* → **Session mode (porta 5432)** |
+| `CRON_SECRET` | qualquer texto longo; só precisa ser igual ao da Vercel |
+
+As duas primeiras são **públicas por design** — vão no JavaScript entregue ao
+navegador de qualquer visitante. As outras três não: quem tem a
+`service_role` manda no banco inteiro, passando por cima do isolamento entre
+clínicas.
+
+Se quiser conferir que nada secreto vazou para o navegador, é o que o
+`backend.mjs` faz (veja [testes-de-navegador.md](testes-de-navegador.md)).
+
+Ainda assim vale linkar o projeto, para os comandos da Vercel funcionarem:
 
 ```bash
 npm i -g vercel     # se ainda não tiver
-vercel login
-vercel link         # escolha o projeto vethub
-vercel env pull .env.local
+vercel login        # abre o navegador com um código de dispositivo
+vercel link --yes --project vethub
 ```
-
-Se preferir preencher à mão, copie `.env.example` para `.env.local` e pegue
-os valores em: Supabase → Settings → API.
 
 > **Atenção no PowerShell:** não use `|` (pipe) para mandar valor para
 > `vercel env add` — o PowerShell grava um `\r` invisível junto e a chave

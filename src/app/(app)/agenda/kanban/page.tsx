@@ -1,15 +1,11 @@
-import {
-  ChevronLeft,
-  ChevronRight,
-  Plus,
-  SlidersHorizontal,
-} from "lucide-react";
+import { Plus, SlidersHorizontal } from "lucide-react";
 import { getSessao } from "@/lib/auth";
 import { hojeISO } from "@/lib/format";
 import { dataParamOuHoje } from "@/lib/validacao";
 import type { Usuario } from "@/lib/types";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button, ButtonLink } from "@/components/ui/button";
+import { NavegadorData } from "@/components/ui/navegador-data";
 import { Select } from "@/components/ui/form";
 import { AlternadorVisao } from "../alternador-visao";
 import { CartaoAgendamento, type CartaoDados } from "./cartao-agendamento";
@@ -82,9 +78,6 @@ function deslocarDia(data: string, dias: number): string {
   return d.toLocaleDateString("en-CA");
 }
 
-function linkDia(data: string, vet?: string): string {
-  return `/agenda/kanban?data=${data}${vet ? `&vet=${vet}` : ""}`;
-}
 
 export default async function AgendaKanbanPage({
   searchParams,
@@ -149,34 +142,13 @@ export default async function AgendaKanbanPage({
       </div>
 
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <ButtonLink
-            href={linkDia(deslocarDia(data, -1), vet)}
-            variante="secondary"
-            tamanho="sm"
-            className="max-sm:min-h-11 max-sm:min-w-11"
-          >
-            <ChevronLeft className="size-4" />
-            <span className="max-sm:sr-only">Anterior</span>
-          </ButtonLink>
-          <ButtonLink
-            href={linkDia(hojeISO(), vet)}
-            variante="secondary"
-            tamanho="sm"
-            className="max-sm:min-h-11"
-          >
-            Hoje
-          </ButtonLink>
-          <ButtonLink
-            href={linkDia(deslocarDia(data, 1), vet)}
-            variante="secondary"
-            tamanho="sm"
-            className="max-sm:min-h-11 max-sm:min-w-11"
-          >
-            <span className="max-sm:sr-only">Próximo</span>
-            <ChevronRight className="size-4" />
-          </ButtonLink>
-        </div>
+        <NavegadorData
+          data={data}
+          hoje={hojeISO()}
+          rota="/agenda/kanban"
+          vet={vet}
+          rotulo="Escolher a data do quadro"
+        />
 
         <form method="get" className="flex min-w-0 flex-wrap items-center gap-2">
           <input type="hidden" name="data" value={data} />

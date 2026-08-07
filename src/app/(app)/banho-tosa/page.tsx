@@ -1,8 +1,6 @@
 import Link from "next/link";
 import {
   Bath,
-  ChevronLeft,
-  ChevronRight,
   ClipboardList,
   Phone,
   Plus,
@@ -16,6 +14,7 @@ import { PORTES, type AgendamentoStatus } from "@/lib/types";
 import { PageHeader } from "@/components/ui/page-header";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
+import { NavegadorData } from "@/components/ui/navegador-data";
 import { EmptyState } from "@/components/ui/empty-state";
 import { IconeEspecie } from "@/components/icone-especie";
 import { CartaoArrastavel, Zona } from "@/components/quadro";
@@ -125,7 +124,6 @@ export default async function BanhoTosaPage({
     (execucoes ?? []).map((e) => [e.agendamento_id, e.servicos ?? []])
   );
 
-  const linkDia = (dia: string) => `/banho-tosa?data=${dia}`;
 
   return (
     <div>
@@ -153,32 +151,12 @@ export default async function BanhoTosaPage({
       )}
 
       <div className="mb-4 flex flex-wrap items-center gap-2">
-        <ButtonLink
-          href={linkDia(deslocarDia(data, -1))}
-          variante="secondary"
-          tamanho="sm"
-          className="min-h-11 max-sm:min-w-11"
-        >
-          <ChevronLeft className="size-4" />
-          <span className="max-sm:sr-only">Anterior</span>
-        </ButtonLink>
-        <ButtonLink
-          href={linkDia(hojeISO())}
-          variante="secondary"
-          tamanho="sm"
-          className="min-h-11"
-        >
-          Hoje
-        </ButtonLink>
-        <ButtonLink
-          href={linkDia(deslocarDia(data, 1))}
-          variante="secondary"
-          tamanho="sm"
-          className="min-h-11 max-sm:min-w-11"
-        >
-          <span className="max-sm:sr-only">Próximo</span>
-          <ChevronRight className="size-4" />
-        </ButtonLink>
+        <NavegadorData
+          data={data}
+          hoje={hojeISO()}
+          rota="/banho-tosa"
+          rotulo="Escolher a data"
+        />
         <span className="ml-auto text-sm text-ink-muted tabular-nums">
           {lista.length} {lista.length === 1 ? "pet no dia" : "pets no dia"}
         </span>

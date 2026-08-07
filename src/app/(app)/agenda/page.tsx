@@ -25,7 +25,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Select } from "@/components/ui/form";
 import { IconeEspecie } from "@/components/icone-especie";
 import { AlternadorVisao } from "./alternador-visao";
-import { NavegadorData } from "./navegador-data";
+import { NavegadorData } from "@/components/ui/navegador-data";
 import { StatusSelect } from "./status-select";
 import { atualizarStatus } from "./actions";
 
@@ -128,7 +128,13 @@ export default async function AgendaPage({
           com a mesma medida, uma embaixo da outra. Antes cada uma terminava
           num ponto diferente e a barra parecia desalinhada. */}
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <NavegadorData data={data} hoje={hojeISO()} rota="/agenda" vet={vet} />
+        <NavegadorData
+          data={data}
+          hoje={hojeISO()}
+          rota="/agenda"
+          vet={vet}
+          rotulo="Escolher a data da agenda"
+        />
 
         <form
           method="get"

@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { CalendarDays, ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { CalendarDays, Plus } from "lucide-react";
 import { getSessao } from "@/lib/auth";
 import { formatHora, hojeISO, ROTULO_TIPO } from "@/lib/format";
 import type { Usuario } from "@/lib/types";
 import { PageHeader } from "@/components/ui/page-header";
 import { ButtonLink } from "@/components/ui/button";
+import { NavegadorData } from "@/components/ui/navegador-data";
 import { EmptyState } from "@/components/ui/empty-state";
 import { AlternadorVisao } from "../alternador-visao";
 import {
@@ -27,9 +28,6 @@ export const metadata = { title: "Agenda · Mês" };
 /** Quantos compromissos cabem numa célula antes do "+N mais". */
 const MAX_POR_CELULA = 3;
 
-function linkMes(mes: string, vet?: string): string {
-  return `/agenda/mes?mes=${mes}${vet ? `&vet=${vet}` : ""}`;
-}
 
 export default async function AgendaMesPage({
   searchParams,
@@ -121,34 +119,14 @@ export default async function AgendaMesPage({
       </div>
 
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <ButtonLink
-            href={linkMes(deslocarMes(mes, -1), vet)}
-            variante="secondary"
-            tamanho="sm"
-            className="max-sm:min-h-11 max-sm:min-w-11"
-          >
-            <ChevronLeft className="size-4" />
-            <span className="max-sm:sr-only">Mês anterior</span>
-          </ButtonLink>
-          <ButtonLink
-            href={linkMes(mesDeHoje(), vet)}
-            variante="secondary"
-            tamanho="sm"
-            className="max-sm:min-h-11"
-          >
-            Hoje
-          </ButtonLink>
-          <ButtonLink
-            href={linkMes(deslocarMes(mes, 1), vet)}
-            variante="secondary"
-            tamanho="sm"
-            className="max-sm:min-h-11 max-sm:min-w-11"
-          >
-            <span className="max-sm:sr-only">Próximo mês</span>
-            <ChevronRight className="size-4" />
-          </ButtonLink>
-        </div>
+        <NavegadorData
+          data={dataReferencia}
+          hoje={hoje}
+          rota="/agenda/mes"
+          vet={vet}
+          passo="mes"
+          rotulo="Escolher o mês"
+        />
 
         <FiltroVeterinario
           campos={{ mes }}

@@ -1,11 +1,12 @@
 import Link from "next/link";
-import { CalendarRange, ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { CalendarRange, Plus } from "lucide-react";
 import { getSessao } from "@/lib/auth";
 import { formatHora, hojeISO, ROTULO_TIPO } from "@/lib/format";
 import { dataParamOuHoje } from "@/lib/validacao";
 import type { Usuario } from "@/lib/types";
 import { PageHeader } from "@/components/ui/page-header";
 import { ButtonLink } from "@/components/ui/button";
+import { NavegadorData } from "@/components/ui/navegador-data";
 import { EmptyState } from "@/components/ui/empty-state";
 import { AlternadorVisao } from "../alternador-visao";
 import {
@@ -37,9 +38,6 @@ const HORAS = Array.from(
 );
 const MINUTOS_NA_GRADE = HORAS.length * 60;
 
-function linkSemana(data: string, vet?: string): string {
-  return `/agenda/semana?data=${data}${vet ? `&vet=${vet}` : ""}`;
-}
 
 /** "4 a 10 de agosto de 2026": encurta quando o mês/ano se repete. */
 function intervaloPorExtenso(inicio: string, fim: string): string {
@@ -181,34 +179,14 @@ export default async function AgendaSemanaPage({
       </div>
 
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <ButtonLink
-            href={linkSemana(deslocarDia(inicio, -7), vet)}
-            variante="secondary"
-            tamanho="sm"
-            className="max-sm:min-h-11 max-sm:min-w-11"
-          >
-            <ChevronLeft className="size-4" />
-            <span className="max-sm:sr-only">Semana anterior</span>
-          </ButtonLink>
-          <ButtonLink
-            href={linkSemana(hoje, vet)}
-            variante="secondary"
-            tamanho="sm"
-            className="max-sm:min-h-11"
-          >
-            Esta semana
-          </ButtonLink>
-          <ButtonLink
-            href={linkSemana(deslocarDia(inicio, 7), vet)}
-            variante="secondary"
-            tamanho="sm"
-            className="max-sm:min-h-11 max-sm:min-w-11"
-          >
-            <span className="max-sm:sr-only">Próxima semana</span>
-            <ChevronRight className="size-4" />
-          </ButtonLink>
-        </div>
+        <NavegadorData
+          data={inicio}
+          hoje={hoje}
+          rota="/agenda/semana"
+          vet={vet}
+          passo="semana"
+          rotulo="Escolher a semana"
+        />
 
         <FiltroVeterinario
           campos={{ data: inicio }}

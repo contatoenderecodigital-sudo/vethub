@@ -51,13 +51,16 @@ const TABELAS = [
   "item",
   "lote",
   "venda",
-  "lancamento_financeiro",
   "fornecedor",
   "receita",
   "internacao",
   "orcamento",
   "compra",
   "whatsapp_conexao",
+  // Tabelas novas: livro único, multi-unidade e auditoria.
+  "baixa",
+  "unidade",
+  "auditoria",
 ];
 
 async function principal() {

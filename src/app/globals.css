@@ -762,7 +762,14 @@ select option {
  * some no modo claro, onde o fundo já é claro e o texto, escuro. */
 /* As variantes `sm:` entram na lista porque geram OUTRA classe
    (`.sm\:bg-white\/15`), e sem elas o alternador da agenda — que só ganha o
-   vidro a partir do tablet — ficava de fora e media 4.13:1. */
+   vidro a partir do tablet — ficava de fora e media 4.13:1.
+ *
+ * `:not(select, input, textarea)` é obrigatório. Campo de formulário usa
+ * `background-image` para DESENHAR COISA: a seta do `<select>` é um SVG posto
+ * ali, com tamanho e posição próprios. Sem a exclusão, este véu substituía o
+ * SVG e a seta virava um quadrado escuro no canto de todos os selects do
+ * sistema — foi exatamente o que aconteceu. Véu e desenho não cabem na mesma
+ * propriedade. */
 :where(
     .bg-white\/10,
     .bg-white\/15,
@@ -772,7 +779,7 @@ select option {
     .sm\:bg-white\/15,
     .sm\:bg-white\/20,
     .sm\:bg-white\/25
-  ) {
+  ):not(select, input, textarea) {
   background-image: linear-gradient(rgb(2 20 15 / 0.2), rgb(2 20 15 / 0.2));
 }
 [data-modo="claro"]

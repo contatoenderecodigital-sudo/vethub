@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTravarScroll } from "@/lib/travar-scroll";
 import {
   useEffect,
   useState,
@@ -321,6 +322,10 @@ export function NavInferior({ ehAdmin }: { ehAdmin: boolean }) {
   const pathname = usePathname();
   const [aberto, setAberto] = useState(false);
   const visiveis = GRUPOS.filter((g) => !g.somenteAdmin || ehAdmin);
+
+  // Sem isto, arrastar o dedo sobre o menu rola a PÁGINA DE TRÁS: a pessoa
+  // fecha o menu e a tela mudou de lugar sozinha.
+  useTravarScroll(aberto);
 
   useEffect(() => {
     if (!aberto) return;

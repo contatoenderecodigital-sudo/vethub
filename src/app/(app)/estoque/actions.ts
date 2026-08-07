@@ -64,6 +64,7 @@ export async function registrarMovimentacao(formData: FormData) {
     quantidade: String(formData.get("quantidade") ?? ""),
     valor_unitario: String(formData.get("valor_unitario") ?? ""),
     lote_codigo: String(formData.get("lote_codigo") ?? ""),
+    lote_validade: String(formData.get("lote_validade") ?? ""),
     motivo: String(formData.get("motivo") ?? ""),
   });
 
@@ -88,13 +89,21 @@ export async function registrarMovimentacao(formData: FormData) {
   if (v.lote_codigo) {
     const { data: lote } = await supabase
       .from("lote")
-      .select("id")
+      .select("id, validade")
       .eq("item_id", item.id)
       .eq("codigo", v.lote_codigo)
       .maybeSingle<{ id: string }>();
 
     if (lote) {
       loteId = lote.id;
+      // Lote já existia sem validade e agora ela veio: completa o cadastro.
+      if (v.lote_validade) {
+        await supabase
+          .from("lote")
+          .update({ validade: v.lote_validade })
+          .eq("id", lote.id)
+          .is("validade", null);
+      }
     } else if (v.tipo === "entrada") {
       const { data: novo, error } = await supabase
         .from("lote")
@@ -102,6 +111,7 @@ export async function registrarMovimentacao(formData: FormData) {
           clinica_id: usuario.clinica_id,
           item_id: item.id,
           codigo: v.lote_codigo,
+          validade: v.lote_validade || null,
           quantidade: 0,
         })
         .select("id")

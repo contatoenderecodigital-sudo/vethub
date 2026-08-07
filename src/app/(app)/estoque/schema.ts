@@ -37,6 +37,10 @@ export const movimentacaoSchema = z.object({
     .refine(quantidadeValida, "Quantidade inválida. Use um número maior que zero."),
   valor_unitario: z.string().refine(valorValido, "Valor unitário inválido."),
   lote_codigo: z.string().trim().max(40, "Código do lote longo demais."),
+  // Validade do lote criado numa entrada manual. Sem ela, lote nascido
+  // aqui nunca aparecia no Controle de validade — era um estoque que
+  // vencia sem ninguém ser avisado.
+  lote_validade: z.string().refine((v) => v === "" || dataCalendarioValida(v), "Validade inválida."),
   motivo: z.string().trim().max(200, "Motivo longo demais."),
 });
 export type MovimentacaoFormValores = z.infer<typeof movimentacaoSchema>;

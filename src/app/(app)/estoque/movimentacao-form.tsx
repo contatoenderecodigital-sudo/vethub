@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ArrowLeftRight } from "lucide-react";
 import { TIPOS_MOVIMENTACAO } from "@/lib/types";
 import { Campo, Input, Select } from "@/components/ui/form";
+import { CampoData } from "@/components/ui/campo-data";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { mascaraMoeda, sanitizarNumero } from "../itens/formato";
 import { registrarMovimentacao } from "./actions";
@@ -27,6 +28,7 @@ export function MovimentacaoForm({
   produtos: ProdutoOpcao[];
   itemInicial?: string;
 }) {
+  const hoje = new Date().toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" });
   const [quantidade, setQuantidade] = useState("");
   const [valor, setValor] = useState("");
 
@@ -112,6 +114,18 @@ export function MovimentacaoForm({
             autoComplete="off"
             placeholder="Código do lote"
           />
+        </Campo>
+
+        {/* Lote criado por aqui nascia SEM validade e nunca aparecia no
+            Controle de validade — estoque vencendo sem ninguém ser avisado.
+            Era o furo do terceiro caminho de criar lote: compras pedia a
+            validade, esta tela não. */}
+        <Campo
+          rotulo="Validade do lote"
+          htmlFor="mov-validade"
+          dica="Só na entrada. É o que alimenta o Controle de validade."
+        >
+          <CampoData id="mov-validade" name="lote_validade" min={hoje} />
         </Campo>
 
         <Campo rotulo="Motivo" htmlFor="mov-motivo" className="sm:col-span-2">

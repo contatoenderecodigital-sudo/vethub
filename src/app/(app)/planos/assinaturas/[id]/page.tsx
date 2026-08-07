@@ -6,6 +6,7 @@ import {
   History,
   PauseCircle,
   PlayCircle,
+  Undo2,
 } from "lucide-react";
 import { getSessao } from "@/lib/auth";
 import { formatBRL, formatDataISO, hojeISO } from "@/lib/format";
@@ -15,7 +16,7 @@ import { Card, CardTitulo } from "@/components/ui/card";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { Progresso } from "@/components/ui/estatistica";
 import { PageHeader } from "@/components/ui/page-header";
-import { alterarStatusAssinatura } from "../../actions";
+import { alterarStatusAssinatura, excluirUso } from "../../actions";
 import { BadgeAssinatura } from "../../badges";
 import { limitesDoMes, primeiro, proximaCobranca } from "../../schema";
 import { RegistrarUsoForm, type OpcaoBeneficio } from "./registrar-uso-form";
@@ -353,6 +354,27 @@ export default async function AssinaturaPage({
                       {beneficio ? beneficio.descricao : "Uso avulso"}
                     </p>
                   </div>
+
+                  {/* Marcar o banho errado queimava a franquia do mês e não
+                      havia volta — o atendente teria que pedir para o tutor
+                      "usar a mais" no mês seguinte, o que não existe. Erro de
+                      digitação no balcão é rotina. */}
+                  <form
+                    action={excluirUso.bind(null, u.id, id)}
+                    className="shrink-0"
+                  >
+                    <ConfirmButton
+                      variante="ghost"
+                      tamanho="sm"
+                      aria-label={`Desfazer uso: ${u.descricao}`}
+                      titulo="Desfazer uso"
+                      mensagem={`Desfazer "${u.descricao}"? A franquia do mês volta a contar sem ele.`}
+                      rotuloConfirmar="Desfazer"
+                      className="min-h-11 min-w-11 sm:min-h-8 sm:min-w-0"
+                    >
+                      <Undo2 className="size-4" />
+                    </ConfirmButton>
+                  </form>
                 </li>
               );
             })}

@@ -495,3 +495,36 @@ export async function gerarCobrancasDoMes() {
   revalidarPlanos();
   redirect(`${ROTA_ASSINATURAS}?geradas=${novas.length}&existentes=${repetidas}`);
 }
+
+/**
+ * Desfaz um uso de benefício registrado por engano.
+ *
+ * Sem isso, marcar o banho errado consumia a franquia do mês do cliente e não
+ * havia volta: o atendente teria que pedir para o tutor "usar a mais" no mês
+ * seguinte, o que não existe no sistema. Erro de digitação no balcão é rotina;
+ * franquia queimada sem desfazer vira discussão no caixa.
+ */
+export async function excluirUso(id: string, assinaturaId: string) {
+  const { supabase } = await getSessao();
+  const voltar = `/planos/assinaturas/${assinaturaId}`;
+
+  const { usuario } = await getSessao();
+  if (!PAPEIS_USO.includes(usuario.papel)) {
+    return redirecionarComAviso(
+      comErro(voltar, "Seu perfil não pode desfazer uso de benefício.")
+    );
+  }
+
+  const { error } = await supabase
+    .from("uso_beneficio")
+    .delete()
+    .eq("id", id)
+    .eq("assinatura_id", assinaturaId);
+
+  if (error) {
+    return redirecionarComAviso(comErro(voltar, "Não foi possível desfazer o uso."));
+  }
+
+  revalidatePath(voltar);
+  redirect(voltar);
+}

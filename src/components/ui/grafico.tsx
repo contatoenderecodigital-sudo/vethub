@@ -156,9 +156,12 @@ export function GraficoBarras({
           cursor={{ fill: "rgb(255 255 255 / 0.08)" }}
           content={<Dica formato={formato} />}
         />
+        {/* A cor da legenda vem da variável do tema, não de um branco fixo:
+            ela ficava branca sobre papel branco no modo claro, em 1.02:1 —
+            "Pago", "Recebido" e "Dinheiro" simplesmente não apareciam. */}
         {series.length > 1 && (
           <Legend
-            wrapperStyle={{ fontSize: 12, color: "rgb(255 255 255 / 0.85)" }}
+            wrapperStyle={{ fontSize: 12, color: "var(--color-ink-muted)" }}
             iconType="circle"
           />
         )}
@@ -204,12 +207,12 @@ export function GraficoArea({
         <XAxis dataKey={eixoX} {...EIXO} />
         <YAxis {...EIXO} tickFormatter={compacto} width={52} />
         <Tooltip
-          cursor={{ stroke: "rgb(255 255 255 / 0.3)" }}
+          cursor={{ stroke: "var(--color-edge)" }}
           content={<Dica formato={formato} />}
         />
         {series.length > 1 && (
           <Legend
-            wrapperStyle={{ fontSize: 12, color: "rgb(255 255 255 / 0.85)" }}
+            wrapperStyle={{ fontSize: 12, color: "var(--color-ink-muted)" }}
             iconType="circle"
           />
         )}
@@ -305,7 +308,7 @@ export function GraficoRosca({
         </Pie>
         <Tooltip content={<Dica formato={formato} />} />
         <Legend
-          wrapperStyle={{ fontSize: 12, color: "rgb(255 255 255 / 0.85)" }}
+          wrapperStyle={{ fontSize: 12, color: "var(--color-ink-muted)" }}
           iconType="circle"
         />
       </PieChart>

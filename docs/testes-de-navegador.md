@@ -165,6 +165,26 @@ reintroduza ao mexer:
    quadradinho: clicar no texto marca a caixa. Medir só o `input` acusa
    dezenas de alvos pequenos que o dedo acerta sem esforço.
 
+## Duas armadilhas que custam horas
+
+**HTTP 500 no servidor de desenvolvimento não é bug da aplicação.** Depois de
+algumas horas e muitas edições, o `npm run dev` começa a responder 500 com
+"Jest worker encountered child process exceptions": é o processo de
+renderização esgotado, não a página. Uma ficha de pet e um comprovante
+chegaram a ser investigados como defeito por causa disso. Antes de reportar
+página quebrada, reinicie o servidor e confira de novo.
+
+**O que a auditoria NÃO vê.** A `design.mjs` mede a tela PARADA. Ela não abre
+menu, não clica em botão, não imprime e não repara se um ícone virou quadrado.
+Todos esses defeitos passaram por ela intactos e foram achados a olho:
+
+- a seta do `<select>` substituída por um quadrado escuro;
+- o menu de ações aparecendo por baixo do cartão seguinte;
+- o comprovante saindo com o fundo do app pintado na folha.
+
+Números de auditoria medem o que alguém ensinou a medir. Eles não dizem se o
+sistema está bom.
+
 ## A armadilha do modo claro
 
 O modo claro é um bloco de CSS que reescreve as classes **pelo nome**

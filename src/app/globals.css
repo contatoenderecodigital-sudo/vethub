@@ -993,3 +993,22 @@ label:has(> input[type="radio"]):active {
     display: table-header-group;
   }
 }
+
+/* ==================================================================
+ * QUEM FICA POR CIMA DE QUEM
+ *
+ * `.glass` usa `backdrop-filter`, e isso cria um contexto de empilhamento
+ * próprio em cada cartão. O menu de ações vive dentro de um deles: por mais
+ * z-index que tivesse, continuava preso ali, e o cartão SEGUINTE da página
+ * — irmão, mais abaixo no HTML — passava por cima dele. Na ficha do pet o
+ * "Editar" saía cortado ao meio e o "Excluir" sumia.
+ *
+ * A disputa é entre os CARTÕES, não entre os filhos deles. Então o cartão
+ * que contém um menu aberto sobe junto, e volta ao normal quando fecha.
+ * ================================================================== */
+.glass:has([data-menu-aberto]),
+.glass-forte:has([data-menu-aberto]),
+[class*="glass"]:has([data-menu-aberto]) {
+  position: relative;
+  z-index: 45;
+}

@@ -48,7 +48,17 @@ export function MenuAcoes({
   }, [aberto]);
 
   return (
-    <div ref={raiz} className="relative shrink-0">
+    // `data-menu-aberto` avisa o CSS de quem está por cima de quem.
+    //
+    // O menu tem z-40, mas isso não bastava: `.glass` usa `backdrop-filter`,
+    // que cria um contexto de empilhamento PRÓPRIO em cada cartão. O menu
+    // ficava preso dentro do cartão do cabeçalho, e o cartão seguinte da
+    // página — irmão dele, mais abaixo no HTML — passava por cima, cortando
+    // "Editar" pela metade e escondendo "Excluir" inteiro. Nenhum z-index
+    // dentro do menu resolveria: a disputa é entre os cartões, não entre os
+    // filhos deles. O globals.css usa este atributo para elevar o cartão que
+    // contém o menu aberto.
+    <div ref={raiz} data-menu-aberto={aberto || undefined} className="relative shrink-0">
       <button
         type="button"
         onClick={() => setAberto((a) => !a)}
@@ -87,7 +97,23 @@ export function MenuAcoes({
           }}
           // No celular abre para a direita (o botão fica encostado à
           // esquerda da barra); do sm: para cima alinha pela direita.
-          className="glass-menu absolute left-0 z-40 mt-2 flex w-56 max-w-[calc(100vw-2rem)] flex-col gap-1 rounded-2xl p-2 sm:right-0 sm:left-auto [&_a]:min-h-11 [&_a]:w-full [&_a]:justify-start [&_button]:min-h-11 [&_button]:w-full [&_button]:justify-start [&_form]:w-full"
+          //
+          // O último par de regras aplaina o botão de excluir. Ele é
+          // `variante="danger"`, ou seja, vermelho CHEIO — desenhado para ser
+          // o botão principal de uma barra, não um item de lista. Dentro do
+          // menu ele virava um tijolo vermelho do tamanho da largura toda, ao
+          // lado de um "Editar" transparente: parecia defeito, não perigo.
+          // Aqui ele fica no mesmo formato dos outros e guarda o vermelho
+          // para o texto e para o passar do mouse, que é onde a cor avisa.
+          className={
+            "glass-menu absolute left-0 z-40 mt-2 flex w-56 max-w-[calc(100vw-2rem)] " +
+            "flex-col gap-1 rounded-2xl p-2 sm:right-0 sm:left-auto " +
+            "[&_a]:min-h-11 [&_a]:w-full [&_a]:justify-start " +
+            "[&_button]:min-h-11 [&_button]:w-full [&_button]:justify-start [&_form]:w-full " +
+            "[&_.bg-danger]:bg-transparent [&_.bg-danger]:text-red-200 " +
+            "[&_.bg-danger]:shadow-none [&_.bg-danger:hover]:bg-red-400/25 " +
+            "[&_.bg-danger:hover]:text-red-100"
+          }
         >
           {children}
         </div>

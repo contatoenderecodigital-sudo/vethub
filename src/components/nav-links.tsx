@@ -383,10 +383,16 @@ export function NavInferior({ ehAdmin }: { ehAdmin: boolean }) {
               <span className="min-w-0 truncate">{INICIO.rotulo}</span>
             </Link>
 
+            {/* Uma linha fina separa os grupos. Antes só o espaço em branco
+                fazia esse trabalho, e a folha inteira lia como uma lista
+                corrida de vinte itens sem começo nem fim. */}
             {visiveis.map((grupo) => (
-              <div key={grupo.titulo} className="mt-3">
-                <p className="flex items-center gap-2 px-3 pb-1 text-[11px] font-semibold tracking-wider text-white/70 uppercase drop-shadow-sm">
-                  <grupo.icone className="size-3.5 shrink-0" strokeWidth={2} />
+              <div
+                key={grupo.titulo}
+                className="mt-2 border-t border-white/12 pt-2 first:border-t-0"
+              >
+                <p className="flex items-center gap-2 px-3 pb-0.5 text-[10px] font-semibold tracking-[0.14em] text-white/55 uppercase">
+                  <grupo.icone className="size-3 shrink-0" strokeWidth={2.2} />
                   {grupo.titulo}
                 </p>
                 <div className="flex flex-col gap-0.5">

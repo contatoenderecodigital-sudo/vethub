@@ -56,19 +56,31 @@ export function AlternadorVisao({
 
   // No celular sobra só o ícone (4 pílulas com rótulo não cabem em 360px),
   // mas o rótulo continua no HTML para leitor de tela e nome acessível.
+  //
+  // E ali os quatro viram UM controle segmentado, não quatro bolinhas soltas:
+  // a moldura é do grupo, os itens dividem a largura em quatro e o ativo é o
+  // único com fundo. Solto, cada botão tinha borda própria e um vão entre
+  // eles, e a barra parecia quatro enfeites jogados acima da agenda.
   const base =
     "inline-flex h-9 items-center justify-center gap-2 rounded-full px-4 text-sm " +
     "font-medium transition-colors focus-visible:outline-2 " +
     "focus-visible:outline-offset-2 focus-visible:outline-white " +
-    "max-sm:size-11 max-sm:px-0";
+    "max-sm:h-10 max-sm:flex-1 max-sm:px-0";
   const ativo = "bg-white text-brand-dark font-semibold shadow-lg shadow-black/10";
+  // No celular a borda e o vidro são do grupo, então o item inativo fica limpo.
   const inativo =
-    "border border-white/40 bg-white/15 text-white backdrop-blur-md hover:bg-white/25";
+    "text-white transition-colors hover:bg-white/25 " +
+    "sm:border sm:border-white/40 sm:bg-white/15 sm:backdrop-blur-md";
 
   return (
     <nav
       aria-label="Alternar visão da agenda"
-      className="flex flex-wrap items-center gap-2"
+      className={
+        "flex items-center gap-2 " +
+        "max-sm:w-full max-sm:gap-1 max-sm:rounded-full max-sm:border " +
+        "max-sm:border-white/40 max-sm:bg-white/15 max-sm:p-1 max-sm:backdrop-blur-md " +
+        "sm:flex-wrap"
+      }
     >
       {itens.map((item) => (
         <Link

@@ -127,8 +127,12 @@ export default async function AgendaPage({
         <AlternadorVisao visao="lista" data={data} vet={vet} />
       </div>
 
+      {/* No celular cada bloco ocupa a linha inteira e os controles dividem a
+          largura entre si: assim as três faixas (visão, data, filtro) ficam
+          com a mesma medida, uma embaixo da outra. Antes cada uma terminava
+          num ponto diferente e a barra parecia desalinhada. */}
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 max-sm:w-full">
           <ButtonLink
             href={linkDia(deslocarDia(data, -1), vet)}
             variante="secondary"
@@ -142,7 +146,7 @@ export default async function AgendaPage({
             href={linkDia(hojeISO(), vet)}
             variante="secondary"
             tamanho="sm"
-            className="max-sm:min-h-11"
+            className="max-sm:min-h-11 max-sm:flex-1"
           >
             Hoje
           </ButtonLink>
@@ -157,13 +161,16 @@ export default async function AgendaPage({
           </ButtonLink>
         </div>
 
-        <form method="get" className="flex min-w-0 flex-wrap items-center gap-2">
+        <form
+          method="get"
+          className="flex min-w-0 flex-wrap items-center gap-2 max-sm:w-full max-sm:flex-nowrap"
+        >
           <input type="hidden" name="data" value={data} />
           <Select
             name="vet"
             defaultValue={vet ?? ""}
             aria-label="Filtrar por veterinário"
-            className="h-8 w-auto min-w-0 max-w-56 text-sm max-sm:min-h-11"
+            className="h-8 w-auto min-w-0 max-w-56 text-sm max-sm:min-h-11 max-sm:max-w-none max-sm:flex-1"
           >
             <option value="">Todos os veterinários</option>
             {(veterinarios ?? []).map((v) => (
@@ -176,7 +183,7 @@ export default async function AgendaPage({
             type="submit"
             variante="secondary"
             tamanho="sm"
-            className="max-sm:min-h-11"
+            className="max-sm:min-h-11 max-sm:shrink-0"
           >
             <SlidersHorizontal className="size-4" />
             Filtrar

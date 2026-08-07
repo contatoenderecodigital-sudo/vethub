@@ -110,34 +110,49 @@ function auditarNaPagina({ AA_NORMAL, AA_GRANDE, ALVO_MIN, ALVO_AA, exigirToque 
   };
   const lum = ([r, g, b]) => 0.2126 * canal(r) + 0.7152 * canal(g) + 0.0722 * canal(b);
   /**
-   * Lê uma cor CSS já computada.
+   * Lê uma cor CSS — QUALQUER cor CSS.
    *
-   * Precisa entender DUAS escritas. O Chrome devolve `rgb()/rgba()` para as
-   * cores antigas, mas serializa `color-mix()` e as modernas como
-   * `color(srgb 0.43 0.90 0.71 / 0.55)` — com componentes de 0 a 1 e barra
-   * antes do alfa. Um parser que só conhecia `rgb()` enxergava "sem cor"
-   * justamente no degradê da marca e no cabeçalho, e por isso o texto branco
-   * do cabeçalho reprovava com 1.10:1 contra um fundo imaginário branco.
+   * Escrever um parser à mão foi erro caro. O Chrome devolve `rgb()` para as
+   * cores antigas, `color(srgb …)` para o que veio de `color-mix()`, e o
+   * Tailwind v4 usa `oklch()` na paleta inteira. Cada escritura que o parser
+   * não conhecia virava "sem cor", e daí saíam milhares de reprovações
+   * inventadas — o cabeçalho da marca chegou a "reprovar" com 1.10:1 contra
+   * um fundo branco que não existia.
+   *
+   * Em vez de perseguir formatos, o trabalho é do próprio navegador: pinta-se
+   * a cor num canvas de 1×1 e lê-se o pixel. O que o Chrome sabe desenhar,
+   * ele sabe converter — inclusive o que for inventado depois disto aqui.
    */
-  const parse = (cor) => {
-    if (!cor) return null;
+  const pincel = document.createElement("canvas").getContext("2d", {
+    willReadFrequently: true,
+  });
+  const cacheCor = new Map();
 
-    const moderno = cor.match(/color\(\s*srgb\s+([^)]+)\)/i);
-    if (moderno) {
-      const [canais, alfa] = moderno[1].split("/");
-      const p = canais.trim().split(/\s+/).map(parseFloat);
-      if (p.length < 3 || p.some(Number.isNaN)) return null;
-      return {
-        rgb: [p[0] * 255, p[1] * 255, p[2] * 255],
-        a: alfa === undefined ? 1 : parseFloat(alfa),
-      };
+  const parse = (cor) => {
+    if (!cor || cor === "none") return null;
+    if (cacheCor.has(cor)) return cacheCor.get(cor);
+
+    let saida = null;
+    try {
+      // fillStyle inválido é ignorado silenciosamente pelo canvas, então a
+      // tela é limpa antes: sobrar a cor anterior daria medição errada.
+      pincel.clearRect(0, 0, 1, 1);
+      pincel.fillStyle = "#000";
+      pincel.fillStyle = cor;
+      pincel.fillRect(0, 0, 1, 1);
+      const [r, g, b, a] = pincel.getImageData(0, 0, 1, 1).data;
+      // `getImageData` devolve a cor NÃO pré-multiplicada: r/g/b já são a cor
+      // pura e o alfa vem à parte. Dividir a cor pelo alfa (como se fosse
+      // pré-multiplicada) estourava o valor — branco a 50% virava 508 — e
+      // produzia contrastes impossíveis, tipo 1.91:1 para texto branco sobre
+      // verde escuro.
+      saida = { rgb: [r, g, b], a: a / 255 };
+    } catch {
+      saida = null;
     }
 
-    const classico = cor.match(/rgba?\(([^)]+)\)/);
-    if (!classico) return null;
-    const p = classico[1].split(/[,\s/]+/).filter(Boolean).map(parseFloat);
-    if (p.length < 3 || p.some(Number.isNaN)) return null;
-    return { rgb: [p[0], p[1], p[2]], a: p[3] === undefined ? 1 : p[3] };
+    cacheCor.set(cor, saida);
+    return saida;
   };
   /**
    * Cor média de um gradiente CSS.
@@ -231,13 +246,28 @@ function auditarNaPagina({ AA_NORMAL, AA_GRANDE, ALVO_MIN, ALVO_AA, exigirToque 
     const grande = tamanho >= 24 || (tamanho >= 18.66 && negrito);
     const minimo = grande ? AA_GRANDE : AA_NORMAL;
     if (r < minimo) {
-      const amostra = texto(el).slice(0, 40);
+      const amostra = texto(el).slice(0, 30);
       const chave = `${amostra}|${Math.round(r * 10)}`;
       if (jaVisto.has(chave)) continue;
       jaVisto.add(chave);
+
+      // As classes do elemento e do pai valem mais que o texto: é por elas
+      // que se acha o componente no código e se corrige de uma vez, em vez
+      // de caçar tela por tela.
+      const classes = (el.className || "").toString().split(/\s+/).filter(Boolean);
+      const suspeitas = classes
+        .filter((c) => /^(text-|bg-|border-|opacity)/.test(c))
+        .slice(0, 4)
+        .join(" ");
+      const pai = (el.parentElement?.className || "").toString().split(/\s+/)
+        .filter((c) => /^(bg-|glass|border-)/.test(c))
+        .slice(0, 3)
+        .join(" ");
+
       reg(
         "contraste",
-        `${r.toFixed(2)}:1 (mínimo ${minimo}) — "${amostra}" · ${Math.round(tamanho)}px`
+        `${r.toFixed(2)}:1 (min ${minimo}) · ${Math.round(tamanho)}px · "${amostra}" · ` +
+          `[${suspeitas || el.tagName.toLowerCase()}]${pai ? ` dentro de [${pai}]` : ""}`
       );
     }
   }

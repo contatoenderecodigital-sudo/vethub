@@ -6,13 +6,18 @@ import {
 
 type Tom = "success" | "pending" | "danger" | "info" | "neutro" | "brand";
 
-// Tons claros para leitura sobre o vidro no degradê verde
+// Tons claros para leitura sobre o vidro no degradê verde.
+//
+// O véu escuro que dá contraste a estes fundos translúcidos está no
+// globals.css, junto com o das outras superfícies: aqui uma classe arbitrária
+// de background brigaria com o tom colorido e, pior, não seria desfeita no
+// modo claro — que reescreve estas classes pelo nome.
 const TONS: Record<Tom, string> = {
   success: "bg-emerald-300/25 text-emerald-50",
   pending: "bg-amber-300/30 text-amber-50",
   danger: "bg-red-400/30 text-red-50",
   info: "bg-cyan-300/25 text-cyan-50",
-  neutro: "bg-white/20 text-white/85",
+  neutro: "bg-white/20 text-white",
   brand: "bg-white/25 text-white",
 };
 

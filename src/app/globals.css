@@ -789,6 +789,37 @@ header.sticky :where(.bg-white\/10, .bg-white\/15, .bg-white\/20, .bg-white\/25)
   background-image: linear-gradient(rgb(2 20 15 / 0.3), rgb(2 20 15 / 0.3));
 }
 
+/* ---- 1b. as etiquetas de estado ----
+ *
+ * "Paga", "Vencida", "Em aberto": fundo colorido translúcido com texto quase
+ * branco. Onde o degradê clareia, "Paga" media 3.81:1 — e é na lista de
+ * contas que essa palavra mais precisa ser lida.
+ *
+ * O véu escuro entra por baixo do tom, então a cor do estado continua
+ * dizendo o que dizia (verde pago, âmbar pendente, vermelho vencido) e o
+ * texto volta a ter contraste. No modo claro sai, como os demais. */
+:where(
+    .bg-emerald-300\/25,
+    .bg-amber-300\/25,
+    .bg-amber-300\/30,
+    .bg-red-400\/25,
+    .bg-red-400\/30,
+    .bg-cyan-300\/25
+  ) {
+  background-image: linear-gradient(rgb(2 20 15 / 0.28), rgb(2 20 15 / 0.28));
+}
+[data-modo="claro"]
+  :where(
+    .bg-emerald-300\/25,
+    .bg-amber-300\/25,
+    .bg-amber-300\/30,
+    .bg-red-400\/25,
+    .bg-red-400\/30,
+    .bg-cyan-300\/25
+  ) {
+  background-image: none;
+}
+
 /* ---- 1c. contorno de foco é para o teclado, não para o clique ----
  *
  * Clicar no gráfico desenhava uma moldura preta em volta dele. O contêiner

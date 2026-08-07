@@ -290,8 +290,8 @@ export default async function ComissoesPage({
               aria-current={ativa ? "page" : undefined}
               className={`inline-flex h-8 items-center rounded-full px-3.5 text-sm font-medium transition-colors ${
                 ativa
-                  ? "bg-brand text-white shadow-sm"
-                  : "border border-white/70 bg-white/50 text-ink-muted backdrop-blur-md hover:bg-white/80 hover:text-ink"
+                  ? "bg-white text-brand-dark font-semibold shadow-sm"
+                  : "border border-white/40 bg-white/15 text-ink backdrop-blur-md hover:bg-white/25"
               }`}
             >
               {aba.rotulo}

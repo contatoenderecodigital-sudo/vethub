@@ -22,7 +22,7 @@ export default function PublicoLayout({
           </Link>
           <Link
             href="/login"
-            className="rounded-lg px-3 py-1.5 text-sm font-medium text-white/90 hover:bg-white/10 hover:text-white"
+            className="rounded-lg px-3 py-1.5 text-sm font-medium text-white hover:bg-white/10"
           >
             Entrar
           </Link>
@@ -37,22 +37,22 @@ export default function PublicoLayout({
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-3 px-4 py-6 text-sm text-ink-muted sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <p>© {ano} VetHub. Todos os direitos reservados.</p>
           <nav className="flex flex-wrap gap-x-4 gap-y-1">
-            <Link href="/termos-de-uso" className="hover:text-ink hover:underline">
+            <Link href="/termos-de-uso" className="link-vidro hover:text-ink">
               Termos de Uso
             </Link>
             <Link
               href="/politica-de-privacidade"
-              className="hover:text-ink hover:underline"
+              className="link-vidro hover:text-ink"
             >
               Privacidade
             </Link>
             <Link
               href="/exclusao-de-dados"
-              className="hover:text-ink hover:underline"
+              className="link-vidro hover:text-ink"
             >
               Exclusão de Dados
             </Link>
-            <Link href="/login" className="hover:text-ink hover:underline">
+            <Link href="/login" className="link-vidro hover:text-ink">
               Entrar
             </Link>
           </nav>

@@ -127,6 +127,15 @@ grande. Passou a usar a cor do tema clareada — a mistura é com branco e não
 com um verde fixo, para a marca continuar acompanhando a cor que a clínica
 escolher.
 
+> **Uma escolha para revisar com calma.** Para o "Hub" alcançar o contraste
+> mínimo ele ficou quase branco, e a distinção de cor entre "Vet" e "Hub"
+> praticamente sumiu — na tela de login, onde o fundo é mais claro, ela some
+> de vez. Cor da marca sobre cor da marca nunca vai contrastar muito; ou o
+> wordmark clareia, ou o fundo atrás dele escurece. A alternativa seria dar ao
+> wordmark uma faixa própria mais escura, preservando as duas cores. Fica a
+> decisão: o valor está em `--color-wordmark`, no `globals.css`, e voltar ao
+> verde cheio é trocar um número.
+
 Na barra do celular, o item ativo era distinguido **só pela cor**. Agora é
 branco e negrito: a diferença aparece pelo peso, que funciona também para quem
 não distingue as duas cores.

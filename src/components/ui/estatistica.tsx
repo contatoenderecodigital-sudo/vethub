@@ -72,9 +72,9 @@ export function Estatistica({
       <p className="mt-1 text-xs break-words text-ink-muted">{rotulo}</p>
 
       {detalhe && (
-        <p className="mt-1 text-[11px] break-words text-ink-muted/85">
-          {detalhe}
-        </p>
+        {/* Sem o /85: a 11px, o texto menor do cartão, ele media 4.08:1.
+            A hierarquia já vem do tamanho — não precisa também de opacidade. */}
+        <p className="mt-1 text-[11px] break-words text-ink-muted">{detalhe}</p>
       )}
 
       {variacao !== undefined && (

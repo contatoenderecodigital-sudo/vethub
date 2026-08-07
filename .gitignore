@@ -55,3 +55,6 @@ tests/varredura/resultado-backend/
 tests/varredura/resultado-cadastros/
 tests/varredura/resultado-velocidade/
 tests/varredura/claro/
+
+# Pacote de documentos gerado para envio (não versionar)
+vethub-docs.zip

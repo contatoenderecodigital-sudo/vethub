@@ -190,7 +190,7 @@ export function CampoData({
               definir("");
               setTexto("");
             }}
-            className="flex size-5 shrink-0 cursor-pointer items-center justify-center rounded text-white/60 hover:bg-white/20 hover:text-white"
+            className="flex size-6 shrink-0 cursor-pointer items-center justify-center rounded text-white/75 hover:bg-white/20 hover:text-white"
           >
             <X className="size-3.5" />
           </button>

@@ -319,7 +319,13 @@ function auditarNaPagina({ AA_NORMAL, AA_GRANDE, ALVO_MIN, ALVO_AA, exigirToque 
       const s = getComputedStyle(el);
       if (s.display === "inline" && el.closest("p, li, span")) continue;
 
-      const r = el.getBoundingClientRect();
+      // Caixa de seleção dentro de <label> tem como alvo o RÓTULO inteiro,
+      // não o quadradinho: clicar no texto marca a caixa. Medir só o input
+      // acusava dezenas de "alvos pequenos" que o dedo acerta sem esforço.
+      const rotulo = el.closest("label");
+      const caixa = rotulo && /^(checkbox|radio)$/.test(el.type) ? rotulo : el;
+
+      const r = caixa.getBoundingClientRect();
       const menor = Math.min(r.width, r.height);
       if (menor >= ALVO_MIN) continue;
 

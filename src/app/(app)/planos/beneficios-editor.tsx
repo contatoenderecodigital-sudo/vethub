@@ -104,7 +104,7 @@ export function BeneficiosEditor({
       <input type="hidden" name="beneficios" value={beneficiosJson} />
 
       {/* Cabeçalho das colunas (desktop): mesma grade das linhas */}
-      <div className="hidden text-xs font-medium text-ink-muted sm:grid sm:grid-cols-[14rem_minmax(0,1fr)_6rem_6rem_2rem] sm:gap-2">
+      <div className="hidden text-xs font-medium text-ink-muted lg:grid lg:grid-cols-[14rem_minmax(0,1fr)_6rem_6rem_2rem] lg:gap-2">
         <span>Serviço ou produto</span>
         <span>Descrição do benefício</span>
         <span>Vezes/mês</span>
@@ -112,15 +112,18 @@ export function BeneficiosEditor({
         <span />
       </div>
 
-      <ul className="space-y-3 sm:space-y-2">
+      <ul className="space-y-3 lg:space-y-2">
         {linhas.map((linha) => (
           <li
             key={linha.chave}
-            className="rounded-lg border border-edge p-2 sm:rounded-none sm:border-0 sm:p-0"
+            className="rounded-lg border border-edge p-2 lg:rounded-none lg:border-0 lg:p-0"
           >
-            <div className="space-y-2 sm:grid sm:grid-cols-[14rem_minmax(0,1fr)_6rem_6rem_2rem] sm:items-center sm:gap-2 sm:space-y-0">
-              <label className="block sm:contents">
-                <span className="mb-1 block text-[11px] font-medium text-ink-muted sm:hidden">
+            {/* A grade de 5 colunas soma 28rem fixos mais os vãos: em 768px ela
+                estourava 13px e a página inteira ganhava rolagem lateral. Por
+                isso só entra a partir de lg; no tablet vale o empilhado. */}
+            <div className="space-y-2 lg:grid lg:grid-cols-[14rem_minmax(0,1fr)_6rem_6rem_2rem] lg:items-center lg:gap-2 lg:space-y-0">
+              <label className="block lg:contents">
+                <span className="mb-1 block text-[11px] font-medium text-ink-muted lg:hidden">
                   Serviço ou produto
                 </span>
                 <Select
@@ -137,8 +140,8 @@ export function BeneficiosEditor({
                 </Select>
               </label>
 
-              <label className="block sm:contents">
-                <span className="mb-1 block text-[11px] font-medium text-ink-muted sm:hidden">
+              <label className="block lg:contents">
+                <span className="mb-1 block text-[11px] font-medium text-ink-muted lg:hidden">
                   Descrição do benefício
                 </span>
                 <Input
@@ -155,9 +158,9 @@ export function BeneficiosEditor({
 
               {/* minmax(0,1fr): sem isso os campos usam o próprio tamanho
                   mínimo e a linha estoura num celular de 320px. */}
-              <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] items-end gap-2 sm:contents">
-                <label className="block sm:contents">
-                  <span className="mb-1 block text-[11px] font-medium text-ink-muted sm:hidden">
+              <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] items-end gap-2 lg:contents">
+                <label className="block lg:contents">
+                  <span className="mb-1 block text-[11px] font-medium text-ink-muted lg:hidden">
                     Vezes/mês
                   </span>
                   <Input
@@ -176,8 +179,8 @@ export function BeneficiosEditor({
                   />
                 </label>
 
-                <label className="block sm:contents">
-                  <span className="mb-1 block text-[11px] font-medium text-ink-muted sm:hidden">
+                <label className="block lg:contents">
+                  <span className="mb-1 block text-[11px] font-medium text-ink-muted lg:hidden">
                     Desconto (%)
                   </span>
                   <Input
@@ -201,7 +204,7 @@ export function BeneficiosEditor({
                   title="Remover benefício"
                   disabled={linhas.length === 1}
                   onClick={() => remover(linha.chave)}
-                  className="mb-1 flex size-8 shrink-0 cursor-pointer items-center justify-center justify-self-end rounded-md text-ink-muted transition-colors hover:bg-red-400/25 hover:text-red-100 disabled:pointer-events-none disabled:opacity-40 sm:mb-0"
+                  className="mb-1 flex size-8 shrink-0 cursor-pointer items-center justify-center justify-self-end rounded-md text-ink-muted transition-colors hover:bg-red-400/25 hover:text-red-100 disabled:pointer-events-none disabled:opacity-40 lg:mb-0"
                 >
                   <X className="size-4" />
                 </button>

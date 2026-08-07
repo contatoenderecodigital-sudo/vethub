@@ -92,6 +92,22 @@ async function enviar(pagina) {
     )
     .catch(() => {});
   await pagina.locator('main button[type="submit"]:visible').first().click({ timeout: 15000 });
+
+  // Espera o botão SAIR do estado "Salvando…" antes de julgar o resultado.
+  // Sem isto, um servidor lento (produção logo após um deploy, com as funções
+  // frias) fazia o teste acusar "botão continua desabilitado" para cadastros
+  // que estavam sendo gravados normalmente.
+  await pagina
+    .waitForFunction(
+      () => {
+        const b = [...document.querySelectorAll('main button[type="submit"]')].find(
+          (x) => x.offsetParent !== null
+        );
+        return !b || !b.disabled;
+      },
+      { timeout: 30000 }
+    )
+    .catch(() => {});
   await pagina.waitForLoadState("networkidle", { timeout: 25000 }).catch(() => {});
   await pagina.waitForTimeout(700);
 }

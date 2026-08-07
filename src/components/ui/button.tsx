@@ -12,7 +12,7 @@ const VARIANTES: Record<Variante, string> = {
     "bg-white text-brand-dark font-semibold shadow-lg shadow-black/10 hover:bg-white/90",
   secondary:
     "border border-white/40 bg-white/15 text-white backdrop-blur-md hover:bg-white/25",
-  ghost: "text-white/75 hover:bg-white/15 hover:text-white",
+  ghost: "text-white/90 hover:bg-white/15 hover:text-white",
   danger: "bg-danger text-white shadow-lg shadow-black/10 hover:bg-red-700",
 };
 

@@ -693,6 +693,39 @@ select option {
   background-image: revert-layer;
 }
 
+/* Link de texto sobre o vidro.
+ *
+ * `.link-vidro` era usada em 23 arquivos e não existia em CSS nenhum: uma
+ * classe morta, que não pintava nada. Os links seguiam a cor herdada e, com
+ * 20 px de altura, ficavam abaixo do alvo mínimo de toque da norma (24 px) —
+ * "Ver painel financeiro", "Ver agenda completa", os links do rodapé legal.
+ *
+ * Definida agora com o que ela sempre prometeu: sublinhado discreto que
+ * firma no hover, e altura suficiente para o dedo. */
+.link-vidro {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.5rem;
+  text-decoration-line: underline;
+  text-decoration-color: rgb(255 255 255 / 0.35);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 150ms ease;
+}
+.link-vidro:hover {
+  text-decoration-color: currentColor;
+}
+[data-modo="claro"] .link-vidro {
+  text-decoration-color: rgb(15 23 42 / 0.3);
+}
+
+/* No celular o alvo cresce para o conforto de 44 px sem mudar a aparência:
+   a área clicável passa a folga, o texto fica onde está. */
+@media (pointer: coarse) {
+  .link-vidro {
+    min-height: 2.75rem;
+  }
+}
+
 /* ---- 1a. superfície translúcida precisa segurar o texto branco ----
  *
  * O degradê da marca termina em verde CLARO. Todo bloco que é só "branco a
@@ -705,11 +738,32 @@ select option {
  * modo claro — que reescreve `bg-white/N` por nome. Aqui o véu escuro é
  * acrescentado como background-image (a cor de fundo continua intacta) e
  * some no modo claro, onde o fundo já é claro e o texto, escuro. */
-:where(.bg-white\/10, .bg-white\/15, .bg-white\/20, .bg-white\/25) {
+/* As variantes `sm:` entram na lista porque geram OUTRA classe
+   (`.sm\:bg-white\/15`), e sem elas o alternador da agenda — que só ganha o
+   vidro a partir do tablet — ficava de fora e media 4.13:1. */
+:where(
+    .bg-white\/10,
+    .bg-white\/15,
+    .bg-white\/20,
+    .bg-white\/25,
+    .sm\:bg-white\/10,
+    .sm\:bg-white\/15,
+    .sm\:bg-white\/20,
+    .sm\:bg-white\/25
+  ) {
   background-image: linear-gradient(rgb(2 20 15 / 0.2), rgb(2 20 15 / 0.2));
 }
 [data-modo="claro"]
-  :where(.bg-white\/10, .bg-white\/15, .bg-white\/20, .bg-white\/25) {
+  :where(
+    .bg-white\/10,
+    .bg-white\/15,
+    .bg-white\/20,
+    .bg-white\/25,
+    .sm\:bg-white\/10,
+    .sm\:bg-white\/15,
+    .sm\:bg-white\/20,
+    .sm\:bg-white\/25
+  ) {
   background-image: none;
 }
 /* Nos menus escuros o fundo já é escuro de verdade: o véu ali só embaçaria o

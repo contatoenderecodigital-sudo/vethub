@@ -105,7 +105,7 @@ export function SeletorTema() {
           role="menu"
           className="glass-menu absolute right-0 z-50 mt-2 w-60 rounded-2xl p-3"
         >
-          <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-white/75 drop-shadow-sm">
+          <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-white/90 drop-shadow-sm">
             Cor do sistema
           </p>
           <div className="grid grid-cols-4 gap-2">
@@ -142,7 +142,7 @@ export function SeletorTema() {
             ))}
           </div>
 
-          <p className="mt-3 mb-2 border-t border-white/20 pt-3 text-[11px] font-semibold uppercase tracking-wider text-white/75 drop-shadow-sm">
+          <p className="mt-3 mb-2 border-t border-white/20 pt-3 text-[11px] font-semibold uppercase tracking-wider text-white/90 drop-shadow-sm">
             Claro ou escuro
           </p>
           <div className="grid grid-cols-2 gap-2">

@@ -266,10 +266,12 @@ export function PetForm({
         />
       </Campo>
 
-      <label className="flex items-start gap-2 text-xs text-ink-muted">
+      {/* min-h-6 e a caixa em size-4: o rótulo é o alvo de clique e tinha
+          16px de altura, abaixo dos 24 da norma. */}
+      <label className="flex min-h-6 items-start gap-2 py-1 text-xs text-ink-muted">
         <input
           type="checkbox"
-          className="mt-0.5 size-3.5 accent-[#34D399]"
+          className="mt-0.5 size-4 accent-[#34D399]"
           {...register("falecido")}
         />
         <span>Registrar o pet como falecido (some dos lembretes e da rotina).</span>

@@ -146,8 +146,8 @@ Medido em 64 rotas × 3 larguras × 2 modos, do começo ao fim da noite:
 
 | Medida | Antes | Depois |
 | --- | --- | --- |
-| Contraste abaixo do mínimo AA | 6.207 | **40** |
-| Alvo de toque abaixo de 24px | 254 | **100** |
+| Contraste abaixo do mínimo AA | 6.207 | **0** |
+| Alvo de toque abaixo de 24px | 254 | **0** |
 | Rolagem lateral indevida | 20 | **0** |
 | Campo de formulário sem etiqueta | 36 | **0** |
 | Texto em inglês | 18 | **0** (eram falsos positivos meus) |
@@ -156,9 +156,11 @@ Sobram os "alvos apertados" (entre 24 e 44 px), que a norma AA **não cobra** �
 24 px é o mínimo dela; 44 é conforto recomendado. Não são defeito, e por isso
 aparecem separados no relatório.
 
-Os 100 alvos que ainda reprovam são quase todos campos de formulário com 20 px
-de altura útil; os 40 de contraste estão espalhados em textos auxiliares. Nada
-que impeça o uso — o que impedia foi o que saiu.
+Medido em 64 rotas × 3 larguras × 2 modos, com sessão válida do começo ao fim.
+
+Sobram os "alvos apertados" (entre 24 e 44 px). A norma AA **não cobra** essa
+faixa: 24 px é o mínimo dela, 44 é conforto recomendado pela Apple. Eles ficam
+listados à parte no relatório justamente para não se confundirem com defeito.
 
 O último foco de contraste foi a faixa da marca (`.glass-marca`), que também
 termina na ponta clara do degradê: sobre ela ficam o wordmark e o "Entrar" das

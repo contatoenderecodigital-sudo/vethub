@@ -87,7 +87,7 @@ export function CompraForm({
         <Campo
           rotulo="Frete (R$)"
           htmlFor="frete"
-          dica="Entra no total da nota e na conta a pagar"
+          dica="Entra no total da nota e é rateado no custo dos itens"
         >
           <Input
             id="frete"
@@ -100,6 +100,39 @@ export function CompraForm({
             value={frete}
             onChange={(e) => setFrete(e.target.value.replace(/[^\d.,]/g, "").slice(0, 12))}
           />
+        </Campo>
+
+        {/* Fornecedor negocia 30/60/90; antes a conta a pagar nascia sempre
+            com 30 dias fixos e quem comprava parcelado apagava e lançava as
+            parcelas à mão. */}
+        <Campo
+          rotulo="Primeiro vencimento"
+          htmlFor="prazo_dias"
+          dica="Dias após a data da nota. 0 = à vista."
+        >
+          <Select id="prazo_dias" name="prazo_dias" defaultValue="30">
+            <option value="0">À vista</option>
+            <option value="7">7 dias</option>
+            <option value="15">15 dias</option>
+            <option value="28">28 dias</option>
+            <option value="30">30 dias</option>
+            <option value="45">45 dias</option>
+            <option value="60">60 dias</option>
+          </Select>
+        </Campo>
+
+        <Campo
+          rotulo="Parcelas"
+          htmlFor="parcelas"
+          dica="Uma conta a pagar por parcela, de 30 em 30 dias."
+        >
+          <Select id="parcelas" name="parcelas" defaultValue="1">
+            {[1, 2, 3, 4, 5, 6, 8, 10, 12].map((n) => (
+              <option key={n} value={n}>
+                {n === 1 ? "À vista / 1x" : `${n}x`}
+              </option>
+            ))}
+          </Select>
         </Campo>
       </div>
 

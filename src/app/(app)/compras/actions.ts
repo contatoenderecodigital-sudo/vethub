@@ -110,6 +110,8 @@ export async function criarCompra(formData: FormData) {
     data: String(formData.get("data") ?? ""),
     frete: valorOuZero(String(formData.get("frete") ?? "")),
     observacao: String(formData.get("observacao") ?? ""),
+    prazo_dias: String(formData.get("prazo_dias") ?? "30"),
+    parcelas: String(formData.get("parcelas") ?? "1"),
   });
 
   if (!resultado.success) {
@@ -130,6 +132,8 @@ export async function criarCompra(formData: FormData) {
       numero_nota: v.numero_nota || null,
       data: v.data,
       frete: centavos(v.frete),
+      prazo_dias: v.prazo_dias,
+      parcelas: v.parcelas,
       observacao: v.observacao || null,
       registrado_por: usuario.id,
     })
@@ -175,7 +179,7 @@ export async function receberCompra(id: string) {
   const { data: compra } = await supabase
     .from("compra")
     .select(
-      "id, status, data, numero_nota, valor_total, fornecedor:fornecedor_id (id, nome)"
+      "id, status, data, numero_nota, valor_total, frete, parcelas, prazo_dias, fornecedor:fornecedor_id (id, nome)"
     )
     .eq("id", id)
     .single<{
@@ -184,6 +188,9 @@ export async function receberCompra(id: string) {
       data: string;
       numero_nota: string | null;
       valor_total: number;
+      frete: number;
+      parcelas: number;
+      prazo_dias: number;
       fornecedor: { id: string; nome: string } | { id: string; nome: string }[] | null;
     }>();
 
@@ -198,6 +205,30 @@ export async function receberCompra(id: string) {
 
   const rotulo = rotuloDaNota(compra.numero_nota);
 
+  // O FRETE faz parte do custo. Uma caixa de ração de R$ 200 com R$ 35 de
+  // frete custou R$ 235 para a clínica; precificar em cima de R$ 200 come a
+  // margem em silêncio, e ninguém percebe até fechar o mês no vermelho.
+  //
+  // O rateio é proporcional ao valor de cada linha, não por quantidade: uma
+  // caixa de vacina cara e um pacote de gaze barato não carregam o mesmo
+  // pedaço do frete só porque vieram na mesma nota.
+  const totalItens = linhas.reduce(
+    (soma, l) => soma + Number(l.quantidade) * Number(l.valor_unitario),
+    0
+  );
+  const frete = Number(compra.frete ?? 0);
+
+  /** Custo unitário da linha já com a parte do frete embutida. */
+  function custoComFrete(linha: LinhaItemCompra): number {
+    const unitario = Number(linha.valor_unitario);
+    if (frete <= 0 || totalItens <= 0 || Number(linha.quantidade) <= 0) {
+      return centavos(unitario);
+    }
+    const pesoDaLinha = (unitario * Number(linha.quantidade)) / totalItens;
+    const freteDaLinha = frete * pesoDaLinha;
+    return centavos(unitario + freteDaLinha / Number(linha.quantidade));
+  }
+
   // 1) Lotes informados: reaproveita o existente ou cria com a validade da nota.
   const movimentacoes: Record<string, unknown>[] = [];
 
@@ -206,10 +237,10 @@ export async function receberCompra(id: string) {
     const item = catalogo.get(linha.item_id);
     if (!item) continue;
 
-    // Custo do catálogo passa a ser o da última entrada.
+    // Custo do catálogo passa a ser o da última entrada, frete incluído.
     await supabase
       .from("item")
-      .update({ preco_custo: centavos(Number(linha.valor_unitario)) })
+      .update({ preco_custo: custoComFrete(linha) })
       .eq("id", item.id);
 
     if (!item.controla_estoque) continue;
@@ -283,18 +314,46 @@ export async function receberCompra(id: string) {
 
   if (erroStatus) return comErro(destino, "Não foi possível atualizar a compra.");
 
-  // 4) Conta a pagar do fornecedor, com vencimento em 30 dias
+  // 4) Contas a pagar do fornecedor — uma por parcela negociada.
+  //
+  // Antes era sempre UMA conta com 30 dias fixos. Fornecedor real negocia
+  // 30/60/90, e quem comprava parcelado tinha que apagar a conta gerada e
+  // lançar as parcelas à mão, o que anulava o ganho do módulo.
   const fornecedor = primeiro(compra.fornecedor);
-  const { error: erroConta } = await supabase.from("conta").insert({
+  const parcelas = Math.max(1, Number(compra.parcelas ?? 1));
+  const prazo = Number(compra.prazo_dias ?? DIAS_PARA_VENCIMENTO);
+  const total = centavos(Number(compra.valor_total));
+
+  // A divisão em centavos sobra: R$ 100 em 3x dá 33,33 + 33,33 + 33,34. O
+  // resto vai na ÚLTIMA parcela, para a soma bater com a nota exatamente.
+  const base = centavos(Math.floor((total * 100) / parcelas) / 100);
+  const sobra = centavos(total - base * parcelas);
+
+  // A despesa de compra tem categoria própria; sem ela a conta nasce como
+  // "Sem categoria" e o relatório por categoria fica com um buraco.
+  const { data: categoria } = await supabase
+    .from("categoria_financeira")
+    .select("id")
+    .eq("tipo", "despesa")
+    .ilike("nome", "fornecedores")
+    .maybeSingle<{ id: string }>();
+
+  const contas = Array.from({ length: parcelas }, (_, i) => ({
     clinica_id: usuario.clinica_id,
     tipo: "pagar",
-    descricao: rotulo,
+    descricao: parcelas > 1 ? `${rotulo} — parcela ${i + 1}/${parcelas}` : rotulo,
+    categoria_id: categoria?.id ?? null,
     fornecedor: fornecedor?.nome ?? null,
-    valor: centavos(Number(compra.valor_total)),
-    vencimento: somarDias(compra.data, DIAS_PARA_VENCIMENTO),
+    valor: i === parcelas - 1 ? centavos(base + sobra) : base,
+    competencia: compra.data,
+    // Parcela 1 no prazo negociado; as seguintes de 30 em 30 dias.
+    vencimento: somarDias(compra.data, prazo + i * 30),
+    origem: "compra",
     observacao: "Gerada automaticamente ao receber a mercadoria.",
     registrado_por: usuario.id,
-  });
+  }));
+
+  const { error: erroConta } = await supabase.from("conta").insert(contas);
 
   revalidarCompras(id);
   revalidarEstoqueEFinanceiro();

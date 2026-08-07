@@ -40,6 +40,9 @@ export const compraSchema = z.object({
     .refine((v) => Number.isFinite(v) && v >= 0, "O frete não pode ser negativo.")
     .refine((v) => v <= VALOR_MAX, "Frete máximo: R$ 9.999.999,99."),
   observacao: z.string().trim().max(500, "Use no máximo 500 caracteres."),
+  // Condição de pagamento negociada com o fornecedor.
+  prazo_dias: z.coerce.number().int().min(0).max(365),
+  parcelas: z.coerce.number().int().min(1).max(24),
 });
 export type CompraFormValores = z.infer<typeof compraSchema>;
 

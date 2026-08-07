@@ -331,9 +331,14 @@ export function NavInferior({ ehAdmin }: { ehAdmin: boolean }) {
     return () => document.removeEventListener("keydown", aoTeclar);
   }, [aberto]);
 
+  // O item ativo era distinguido por COR (menta sobre a barra), e a 10px isso
+  // media 2.37:1 — o rótulo mais ilegível do app inteiro. Cor não deve ser o
+  // único sinal de estado: agora o ativo é branco cheio e em negrito, e o
+  // inativo continua branco a 88%. A diferença aparece pelo peso, que
+  // funciona também para quem não distingue as duas cores.
   const classeItem = (ativo: boolean) =>
-    `flex min-h-11 flex-1 flex-col items-center justify-center gap-1 px-1 py-2 text-[10px] font-medium ${
-      ativo ? "text-brand-mint" : "text-ink-muted"
+    `flex min-h-11 flex-1 flex-col items-center justify-center gap-1 px-1 py-2 text-[10px] ${
+      ativo ? "font-bold text-white" : "font-medium text-ink-muted"
     }`;
 
   return (

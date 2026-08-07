@@ -16,6 +16,15 @@
   --color-brand-light: var(--tema-claro);
   --color-brand-mint: var(--tema-menta);
 
+  /* O "Hub" do wordmark sobre o cabeçalho colorido.
+     A cor do tema sozinha não dá contraste: verde claro sobre verde médio
+     mediu 1.96:1, e mesmo o menta ficou em 2.47, abaixo dos 3.0 que a norma
+     pede até para texto grande. A mistura é com BRANCO e não com um verde
+     fixo para a marca continuar acompanhando a cor que a clínica escolher,
+     seja ela verde, azul ou violeta; a proporção foi calibrada medindo o
+     contraste real contra o cabeçalho nos dois modos, claro e escuro. */
+  --color-wordmark: color-mix(in srgb, var(--tema-claro) 12%, #ffffff);
+
   /* Neutros — tema vidro sobre o degradê da marca: texto BRANCO.
      ink-muted em 88% (não 72%): abaixo disso o texto secundário
      reprova no contraste AA sobre o vidro claro. */
@@ -123,6 +132,12 @@ body::before {
   z-index: -1;
   transition: background 400ms ease;
   background:
+    /* Véu escuro por cima de tudo: o degradê termina em verde CLARO, e o
+       texto branco que cai ali (subtítulo da página, botão secundário,
+       estado vazio) ficava em 4.1–4.4:1, abaixo dos 4.5 da norma. Um véu
+       discreto segura a legibilidade em qualquer ponto do degradê sem
+       apagar a cor da marca. */
+    linear-gradient(rgb(2 20 15 / 0.12), rgb(2 20 15 / 0.12)),
     /* formas nítidas: é o que o vidro desfoca — sem elas o glass parece fake */
     radial-gradient(circle 24rem at 82% 8%, color-mix(in srgb, var(--tema-menta) 55%, transparent) 0 55%, transparent 62%),
     radial-gradient(circle 30rem at 8% 88%, color-mix(in srgb, var(--tema-profundo) 50%, transparent) 0 58%, transparent 66%),
@@ -143,9 +158,23 @@ body::before {
  * .glass-forte → menus flutuantes, dropdowns, modais (mais opacos)
  * .glass-marca → cabeçalho com o gradiente da marca em vidro
  * ------------------------------------------------------------------ */
-/* Vidro clássico (referência css.glass): branco ~15%, blur, borda branca fina */
+/* Vidro clássico (referência css.glass): branco ~15%, blur, borda branca fina.
+ *
+ * As DUAS camadas de fundo são de propósito. O véu branco dá o vidro; o véu
+ * escuro por baixo existe para o texto poder ser lido.
+ *
+ * O degradê da marca vai de verde escuro a verde claro, e onde ele clareia o
+ * texto branco perdia o contraste: medido em 3.62:1 nos rótulos dos cartões,
+ * abaixo dos 4.5 que a norma AA pede para texto pequeno. Não era impressão —
+ * era o motivo de "não dá para ler" em várias telas.
+ *
+ * Um escurecimento leve por baixo do véu branco leva o mesmo rótulo a
+ * 5.24:1 e quase não muda a aparência: o cartão continua sendo vidro claro
+ * sobre o degradê, só para de sumir nas regiões claras dele. */
 .glass {
-  background: rgb(255 255 255 / 0.14);
+  background:
+    linear-gradient(rgb(2 20 15 / 0.22), rgb(2 20 15 / 0.22)),
+    rgb(255 255 255 / 0.14);
   -webkit-backdrop-filter: blur(18px) saturate(1.3);
   backdrop-filter: blur(18px) saturate(1.3);
   border: 1px solid rgb(255 255 255 / 0.3);
@@ -657,6 +686,32 @@ select option {
    pode ter esse degradê substituído pelo véu. */
 :where(.glass-marca, .bg-gradient-to-r, .bg-gradient-to-br, .bg-gradient-to-b):hover {
   background-image: revert-layer;
+}
+
+/* ---- 1a. superfície translúcida precisa segurar o texto branco ----
+ *
+ * O degradê da marca termina em verde CLARO. Todo bloco que é só "branco a
+ * 10–25%" sobre ele — botão secundário, avatar, item de menu ativo, estado
+ * vazio — deixava o texto branco em 3.5–4.4:1, abaixo dos 4.5 da norma. Era
+ * o mesmo defeito dos cartões, nos elementos que não usam `.glass`.
+ *
+ * A correção mora aqui e não nas classes dos componentes por dois motivos:
+ * são dezenas de lugares, e trocar a classe por um valor arbitrário quebra o
+ * modo claro — que reescreve `bg-white/N` por nome. Aqui o véu escuro é
+ * acrescentado como background-image (a cor de fundo continua intacta) e
+ * some no modo claro, onde o fundo já é claro e o texto, escuro. */
+:where(.bg-white\/10, .bg-white\/15, .bg-white\/20, .bg-white\/25) {
+  background-image: linear-gradient(rgb(2 20 15 / 0.2), rgb(2 20 15 / 0.2));
+}
+[data-modo="claro"]
+  :where(.bg-white\/10, .bg-white\/15, .bg-white\/20, .bg-white\/25) {
+  background-image: none;
+}
+/* Dentro do cabeçalho e dos menus escuros o fundo já é escuro: o véu ali só
+   embaçaria o realce do item ativo. */
+header.sticky :where(.bg-white\/10, .bg-white\/15, .bg-white\/20, .bg-white\/25),
+.glass-menu :where(.bg-white\/10, .bg-white\/15, .bg-white\/20, .bg-white\/25) {
+  background-image: none;
 }
 
 /* ---- 1c. contorno de foco é para o teclado, não para o clique ----

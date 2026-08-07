@@ -11,7 +11,9 @@ export function Wordmark({
   className?: string;
 }) {
   const vet = sobre === "escuro" ? "text-white" : "text-ink";
-  const hub = sobre === "escuro" ? "text-brand-light" : "text-brand-mint";
+  // Sobre o cabeçalho colorido o "Hub" usa a cor do tema CLAREADA
+  // (--color-wordmark): a cor cheia não alcançava o contraste mínimo.
+  const hub = sobre === "escuro" ? "text-[var(--color-wordmark)]" : "text-brand-mint";
   return (
     <span className={`wordmark select-none ${className}`}>
       <span className={vet}>Vet</span>

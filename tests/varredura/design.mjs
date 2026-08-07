@@ -168,7 +168,11 @@ function auditarNaPagina({ AA_NORMAL, AA_GRANDE, ALVO_MIN, ALVO_AA, exigirToque 
     const cores = [...imagem.matchAll(/(?:color\(\s*srgb\s+[^)]+\)|rgba?\([^)]+\))/gi)]
       .map((m) => parse(m[0]))
       .filter(Boolean);
-    const solidas = cores.filter((c) => c.a > 0.15);
+    // Limiar em 0.02, o mesmo do background-color. Estava em 0.15 e engolia
+    // véus discretos — inclusive o escurecimento de 0.14 do vidro, que é
+    // justamente o que torna o texto legível: a correção existia na tela e
+    // não aparecia na medição.
+    const solidas = cores.filter((c) => c.a > 0.02);
     if (!solidas.length) return null;
     return {
       rgb: [0, 1, 2].map((i) => solidas.reduce((s, c) => s + c.rgb[i], 0) / solidas.length),
@@ -176,12 +180,37 @@ function auditarNaPagina({ AA_NORMAL, AA_GRANDE, ALVO_MIN, ALVO_AA, exigirToque 
     };
   };
 
-  /** A camada de fundo de um nó: cor sólida ou degradê, o que houver. */
+  /**
+   * A camada de fundo de um nó.
+   *
+   * Cor e degradê podem existir ao MESMO tempo no mesmo elemento — é assim
+   * que o vidro é feito: um véu escuro (background-image) por cima de um véu
+   * branco (background-color). Devolver só a cor fazia o escurecimento sumir
+   * da medição, e a correção parecia não ter efeito nenhum.
+   */
   const camadaDe = (n, pseudo = null) => {
     const s = getComputedStyle(n, pseudo);
     const cor = parse(s.backgroundColor);
+    const grad = doGradiente(s.backgroundImage);
+
+    if (grad && cor && cor.a > 0.02) {
+      // Composição "source-over": o degradê (s) é pintado por cima da cor de
+      // fundo (b), e AMBOS são semi-transparentes — o resultado ainda deixa
+      // passar o que estiver atrás.
+      //   αo = αs + αb(1−αs)
+      //   Co = (Cs·αs + Cb·αb·(1−αs)) / αo
+      // Dividir pelo alfa resultante é o passo que faltava: sem ele, dois
+      // véus de 14% davam quase-branco em vez do cinza que se vê na tela.
+      const as = grad.a;
+      const ab = cor.a;
+      const ao = as + ab * (1 - as);
+      const rgb = [0, 1, 2].map(
+        (i) => (grad.rgb[i] * as + cor.rgb[i] * ab * (1 - as)) / ao
+      );
+      return { rgb, a: ao };
+    }
     if (cor && cor.a > 0.02) return cor;
-    return doGradiente(s.backgroundImage);
+    return grad;
   };
 
   /** Empilha as camadas até achar fundo opaco: é o que o olho enxerga. */
@@ -452,11 +481,24 @@ async function principal() {
 
   const navegador = await chromium.launch();
 
+  // Entra UMA vez e reaproveita a sessão nos outros contextos.
+  //
+  // São 2 modos × 3 telas = 6 janelas, e logar em cada uma disparava o limite
+  // de autenticações do Supabase no meio da varredura: a corrida morria com
+  // "login recusado" depois de quinze minutos rodando. O cookie de sessão é o
+  // mesmo para todas, então basta guardá-lo.
+  const contextoLogin = await navegador.newContext();
+  const paginaLogin = await contextoLogin.newPage();
+  await entrar(paginaLogin);
+  const sessao = await contextoLogin.storageState();
+  await contextoLogin.close();
+
   for (const modo of ["escuro", "claro"]) {
     for (const tela of TELAS) {
       const contexto = await navegador.newContext({
         viewport: { width: tela.largura, height: tela.altura },
         hasTouch: tela.toque,
+        storageState: sessao,
       });
       // O guia abre sozinho em página nunca vista e cobre a tela: mediria a
       // capivara, não a página.
@@ -468,7 +510,6 @@ async function principal() {
       }, modo);
 
       const pagina = await contexto.newPage();
-      await entrar(pagina);
 
       process.stdout.write(`[${modo}/${tela.nome}] `);
       for (const rota of rotas) {

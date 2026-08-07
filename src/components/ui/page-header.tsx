@@ -35,7 +35,7 @@ export function PageHeader({
           {titulo}
         </h1>
         {subtitulo && (
-          <p className="mt-0.5 text-sm text-white/85 drop-shadow-sm">{subtitulo}</p>
+          <p className="mt-0.5 text-sm text-white/90 drop-shadow-sm">{subtitulo}</p>
         )}
       </div>
       {temAcoes && (

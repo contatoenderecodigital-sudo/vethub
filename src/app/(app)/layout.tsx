@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Wordmark } from "@/components/wordmark";
 import { NavInferior, NavLateral } from "@/components/nav-links";
 import { SeletorTema } from "@/components/seletor-tema";
+import { SeletorUnidade } from "@/components/seletor-unidade";
 import { GuiaCapivara } from "@/components/guia/guia-capivara";
 
 const ROTULO_PAPEL: Record<string, string> = {
@@ -26,7 +27,7 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { supabase, usuario } = await getSessao();
+  const { supabase, usuario, unidade, unidades } = await getSessao();
 
   const { data: clinica } = await supabase
     .from("clinica")
@@ -59,6 +60,8 @@ export default async function AppLayout({
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3">
+            <SeletorUnidade atual={unidade} unidades={unidades} />
+
             <span data-guia="tema" className="flex">
               <SeletorTema />
             </span>

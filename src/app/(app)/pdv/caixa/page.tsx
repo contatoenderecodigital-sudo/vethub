@@ -52,7 +52,7 @@ export default async function CaixaPage({
   searchParams: Promise<{ erro?: string }>;
 }) {
   const { erro } = await searchParams;
-  const { supabase } = await getSessao();
+  const { supabase, unidade } = await getSessao();
 
   // O caixa aberto e o histórico não dependem um do outro: vão juntos, numa
   // ida só ao banco em vez de duas em fila.
@@ -61,6 +61,7 @@ export default async function CaixaPage({
       .from("caixa")
       .select(CAMPOS_CAIXA)
       .eq("status", "aberto")
+      .eq("unidade_id", unidade?.id ?? "")
       .maybeSingle<CaixaLinha>(),
     supabase
       .from("caixa")

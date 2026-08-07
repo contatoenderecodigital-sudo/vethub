@@ -32,7 +32,7 @@ async function voltarComErro(rota: string, mensagem: string): Promise<never> {
 // ==================================================================
 
 export async function abrirCaixa(formData: FormData) {
-  const { supabase, usuario } = await getSessao();
+  const { supabase, usuario, unidade } = await getSessao();
 
   const resultado = aberturaCaixaSchema.safeParse({
     valor_abertura: paraNumero(String(formData.get("valor_abertura") ?? "0")) || 0,
@@ -49,6 +49,7 @@ export async function abrirCaixa(formData: FormData) {
     .from("caixa")
     .select("id")
     .eq("status", "aberto")
+    .eq("unidade_id", unidade?.id ?? "")
     .maybeSingle<{ id: string }>();
 
   if (aberto) {
@@ -169,7 +170,7 @@ export type ResultadoVenda =
  * serve só para dizer o que foi vendido, nunca por quanto ficou.
  */
 export async function finalizarVenda(payload: string): Promise<ResultadoVenda> {
-  const { supabase, usuario } = await getSessao();
+  const { supabase, usuario, unidade } = await getSessao();
 
   let bruto: unknown;
   try {
@@ -188,6 +189,7 @@ export async function finalizarVenda(payload: string): Promise<ResultadoVenda> {
     .from("caixa")
     .select("id")
     .eq("status", "aberto")
+    .eq("unidade_id", unidade?.id ?? "")
     .maybeSingle<{ id: string }>();
 
   if (!caixa) {

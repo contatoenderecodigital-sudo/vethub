@@ -38,12 +38,16 @@ export default async function PdvPage({
   searchParams: Promise<{ erro?: string; orcamento?: string }>;
 }) {
   const { erro, orcamento: orcamentoId } = await searchParams;
-  const { supabase, usuario } = await getSessao();
+  const { supabase, usuario, unidade } = await getSessao();
 
+  // O caixa é POR UNIDADE: cada filial abre e fecha o seu, em horários
+  // diferentes. Sem este filtro, quem trabalha no Centro veria o caixa da
+  // Matriz e venderia no lugar errado.
   const { data: caixa } = await supabase
     .from("caixa")
     .select("id, abertura, valor_abertura, usuario:aberto_por (nome)")
     .eq("status", "aberto")
+    .eq("unidade_id", unidade?.id ?? "")
     .maybeSingle<CaixaAberto>();
 
   // Venda vinda de um orçamento aprovado. Só aprovado entra: orçamento em

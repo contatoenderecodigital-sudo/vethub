@@ -49,11 +49,10 @@ next-env.d.ts
 .vercel
 .env*
 
-# Prints e relatórios da varredura de navegador (gerados, não versionar)
-tests/varredura/resultado/
-tests/varredura/resultado-backend/
-tests/varredura/resultado-cadastros/
-tests/varredura/resultado-velocidade/
+# Prints e relatórios da varredura de navegador (gerados, não versionar).
+# Padrão em vez de lista: cada roteiro novo cria a própria pasta de saída, e
+# uma lista fixa deixaria a do roteiro seguinte escapar para o commit.
+tests/varredura/resultado*/
 tests/varredura/claro/
 
 # Pacote de documentos gerado para envio (não versionar)

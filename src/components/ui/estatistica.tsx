@@ -101,9 +101,15 @@ export function Estatistica({
     </>
   );
 
+  // Cartão clicável precisa PARECER clicável: mão no cursor, véu mais forte
+  // no hover, anel de foco para quem anda de Tab e um afundar no clique (o
+  // `:active` global do globals.css cuida da cor). Sem isso o cartão levava a
+  // outra tela sem nunca ter avisado que era um botão.
   const base = cn(
     "glass flex h-full flex-col items-center rounded-2xl p-4 text-center transition-all",
-    href && "hover:bg-white/20 hover:shadow-lg hover:shadow-black/10",
+    href &&
+      "cursor-pointer hover:bg-white/20 hover:shadow-lg hover:shadow-black/10 " +
+        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white",
     className
   );
 

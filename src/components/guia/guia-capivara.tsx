@@ -109,6 +109,24 @@ function Guia({ chave, passos }: { chave: string; passos: Passo[] }) {
     setAberto(true);
   }, []);
 
+  // Qualquer clique fora do balão fecha o guia — sem impedir o clique de
+  // chegar onde ia. É o par do `pointer-events-none` do fundo: o guia sai de
+  // cena e o botão que a pessoa mirou funciona no mesmo toque.
+  //
+  // `pointerdown` na fase de captura para fechar antes de a página reagir, e
+  // sem `preventDefault`, que é justamente o que deixa o clique seguir.
+  useEffect(() => {
+    if (!aberto) return;
+
+    const aoApontar = (e: PointerEvent) => {
+      if (balao.current?.contains(e.target as Node)) return;
+      fechar();
+    };
+
+    document.addEventListener("pointerdown", aoApontar, true);
+    return () => document.removeEventListener("pointerdown", aoApontar, true);
+  }, [aberto, fechar]);
+
   // Página nova (nunca vista) abre o guia sozinha, uma única vez. Quem
   // desligar o automático só vê o guia clicando no "?". O respiro de 700ms
   // deixa a página assentar antes de a capivara entrar em cena.
@@ -226,14 +244,15 @@ function Guia({ chave, passos }: { chave: string; passos: Passo[] }) {
 
   return (
     <>
-      {/* Camada que escurece e segura os cliques da página de trás.
-          Clicar nela fecha o guia: ele abre sozinho na primeira visita de
-          cada página, e sem essa saída o usuário fica preso procurando o X
-          toda vez que só queria usar a tela. */}
+      {/* Camada que escurece a página de trás — e SÓ escurece.
+          `pointer-events-none` é o detalhe que importa: como o guia abre
+          sozinho na primeira visita de cada página, uma camada que segurasse
+          o clique roubaria o primeiro clique de toda tela nova. Quem mirou em
+          Salvar salvava a capivara em vez do cadastro. Agora o clique passa
+          direto e quem fecha o guia é o ouvinte abaixo. */}
       <div
-        className="fixed inset-0 z-[60] cursor-pointer"
+        className="pointer-events-none fixed inset-0 z-[60]"
         aria-hidden
-        onClick={fechar}
       >
         {holofote ? (
           <div
@@ -252,7 +271,7 @@ function Guia({ chave, passos }: { chave: string; passos: Passo[] }) {
       </div>
 
       <div
-        className={`fixed inset-x-3 z-[61] mx-auto flex max-w-md items-end gap-1 sm:inset-x-auto sm:right-6 sm:mx-0 sm:w-[34rem] sm:max-w-none ${
+        className={`fixed inset-x-3 z-[61] mx-auto flex max-w-md items-end gap-2 sm:inset-x-auto sm:right-6 sm:mx-0 sm:w-[34rem] sm:max-w-none sm:gap-1 ${
           ancoragem === "cima"
             ? "top-4 md:top-6"
             : "bottom-[calc(5.5rem+env(safe-area-inset-bottom))] md:bottom-6"
@@ -261,10 +280,15 @@ function Guia({ chave, passos }: { chave: string; passos: Passo[] }) {
         {/* O Bento fica MAIS ALTO que o balão: como o alinhamento é pelo pé
             (`items-end`), ele cresce para cima e a cabeça passa da borda de
             cima da caixa. Caixa quadrada com object-contain, então ele nunca
-            é cortado — só encolhe se a tela apertar. A margem negativa
-            aproxima o balão, porque a arte já vem com bastante espaço vazio
-            dos lados. */}
-        <div className="relative -mr-4 size-36 shrink-0 sm:-mr-6 sm:size-64">
+            é cortado — só encolhe se a tela apertar.
+
+            A margem negativa existe porque a arte vem com espaço vazio dos
+            lados, e sem ela o balão parece solto. Mas no CELULAR ela custava
+            caro: o balão tem fundo opaco e cobria parte do Bento, que ficava
+            espremido contra o card. Lá ele agora fica um pouco menor e sem
+            sobreposição — respira ao lado do balão em vez de brigar com ele.
+            No desktop sobra largura, então a aproximação continua. */}
+        <div className="relative size-32 shrink-0 sm:-mr-6 sm:size-64">
           {semImagem[pose] ? (
             <span className="glass-forte flex size-full items-center justify-center rounded-full text-white">
               <PawPrint className="size-8" strokeWidth={1.8} aria-hidden />

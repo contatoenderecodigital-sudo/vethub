@@ -588,3 +588,120 @@ select option {
 [data-modo="claro"] .glass-menu .text-white\/75 {
   color: #0f172a;
 }
+
+/* ==================================================================
+ * RESPOSTA AO TOQUE: hover, clique e foco
+ *
+ * Dois buracos que só apareceram quando alguém perguntou "por que nada
+ * muda quando eu clico?":
+ *
+ * 1. O hover morria no modo claro. O bloco acima reescreve `.bg-white/20`,
+ *    mas `hover:bg-white/20` gera OUTRO seletor (`.hover\:bg-white\/20:hover`)
+ *    e não era alcançado por nenhuma regra. Resultado: no claro o véu de
+ *    hover era branco sobre um cartão já branco — invisível. São 94 usos
+ *    espalhados por 103 arquivos, então a correção mora aqui, do mesmo jeito
+ *    que o resto do modo claro: um bloco só, zero alteração nos componentes.
+ *
+ * 2. Não existia estado de clique em lugar nenhum do app. Hover não serve
+ *    para quem usa no celular (não há mouse) nem responde à pergunta "o
+ *    sistema recebeu meu toque?". `:active` responde, e no toque é o único
+ *    retorno que existe antes da tela seguinte carregar.
+ * ================================================================== */
+
+/* ---- 1. o véu de hover no modo claro ---- */
+[data-modo="claro"] .hover\:bg-white\/5:hover  { background-color: rgb(15 23 42 / 0.04); }
+[data-modo="claro"] .hover\:bg-white\/10:hover { background-color: rgb(15 23 42 / 0.06); }
+[data-modo="claro"] .hover\:bg-white\/15:hover { background-color: rgb(15 23 42 / 0.08); }
+[data-modo="claro"] .hover\:bg-white\/20:hover { background-color: rgb(15 23 42 / 0.10); }
+[data-modo="claro"] .hover\:bg-white\/25:hover { background-color: rgb(15 23 42 / 0.13); }
+
+/* Dentro do cabeçalho o fundo é colorido: ali o véu continua branco. */
+[data-modo="claro"] header.sticky .hover\:bg-white\/10:hover { background-color: rgb(255 255 255 / 0.12); }
+[data-modo="claro"] header.sticky .hover\:bg-white\/15:hover { background-color: rgb(255 255 255 / 0.18); }
+[data-modo="claro"] header.sticky .hover\:bg-white\/20:hover { background-color: rgb(255 255 255 / 0.24); }
+[data-modo="claro"] header.sticky .hover\:bg-white\/25:hover { background-color: rgb(255 255 255 / 0.3); }
+
+/* Texto que clareia no hover precisa ESCURECER no claro, senão some. */
+[data-modo="claro"] .hover\:text-white:hover { color: #0f172a; }
+[data-modo="claro"] header.sticky .hover\:text-white:hover { color: #fff; }
+
+/* ---- 1b. o piso: TUDO que é clicável reage ao mouse ----
+ *
+ * As regras acima só consertam quem já tinha `hover:bg-white/*` escrito na
+ * classe. Medindo o app inteiro, 39 elementos clicáveis não mudavam nada —
+ * o menu lateral inteiro, os grupos do menu, as abas de filtro, os "Ver
+ * painel financeiro" da vida. Ficavam iguais parados e sob o mouse.
+ *
+ * O véu é aplicado como `background-image`, não `background-color`, de
+ * propósito: assim ele deita POR CIMA da cor que o elemento já tem, em vez
+ * de apagá-la. Um botão verde continua verde, só clareia; um link
+ * transparente ganha um fundo suave. Uma regra, todo o app.
+ *
+ * `:where()` mantém a especificidade em zero, então qualquer regra do
+ * componente continua mandando mais que esta. */
+:where(a[href], button:not(:disabled), [role="button"], [role="option"], [role="tab"], summary):hover {
+  background-image: linear-gradient(0deg, rgb(255 255 255 / 0.14), rgb(255 255 255 / 0.14));
+}
+[data-modo="claro"]
+  :where(a[href], button:not(:disabled), [role="button"], [role="option"], [role="tab"], summary):hover {
+  background-image: linear-gradient(0deg, rgb(15 23 42 / 0.07), rgb(15 23 42 / 0.07));
+}
+
+/* No cabeçalho o fundo é a cor da marca: ali o véu volta a ser branco nos
+   dois modos, senão o item do menu escurece contra o verde. */
+[data-modo="claro"] header.sticky :where(a[href], button:not(:disabled)):hover {
+  background-image: linear-gradient(0deg, rgb(255 255 255 / 0.18), rgb(255 255 255 / 0.18));
+}
+
+/* Quem já pinta o próprio fundo com degradê (a marca, o botão de tema) não
+   pode ter esse degradê substituído pelo véu. */
+:where(.glass-marca, .bg-gradient-to-r, .bg-gradient-to-br, .bg-gradient-to-b):hover {
+  background-image: revert-layer;
+}
+
+/* ---- 2. o clique: afunda de leve e escurece ----
+   `:active` pega mouse e toque. A transição é curta de propósito: retorno
+   de toque que demora parece travamento, não resposta. */
+a[href]:active,
+button:not(:disabled):active,
+[role="button"]:not([aria-disabled="true"]):active,
+[role="option"]:active,
+summary:active,
+label:has(> input[type="checkbox"]):active,
+label:has(> input[type="radio"]):active {
+  transform: scale(0.985);
+  transition-duration: 60ms;
+}
+
+/* ---- 3. o vidro clicável reage ao mouse e ao clique ----
+ *
+ * `.glass` define `background` fora de qualquer @layer, e CSS sem camada
+ * ganha de tudo que está em camada — inclusive das utilitárias do Tailwind.
+ * Por isso `hover:bg-white/20` num cartão `.glass` nunca pintou nada no modo
+ * escuro: a regra existia, mas perdia a cascata. A correção precisa morar
+ * aqui, fora de camada, para disputar em pé de igualdade.
+ *
+ * A escala é sempre a mesma: parado < hover < clicando. */
+.glass:where(a[href], button:not(:disabled)):hover {
+  background: rgb(255 255 255 / 0.22);
+}
+.glass:where(a[href], button:not(:disabled)):active {
+  background: rgb(255 255 255 / 0.32);
+}
+
+[data-modo="claro"] .glass:where(a[href], button:not(:disabled)):hover {
+  background: rgb(15 23 42 / 0.06);
+}
+[data-modo="claro"] .glass:where(a[href], button:not(:disabled)):active {
+  background: rgb(15 23 42 / 0.14);
+}
+
+/* Cartões de número e linhas de lista clicáveis não devem "pular" a página
+   inteira ao serem pressionados: só o próprio bloco reage. */
+@media (prefers-reduced-motion: reduce) {
+  a[href]:active,
+  button:not(:disabled):active,
+  [role="button"]:active {
+    transform: none;
+  }
+}

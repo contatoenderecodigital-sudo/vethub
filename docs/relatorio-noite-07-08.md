@@ -152,14 +152,8 @@ Medido em 64 rotas × 3 larguras × 2 modos, do começo ao fim da noite:
 | Campo de formulário sem etiqueta | 36 | **0** |
 | Texto em inglês | 18 | **0** (eram falsos positivos meus) |
 
-Sobram os "alvos apertados" (entre 24 e 44 px), que a norma AA **não cobra** —
-24 px é o mínimo dela; 44 é conforto recomendado. Não são defeito, e por isso
-aparecem separados no relatório.
-
-Medido em 64 rotas × 3 larguras × 2 modos, com sessão válida do começo ao fim.
-
 Sobram os "alvos apertados" (entre 24 e 44 px). A norma AA **não cobra** essa
-faixa: 24 px é o mínimo dela, 44 é conforto recomendado pela Apple. Eles ficam
+faixa: 24 px é o mínimo dela, 44 é conforto recomendado pela Apple. Ficam
 listados à parte no relatório justamente para não se confundirem com defeito.
 
 O último foco de contraste foi a faixa da marca (`.glass-marca`), que também

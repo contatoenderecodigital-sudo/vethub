@@ -659,6 +659,29 @@ select option {
   background-image: revert-layer;
 }
 
+/* ---- 1c. contorno de foco é para o teclado, não para o clique ----
+ *
+ * Clicar no gráfico desenhava uma moldura preta em volta dele. O contêiner
+ * do Recharts recebe `tabindex` para ser alcançável por teclado, e o
+ * navegador então mostra o contorno também no clique do mouse — onde ele não
+ * informa nada, só suja.
+ *
+ * `:focus-visible` é o navegador dizendo "este foco veio do teclado". Então
+ * o contorno some no clique e continua firme no Tab, que é quem precisa
+ * dele. Vale para qualquer elemento que ganhe foco sem ser um controle. */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+.recharts-wrapper:focus,
+.recharts-surface:focus,
+.recharts-wrapper *:focus {
+  outline: none;
+}
+.recharts-wrapper:focus-visible {
+  outline: 2px solid rgb(255 255 255 / 0.9);
+  outline-offset: 2px;
+}
+
 /* ---- 2. o clique: afunda de leve e escurece ----
    `:active` pega mouse e toque. A transição é curta de propósito: retorno
    de toque que demora parece travamento, não resposta. */

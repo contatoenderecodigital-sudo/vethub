@@ -236,10 +236,19 @@ export async function ListaContas({
               key={aba.valor}
               href={linkAba(aba.valor)}
               aria-current={ativa ? "page" : undefined}
+              // A aba inativa usava `bg-white/50` com `text-ink-muted`. No
+              // modo escuro isso é texto BRANCO sobre fundo BRANCO: as abas
+              // "Pagas" e "Todas" ficavam ilegíveis. Acontece porque o véu
+              // acima de 50% não é convertido no modo claro (ali ele é fundo
+              // de verdade, não véu), então a mesma classe significa coisas
+              // opostas nos dois modos.
+              //
+              // Agora usa o mesmo vidro do resto do app — o do alternador da
+              // agenda —, que já era legível nos dois.
               className={`inline-flex h-8 items-center rounded-full px-3.5 text-sm font-medium transition-colors ${
                 ativa
-                  ? "bg-brand text-white shadow-sm"
-                  : "border border-white/70 bg-white/50 text-ink-muted backdrop-blur-md hover:bg-white/80 hover:text-ink"
+                  ? "bg-white text-brand-dark font-semibold shadow-sm"
+                  : "border border-white/40 bg-white/15 text-ink backdrop-blur-md hover:bg-white/25"
               }`}
             >
               {aba.rotulo}
@@ -273,22 +282,19 @@ export async function ListaContas({
             ))}
           </Select>
         </div>
-        <div className="flex min-w-64 flex-1 flex-wrap items-center gap-2">
-          <div className="min-w-32 flex-1">
-            <CampoData
-              name="de"
-              defaultValue={de ?? ""}
-              aria-label="Vencimento de"
-            />
-          </div>
-          <span className="text-sm text-ink-muted">até</span>
-          <div className="min-w-32 flex-1">
-            <CampoData
-              name="ate"
-              defaultValue={ate ?? ""}
-              aria-label="Vencimento até"
-            />
-          </div>
+        {/* Grade em vez de flex-wrap: com wrap, o segundo campo caía para a
+            linha de baixo e o "até" ficava órfão no fim da primeira, com as
+            duas caixas de tamanhos diferentes. Em três colunas
+            (campo · até · campo) os dois ficam sempre lado a lado e com a
+            MESMA largura, que é o que a dupla de datas precisa aparentar. */}
+        {/* `min-w-0` nas colunas é obrigatório: `1fr` respeita a largura
+            mínima do conteúdo, e o campo de data tem placeholder e botão de
+            calendário dentro. Sem isso a grade não encolhia e empurrava a
+            página para 550 px numa tela de 390. */}
+        <div className="grid min-w-0 flex-1 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 sm:min-w-64">
+          <CampoData name="de" defaultValue={de ?? ""} aria-label="Vencimento de" />
+          <span className="shrink-0 text-sm text-ink-muted">até</span>
+          <CampoData name="ate" defaultValue={ate ?? ""} aria-label="Vencimento até" />
         </div>
         <div className="flex shrink-0 gap-2">
           <Button type="submit" variante="secondary">
@@ -401,7 +407,11 @@ export async function ListaContas({
                       </div>
                     </div>
 
-                    <div className="flex w-full shrink-0 flex-wrap items-center gap-2 sm:w-auto">
+                    {/* No celular as ações ganham uma linha separadora e um
+                        respiro: sem isso os quatro ícones encostavam no texto
+                        da conta e o card virava um amontoado onde não dava
+                        para saber o que era informação e o que era botão. */}
+                    <div className="flex w-full shrink-0 flex-wrap items-center gap-2 max-sm:mt-3 max-sm:border-t max-sm:border-white/12 max-sm:pt-3 sm:w-auto">
                       {podeBaixar && (
                         <BaixaForm
                           contaId={c.id}

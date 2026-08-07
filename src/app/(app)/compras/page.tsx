@@ -224,22 +224,15 @@ export default async function ComprasPage({
             ))}
           </Select>
         </div>
-        <div className="flex min-w-64 flex-1 flex-wrap items-center gap-2">
-          <div className="min-w-32 flex-1">
-            <CampoData
-              name="de"
-              defaultValue={de ?? ""}
-              aria-label="Compras a partir de"
-            />
-          </div>
-          <span className="text-sm text-ink-muted">até</span>
-          <div className="min-w-32 flex-1">
-            <CampoData
-              name="ate"
-              defaultValue={ate ?? ""}
-              aria-label="Compras até"
-            />
-          </div>
+        {/* Mesma grade de três colunas do filtro de contas: campo · até ·
+            campo, sempre na mesma linha e com a mesma largura. */}
+        {/* `minmax(0,1fr)` e não `1fr`: o campo de data tem largura mínima
+            própria (placeholder + botão de calendário) e a grade não
+            encolhia, estourando a página no celular. */}
+        <div className="grid min-w-0 flex-1 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 sm:min-w-64">
+          <CampoData name="de" defaultValue={de ?? ""} aria-label="Compras a partir de" />
+          <span className="shrink-0 text-sm text-ink-muted">até</span>
+          <CampoData name="ate" defaultValue={ate ?? ""} aria-label="Compras até" />
         </div>
         <div className="flex shrink-0 gap-2">
           <Button type="submit" variante="secondary">
@@ -307,7 +300,7 @@ export default async function ComprasPage({
                     </td>
                     <td className="px-4 py-3 text-ink">
                       <Link href={`/compras/${c.id}`} className="hover:underline">
-                        {c.numero_nota ? `NF ${c.numero_nota}` : "—"}
+                        {c.numero_nota ? `NF ${c.numero_nota}` : "-"}
                       </Link>
                     </td>
                     <td className="px-4 py-3 text-ink-muted">

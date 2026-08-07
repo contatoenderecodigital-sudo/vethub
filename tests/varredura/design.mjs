@@ -529,6 +529,18 @@ async function principal() {
         try {
           await pagina.goto(`${BASE}${rota}`, { waitUntil: "domcontentloaded", timeout: 30000 });
           await pagina.waitForLoadState("networkidle", { timeout: 15000 }).catch(() => {});
+
+          // Caiu no login? Então a sessão morreu no meio da corrida, e daqui
+          // para a frente TODAS as rotas medem a mesma tela de entrada. Uma
+          // rodada assim rendeu 183 achados do wordmark de 36px "em 61
+          // rotas" — que era a tela de login contada 61 vezes. Melhor parar e
+          // dizer isso do que entregar número inventado.
+          if (rota !== "/login" && new URL(pagina.url()).pathname.startsWith("/login")) {
+            throw new Error(
+              "sessão perdida no meio da varredura (a rota caiu em /login) — " +
+                "rode de novo; o Supabase limita autenticações seguidas"
+            );
+          }
           await pagina.evaluate((m) => document.documentElement.setAttribute("data-modo", m), modo);
           await pagina.waitForTimeout(350);
 

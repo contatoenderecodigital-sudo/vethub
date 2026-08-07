@@ -618,10 +618,19 @@ select option {
 [data-modo="claro"] .text-amber-100 { color: #b45309; }
 [data-modo="claro"] .text-emerald-50,
 [data-modo="claro"] .text-emerald-100 { color: #047857; }
+/* O ciano faltava na lista, e as etiquetas de "tipo" no histórico de
+   alterações ficavam em 1.09:1 no modo claro — texto quase branco sobre
+   papel branco, ilegível. */
+[data-modo="claro"] .text-cyan-50,
+[data-modo="claro"] .text-cyan-100 { color: #0e7490; }
 [data-modo="claro"] .bg-red-400\/25,
 [data-modo="claro"] .bg-red-400\/30 { background-color: rgb(220 38 38 / 0.08); }
-[data-modo="claro"] .bg-amber-300\/25 { background-color: rgb(217 119 6 / 0.1); }
+[data-modo="claro"] .bg-amber-300\/25,
+[data-modo="claro"] .bg-amber-300\/30 { background-color: rgb(217 119 6 / 0.1); }
+/* `/25` faltava: é o tom que o componente Badge usa para "sucesso". */
+[data-modo="claro"] .bg-emerald-300\/25,
 [data-modo="claro"] .bg-emerald-300\/30 { background-color: rgb(5 150 105 / 0.1); }
+[data-modo="claro"] .bg-cyan-300\/25 { background-color: rgb(14 116 144 / 0.1); }
 [data-modo="claro"] .border-red-300\/40,
 [data-modo="claro"] .border-red-300\/50 { border-color: rgb(220 38 38 / 0.3); }
 [data-modo="claro"] .border-amber-200\/60 { border-color: rgb(217 119 6 / 0.35); }

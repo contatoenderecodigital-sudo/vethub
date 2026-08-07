@@ -142,8 +142,20 @@ não distingue as duas cores.
 
 ### Números
 
-No dashboard, os achados de contraste começaram o dia em **86** e fecharam em
-**0**. No app inteiro, de **6.207** para a casa das dezenas.
+| Medida | Antes | Depois |
+| --- | --- | --- |
+| Contraste abaixo do mínimo AA | 6.207 | dezenas |
+| Alvo de toque abaixo de 24px | 254 | **0** |
+| Rolagem lateral indevida | 20 | **0** |
+| Campo de formulário sem etiqueta | 36 | **0** |
+| Texto em inglês | 18 | **0** (eram falsos positivos) |
+
+Sobram os "alvos apertados" (entre 24 e 44 px), que a norma AA **não cobra** —
+24 px é o mínimo dela; 44 é conforto recomendado. Não são defeito.
+
+O último foco de contraste foi a faixa da marca (`.glass-marca`), que também
+termina na ponta clara do degradê: sobre ela ficam o wordmark e o "Entrar" das
+telas legais — justamente as páginas que o revisor da Meta abre.
 
 ---
 
@@ -202,14 +214,33 @@ ficava invisível no modo claro. É para isso que ela serve.
 
 ## 7. Estado verificado
 
+Tudo abaixo rodou **contra produção**, depois do último deploy:
+
 | Bateria | Resultado |
 | --- | --- |
 | Isolamento entre clínicas (`npm test`) | **7 de 7** |
 | Backend e segurança (`backend.mjs`) | **12 de 12** |
 | O teste do dinheiro | **16 de 16** |
-| Fluxos clínicos | **7 fluxos, sem falha** |
-| Varredura de telas | 152 visitas, 0 layout estourado |
+| Fluxos clínicos | **48 passos, 0 falhas** |
+| Varredura de telas | 152 visitas, **0 layout estourado** |
 | Build, tipos e lint | limpos |
+
+> Os "4 erros" que a varredura acusa em `/pdv` e `/pdv/caixa` são o alerta de
+> caixa aberto desde ontem. O detector conta qualquer `role="alert"` como
+> erro; é a funcionalidade trabalhando. Fechar aquele caixa é tarefa de
+> pessoa, não de sistema — dinheiro físico precisa ser conferido.
+
+### Um erro meu que vale registrar
+
+Publiquei um commit com o build quebrado. O comando era
+`npm run build | grep -iE "error|Compiled successfully" && git commit …`, e o
+`grep` devolve **sucesso quando ENCONTRA** a palavra "error" — então o `&&`
+deixou passar justamente no caso de falha. A Vercel recusou o build e produção
+ficou no deploy anterior, sem quebrar para ninguém, mas o repositório passou
+alguns minutos com a `main` sem compilar.
+
+Para decidir por resultado de build vale o **código de saída** do comando,
+nunca o texto que ele imprime.
 
 O isolamento entre clínicas era o único item que, se estivesse quebrado, não
 daria para consertar depois. Está confirmado por dois caminhos independentes.

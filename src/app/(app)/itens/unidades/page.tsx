@@ -21,8 +21,8 @@ interface UnidadeLinha {
 /** Caixa de "aceita fração" usada nas linhas e no formulário de cadastro. */
 function CaixaFracionavel({ marcada }: { marcada?: boolean }) {
   return (
-    {/* O rótulo é o alvo (clicar no texto marca a caixa), então é ele que
-        precisa dos 24px da norma — tinha 20. */}
+    // O rótulo é o alvo de clique (clicar no texto marca a caixa), então é
+    // ele que precisa dos 24px da norma — tinha 20.
     <label className="flex min-h-6 cursor-pointer items-center gap-2 text-sm text-ink-muted">
       <input
         type="checkbox"

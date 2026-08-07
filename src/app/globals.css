@@ -915,3 +915,81 @@ label:has(> input[type="radio"]):active {
     transform: none;
   }
 }
+
+/* ==================================================================
+ * IMPRESSÃO
+ *
+ * Existia CSS de impressão só para os relatórios (`.relatorio-folha`). O
+ * comprovante de venda e a receita — os dois papéis que o cliente leva na
+ * mão — não tinham nenhum: saíam com o degradê escuro do app pintado na
+ * folha, gastando tinta, e com o botão do guia impresso no canto.
+ *
+ * Este bloco vale para o site inteiro, então qualquer tela nova já nasce
+ * imprimível.
+ * ================================================================== */
+@media print {
+  /* O fundo do app é um pseudo-elemento fixo em tela cheia: sem apagá-lo,
+     é ELE que a impressora tenta reproduzir. */
+  html,
+  body {
+    background: #ffffff !important;
+  }
+  body::before {
+    display: none !important;
+  }
+
+  /* Nada de navegação nem de ajuda no papel. O guia do Bento é o botão "?"
+     do canto, que aparecia impresso junto com o comprovante. */
+  header,
+  aside,
+  nav,
+  [data-guia],
+  [aria-label="Abrir o guia desta página"],
+  [aria-label="Guia do VetHub"],
+  .nao-imprimir {
+    display: none !important;
+  }
+
+  /* Tinta preta sobre papel branco. O vidro perde o borrão e a sombra:
+     translucidez não existe em papel, vira mancha cinza. */
+  * {
+    color: #18181b !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  .glass,
+  .glass-forte,
+  .glass-menu,
+  .glass-marca {
+    background: #ffffff !important;
+    border-color: #d4d4d8 !important;
+    background-image: none !important;
+  }
+
+  /* O véu escuro das superfícies e das etiquetas existe para dar contraste
+     na tela; no papel ele só escurece o que já é legível. */
+  [class*="bg-white/"],
+  [class*="bg-emerald-"],
+  [class*="bg-amber-"],
+  [class*="bg-red-"],
+  [class*="bg-cyan-"] {
+    background-image: none !important;
+    background-color: transparent !important;
+  }
+
+  main {
+    padding: 0 !important;
+  }
+
+  /* Não corta uma linha de tabela nem um cartão ao meio na virada da página. */
+  tr,
+  li,
+  .glass {
+    break-inside: avoid;
+  }
+  thead {
+    display: table-header-group;
+  }
+}

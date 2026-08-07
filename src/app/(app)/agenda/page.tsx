@@ -1,8 +1,6 @@
 import {
   CalendarDays,
   Check,
-  ChevronLeft,
-  ChevronRight,
   LogIn,
   LogOut,
   Plus,
@@ -27,6 +25,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Select } from "@/components/ui/form";
 import { IconeEspecie } from "@/components/icone-especie";
 import { AlternadorVisao } from "./alternador-visao";
+import { NavegadorData } from "./navegador-data";
 import { StatusSelect } from "./status-select";
 import { atualizarStatus } from "./actions";
 
@@ -59,9 +58,6 @@ function deslocarDia(data: string, dias: number): string {
   return d.toLocaleDateString("en-CA");
 }
 
-function linkDia(data: string, vet?: string): string {
-  return `/agenda?data=${data}${vet ? `&vet=${vet}` : ""}`;
-}
 
 export default async function AgendaPage({
   searchParams,
@@ -132,34 +128,7 @@ export default async function AgendaPage({
           com a mesma medida, uma embaixo da outra. Antes cada uma terminava
           num ponto diferente e a barra parecia desalinhada. */}
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2 max-sm:w-full">
-          <ButtonLink
-            href={linkDia(deslocarDia(data, -1), vet)}
-            variante="secondary"
-            tamanho="sm"
-            className="max-sm:min-h-11 max-sm:min-w-11"
-          >
-            <ChevronLeft className="size-4" />
-            <span className="max-sm:sr-only">Anterior</span>
-          </ButtonLink>
-          <ButtonLink
-            href={linkDia(hojeISO(), vet)}
-            variante="secondary"
-            tamanho="sm"
-            className="max-sm:min-h-11 max-sm:flex-1"
-          >
-            Hoje
-          </ButtonLink>
-          <ButtonLink
-            href={linkDia(deslocarDia(data, 1), vet)}
-            variante="secondary"
-            tamanho="sm"
-            className="max-sm:min-h-11 max-sm:min-w-11"
-          >
-            <span className="max-sm:sr-only">Próximo</span>
-            <ChevronRight className="size-4" />
-          </ButtonLink>
-        </div>
+        <NavegadorData data={data} hoje={hojeISO()} rota="/agenda" vet={vet} />
 
         <form
           method="get"

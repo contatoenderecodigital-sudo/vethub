@@ -129,7 +129,10 @@ export function GraficoBarras({
 }) {
   return (
     <ResponsiveContainer width="100%" height={altura} className="text-ink-muted">
-      <BarChart data={dados} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
+      {/* `right: 20` e não 8: com a margem apertada, a barra do último mês
+          encostava na borda da área do gráfico e saía cortada ao meio, e o
+          rótulo dele ficava espremido contra o limite. */}
+      <BarChart data={dados} margin={{ top: 8, right: 20, left: -12, bottom: 0 }}>
         <defs>
           {series.map((s, i) => {
             const cor = s.cor ?? CORES_SERIE[i % CORES_SERIE.length];
@@ -185,7 +188,7 @@ export function GraficoArea({
 }: BaseProps & { series: { chave: string; rotulo: string; cor?: string }[] }) {
   return (
     <ResponsiveContainer width="100%" height={altura} className="text-ink-muted">
-      <AreaChart data={dados} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
+      <AreaChart data={dados} margin={{ top: 8, right: 20, left: -12, bottom: 0 }}>
         <defs>
           {series.map((s, i) => {
             const cor = s.cor ?? CORES_SERIE[i % CORES_SERIE.length];
@@ -242,7 +245,7 @@ export function GraficoLinha({
 }: BaseProps & { chave: string; rotulo: string }) {
   return (
     <ResponsiveContainer width="100%" height={altura} className="text-ink-muted">
-      <LineChart data={dados} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
+      <LineChart data={dados} margin={{ top: 8, right: 20, left: -12, bottom: 0 }}>
         <CartesianGrid strokeDasharray="3 3" stroke={COR_GRADE} vertical={false} />
         <XAxis dataKey={eixoX} {...EIXO} />
         <YAxis {...EIXO} tickFormatter={compacto} width={52} />

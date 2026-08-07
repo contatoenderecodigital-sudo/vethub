@@ -20,6 +20,7 @@ import {
   DollarSign,
   FileText,
   Handshake,
+  History,
   LayoutDashboard,
   Menu,
 
@@ -159,6 +160,7 @@ const GRUPOS: Grupo[] = [
       { href: "/configuracoes/usuarios", rotulo: "Equipe", icone: UserCog },
       { href: "/configuracoes/clinica", rotulo: "Clínica", icone: Building2 },
       { href: "/configuracoes/unidades", rotulo: "Unidades", icone: Store },
+      { href: "/configuracoes/auditoria", rotulo: "Histórico de alterações", icone: History },
     ],
   },
 ];

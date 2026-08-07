@@ -235,13 +235,19 @@ select option {
   background: #ffffff;
 }
 
+/* A faixa da marca também termina na ponta CLARA do degradê, e é sobre ela
+   que ficam o wordmark e o "Entrar" das telas legais — as páginas que o
+   revisor da Meta abre. Mediam 2.83:1 e 3.42:1. O véu escuro por cima do
+   degradê mantém a cor da marca reconhecível e devolve o contraste. */
 .glass-marca {
-  background-image: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--tema-escuro) 82%, transparent),
-    color-mix(in srgb, var(--tema-medio) 78%, transparent) 55%,
-    color-mix(in srgb, var(--tema-claro) 74%, transparent)
-  );
+  background-image:
+    linear-gradient(rgb(2 20 15 / 0.2), rgb(2 20 15 / 0.2)),
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--tema-escuro) 82%, transparent),
+      color-mix(in srgb, var(--tema-medio) 78%, transparent) 55%,
+      color-mix(in srgb, var(--tema-claro) 74%, transparent)
+    );
   -webkit-backdrop-filter: blur(20px) saturate(1.6);
   backdrop-filter: blur(20px) saturate(1.6);
   box-shadow: inset 0 -1px 0 rgb(255 255 255 / 0.25);
@@ -504,8 +510,12 @@ select option {
 }
 
 /* O cabeçalho mantém a cor da marca: é a faixa de identidade da clínica. */
+/* `background` (atalho) apagaria o véu escuro do `.glass-marca`, e o wordmark
+   voltaria a 2.83:1 só no modo claro. A cor vai em `background-color` e o véu
+   é reposto à parte. */
 [data-modo="claro"] header.sticky {
-  background: color-mix(in srgb, var(--tema-medio) 92%, transparent);
+  background-color: color-mix(in srgb, var(--tema-medio) 92%, transparent);
+  background-image: linear-gradient(rgb(2 20 15 / 0.2), rgb(2 20 15 / 0.2));
   border-bottom-color: rgb(15 23 42 / 0.08);
 }
 

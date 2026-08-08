@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { redirecionarComAviso } from "@/lib/aviso";
 import { getSessao } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { tetoDeUsuarios } from "@/lib/plano-conta";
 import type { Papel } from "@/lib/types";
 import { novoUsuarioSchema } from "./schema";
 
@@ -18,7 +19,27 @@ async function exigirAdmin() {
 }
 
 export async function criarUsuario(formData: FormData) {
-  const { usuario } = await exigirAdmin();
+  const { supabase, usuario, conta } = await exigirAdmin();
+
+  // O teto de usuários é metade do que separa um plano do outro, então ele
+  // é conferido AQUI, no servidor, e não só escondendo o botão: o formulário
+  // é uma requisição como outra qualquer e quem souber o endereço a repete.
+  //
+  // A contagem passa pelo supabase da sessão, sujeito ao RLS — conta só a
+  // equipe desta clínica, nunca a do vizinho.
+  const teto = tetoDeUsuarios(conta.plano, conta.limite_usuarios);
+  if (teto != null) {
+    const { count } = await supabase
+      .from("usuario")
+      .select("id", { count: "exact", head: true });
+    if ((count ?? 0) >= teto) {
+      return redirecionarComAviso(
+        `/configuracoes/usuarios/novo?erro=Seu plano permite ${teto} ${
+          teto === 1 ? "usuário" : "usuários"
+        }. Para adicionar mais, veja os planos em Assinatura.`
+      );
+    }
+  }
 
   // Revalida no servidor com o MESMO schema zod do form (nunca confiar só no front).
   const resultado = novoUsuarioSchema.safeParse({

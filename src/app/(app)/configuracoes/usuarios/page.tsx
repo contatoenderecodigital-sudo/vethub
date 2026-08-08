@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
-import { Check, Plus, Trash2 } from "lucide-react";
+import { Check, Lock, Plus, Trash2 } from "lucide-react";
 import { getSessao } from "@/lib/auth";
+import { tetoDeUsuarios } from "@/lib/plano-conta";
 import { PAPEIS, type Usuario } from "@/lib/types";
 import { PageHeader } from "@/components/ui/page-header";
 import { ButtonLink } from "@/components/ui/button";
@@ -24,7 +25,7 @@ export default async function UsuariosPage({
   searchParams: Promise<{ erro?: string }>;
 }) {
   const { erro } = await searchParams;
-  const { supabase, usuario } = await getSessao();
+  const { supabase, usuario, conta } = await getSessao();
 
   if (usuario.papel !== "admin") redirect("/dashboard");
 
@@ -34,16 +35,32 @@ export default async function UsuariosPage({
     .order("nome")
     .returns<Usuario[]>();
 
+  // Mostrar o teto ANTES é o que evita a pior versão disto: preencher nome,
+  // e-mail e senha para só então descobrir que não cabe mais ninguém.
+  const teto = tetoDeUsuarios(conta.plano, conta.limite_usuarios);
+  const lotado = teto != null && (membros?.length ?? 0) >= teto;
+
   return (
     <div>
       <PageHeader
         titulo="Equipe"
-        subtitulo="Usuários da clínica e seus papéis"
+        subtitulo={
+          teto == null
+            ? "Usuários da clínica e seus papéis"
+            : `${membros?.length ?? 0} de ${teto} usuários do seu plano`
+        }
         acao={
-          <ButtonLink href="/configuracoes/usuarios/novo">
-            <Plus className="size-4" />
-            Novo usuário
-          </ButtonLink>
+          lotado ? (
+            <ButtonLink href="/assinatura">
+              <Lock className="size-4" />
+              Aumentar limite
+            </ButtonLink>
+          ) : (
+            <ButtonLink href="/configuracoes/usuarios/novo">
+              <Plus className="size-4" />
+              Novo usuário
+            </ButtonLink>
+          )
         }
       />
 

@@ -27,7 +27,7 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { supabase, usuario, unidade, unidades } = await getSessao();
+  const { supabase, usuario, unidade, unidades, conta } = await getSessao();
 
   const { data: clinica } = await supabase
     .from("clinica")
@@ -90,7 +90,7 @@ export default async function AppLayout({
       <div className="flex flex-1">
         {/* Navegação lateral (desktop): painel de vidro flutuante */}
         <aside data-guia="menu" className="glass sticky top-[4.25rem] ml-3 mt-3 hidden h-[calc(100dvh-4.5rem)] w-60 shrink-0 flex-col justify-between self-start overflow-y-auto rounded-2xl md:flex 2xl:w-64">
-          <NavLateral ehAdmin={usuario.papel === "admin"} />
+          <NavLateral ehAdmin={usuario.papel === "admin"} plano={conta.plano} />
 
           {/* Bloco do usuário */}
           <div className="border-t border-white/20 p-3">
@@ -129,7 +129,7 @@ export default async function AppLayout({
       </div>
 
       {/* Navegação inferior (mobile) */}
-      <NavInferior ehAdmin={usuario.papel === "admin"} />
+      <NavInferior ehAdmin={usuario.papel === "admin"} plano={conta.plano} />
 
       {/* O Bento: o "?" do canto que explica a página */}
       <GuiaCapivara />

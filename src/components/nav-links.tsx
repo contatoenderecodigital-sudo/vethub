@@ -10,6 +10,7 @@ import {
   type SVGProps,
 } from "react";
 import {
+  BadgeCheck,
   Bath,
   BedDouble,
   Boxes,
@@ -23,6 +24,7 @@ import {
   Handshake,
   History,
   LayoutDashboard,
+  Lock,
   Menu,
 
   Package,
@@ -45,6 +47,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { IconeWhatsapp } from "@/components/icone-whatsapp";
+import { temRecurso, type Recurso } from "@/lib/plano-conta";
 
 /**
  * O ícone pode vir do Lucide ou ser um SVG nosso (o logo do WhatsApp,
@@ -58,6 +61,15 @@ interface Item {
   icone: IconeDeMenu;
   /** Rota ainda não construída: aparece esmaecida com selo "breve". */
   breve?: boolean;
+  /**
+   * Recurso de plano que esta tela exige.
+   *
+   * Quando a conta não tem, o item continua VISÍVEL, com cadeado, e leva à
+   * tela que explica o recurso. Esconder seria pior para os dois lados: a
+   * clínica nunca descobre que existe internação no sistema, e nós perdemos
+   * a venda que só acontece quando alguém procura a função e não acha.
+   */
+  recurso?: Recurso;
   /**
    * Tela do dia a dia: o Next busca os DADOS dela antes do clique, então a
    * troca de aba é instantânea em vez de esperar meio segundo.
@@ -97,7 +109,7 @@ const GRUPOS: Grupo[] = [
       { href: "/agenda", rotulo: "Agenda", icone: CalendarDays, quente: true },
       { href: "/consultas", rotulo: "Consultas", icone: Stethoscope, quente: true },
       { href: "/receitas", rotulo: "Receituário", icone: Pill },
-      { href: "/internacao", rotulo: "Internação", icone: BedDouble },
+      { href: "/internacao", rotulo: "Internação", icone: BedDouble, recurso: "internacao" },
       { href: "/banho-tosa", rotulo: "Banho e tosa", icone: Bath },
       { href: "/banho-tosa/fichas", rotulo: "Fichas de tosa", icone: ClipboardList },
     ],
@@ -133,9 +145,9 @@ const GRUPOS: Grupo[] = [
       { href: "/pdv", rotulo: "PDV e vendas", icone: ShoppingCart },
       { href: "/financeiro/receber", rotulo: "Contas a receber", icone: Wallet },
       { href: "/financeiro/pagar", rotulo: "Contas a pagar", icone: Wallet },
-      { href: "/financeiro/comissoes", rotulo: "Comissões", icone: Percent },
-      { href: "/planos", rotulo: "Planos", icone: ClipboardList },
-      { href: "/planos/assinaturas", rotulo: "Assinaturas", icone: Repeat },
+      { href: "/financeiro/comissoes", rotulo: "Comissões", icone: Percent, recurso: "comissoes" },
+      { href: "/planos", rotulo: "Planos", icone: ClipboardList, recurso: "planos_de_saude" },
+      { href: "/planos/assinaturas", rotulo: "Assinaturas", icone: Repeat, recurso: "planos_de_saude" },
     ],
   },
   {
@@ -144,12 +156,12 @@ const GRUPOS: Grupo[] = [
     itens: [
       { href: "/relatorios", rotulo: "Todos os relatórios", icone: ChartColumn },
       { href: "/relatorios/atendimentos", rotulo: "Atendimentos", icone: CalendarDays },
-      { href: "/relatorios/faturamento", rotulo: "Faturamento", icone: DollarSign },
-      { href: "/relatorios/insumos", rotulo: "Insumos", icone: Syringe },
+      { href: "/relatorios/faturamento", rotulo: "Faturamento", icone: DollarSign, recurso: "relatorios_avancados" },
+      { href: "/relatorios/insumos", rotulo: "Insumos", icone: Syringe, recurso: "relatorios_avancados" },
       { href: "/relatorios/estoque", rotulo: "Estoque", icone: Boxes },
       { href: "/relatorios/financeiro", rotulo: "Financeiro", icone: Wallet },
-      { href: "/relatorios/clientes", rotulo: "Clientes", icone: Users },
-      { href: "/relatorios/vacinas", rotulo: "Vacinas a vencer", icone: Syringe },
+      { href: "/relatorios/clientes", rotulo: "Clientes", icone: Users, recurso: "relatorios_avancados" },
+      { href: "/relatorios/vacinas", rotulo: "Vacinas a vencer", icone: Syringe, recurso: "relatorios_avancados" },
     ],
   },
   {
@@ -157,11 +169,12 @@ const GRUPOS: Grupo[] = [
     icone: UserCog,
     somenteAdmin: true,
     itens: [
-      { href: "/configuracoes/whatsapp", rotulo: "WhatsApp", icone: IconeWhatsapp },
+      { href: "/configuracoes/whatsapp", rotulo: "WhatsApp", icone: IconeWhatsapp, recurso: "whatsapp" },
       { href: "/configuracoes/usuarios", rotulo: "Equipe", icone: UserCog },
       { href: "/configuracoes/clinica", rotulo: "Clínica", icone: Building2 },
-      { href: "/configuracoes/unidades", rotulo: "Unidades", icone: Store },
+      { href: "/configuracoes/unidades", rotulo: "Unidades", icone: Store, recurso: "multi_unidade" },
       { href: "/configuracoes/auditoria", rotulo: "Histórico de alterações", icone: History },
+      { href: "/assinatura", rotulo: "Assinatura", icone: BadgeCheck },
     ],
   },
 ];
@@ -195,8 +208,29 @@ function grupoAtivo(pathname: string, grupo: Grupo) {
   return grupo.itens.some((i) => !i.breve && estaAtivo(pathname, i.href));
 }
 
+/**
+ * Item fora do plano da conta.
+ *
+ * Quem está no teste vê tudo destrancado — é justamente o que faz a pessoa
+ * sentir falta depois.
+ */
+function estaBloqueado(item: Item, plano: string) {
+  return item.recurso != null && !temRecurso(plano, item.recurso);
+}
+
+/**
+ * Para onde o item leva.
+ *
+ * Trancado, ele NÃO leva à tela trancada: vai direto para a explicação do
+ * recurso. O servidor faria o mesmo desvio, mas passando pela rota real a
+ * pessoa veria a tela piscar antes de trocar — parece defeito.
+ */
+function destinoDoItem(item: Item, bloqueado: boolean) {
+  return bloqueado ? `/assinatura/recurso/${item.recurso}` : item.href;
+}
+
 /** Navegação lateral (desktop), com submenus expansíveis. */
-export function NavLateral({ ehAdmin }: { ehAdmin: boolean }) {
+export function NavLateral({ ehAdmin, plano }: { ehAdmin: boolean; plano: string }) {
   const pathname = usePathname();
   const visiveis = GRUPOS.filter((g) => !g.somenteAdmin || ehAdmin);
 
@@ -281,19 +315,32 @@ export function NavLateral({ ehAdmin }: { ehAdmin: boolean }) {
                       </span>
                     </span>
                   ) : (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      prefetch={item.quente === true}
-                      className={`flex items-center gap-2.5 rounded-lg px-3 py-1.5 text-sm transition-colors ${
-                        estaAtivo(pathname, item.href)
-                          ? "bg-white/25 font-semibold text-white"
-                          : "text-ink-muted hover:bg-white/15 hover:text-ink"
-                      }`}
-                    >
-                      <item.icone className="size-4 shrink-0" strokeWidth={1.8} />
-                      <span className="truncate">{item.rotulo}</span>
-                    </Link>
+                    (() => {
+                      const bloqueado = estaBloqueado(item, plano);
+                      return (
+                        <Link
+                          key={item.href}
+                          href={destinoDoItem(item, bloqueado)}
+                          prefetch={!bloqueado && item.quente === true}
+                          title={bloqueado ? "Disponível em outro plano" : undefined}
+                          className={`flex items-center gap-2.5 rounded-lg px-3 py-1.5 text-sm transition-colors ${
+                            !bloqueado && estaAtivo(pathname, item.href)
+                              ? "bg-white/25 font-semibold text-white"
+                              : "text-ink-muted hover:bg-white/15 hover:text-ink"
+                          }`}
+                        >
+                          <item.icone className="size-4 shrink-0" strokeWidth={1.8} />
+                          <span className="min-w-0 flex-1 truncate">{item.rotulo}</span>
+                          {bloqueado && (
+                            <Lock
+                              className="size-3.5 shrink-0 opacity-70"
+                              strokeWidth={2.2}
+                              aria-label="Disponível em outro plano"
+                            />
+                          )}
+                        </Link>
+                      );
+                    })()
                   )
                 )}
               </div>
@@ -318,7 +365,7 @@ const ITENS_MOBILE: Item[] = [
  * de baixo para cima com TODAS as seções do menu lateral. Sem ele o celular
  * não alcançaria Itens, Financeiro, Relatórios e Configurações.
  */
-export function NavInferior({ ehAdmin }: { ehAdmin: boolean }) {
+export function NavInferior({ ehAdmin, plano }: { ehAdmin: boolean; plano: string }) {
   const pathname = usePathname();
   const [aberto, setAberto] = useState(false);
   const visiveis = GRUPOS.filter((g) => !g.somenteAdmin || ehAdmin);
@@ -419,19 +466,31 @@ export function NavInferior({ ehAdmin }: { ehAdmin: boolean }) {
                         </span>
                       </span>
                     ) : (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => setAberto(false)}
-                        className={`flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm ${
-                          estaAtivo(pathname, item.href)
-                            ? "bg-white/25 font-semibold text-white"
-                            : "text-ink-muted hover:bg-white/15 hover:text-ink"
-                        }`}
-                      >
-                        <item.icone className="size-[18px] shrink-0" strokeWidth={1.8} />
-                        <span className="min-w-0 truncate">{item.rotulo}</span>
-                      </Link>
+                      (() => {
+                        const bloqueado = estaBloqueado(item, plano);
+                        return (
+                          <Link
+                            key={item.href}
+                            href={destinoDoItem(item, bloqueado)}
+                            onClick={() => setAberto(false)}
+                            className={`flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm ${
+                              !bloqueado && estaAtivo(pathname, item.href)
+                                ? "bg-white/25 font-semibold text-white"
+                                : "text-ink-muted hover:bg-white/15 hover:text-ink"
+                            }`}
+                          >
+                            <item.icone className="size-[18px] shrink-0" strokeWidth={1.8} />
+                            <span className="min-w-0 flex-1 truncate">{item.rotulo}</span>
+                            {bloqueado && (
+                              <Lock
+                                className="size-4 shrink-0 opacity-70"
+                                strokeWidth={2.2}
+                                aria-label="Disponível em outro plano"
+                              />
+                            )}
+                          </Link>
+                        );
+                      })()
                     )
                   )}
                 </div>

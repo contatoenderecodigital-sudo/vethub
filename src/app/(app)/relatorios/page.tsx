@@ -1,16 +1,28 @@
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Lock } from "lucide-react";
 import { getSessao } from "@/lib/auth";
 import { PageHeader } from "@/components/ui/page-header";
+import { temRecurso } from "@/lib/plano-conta";
 import { AREAS, RELATORIOS } from "./definicoes";
 
 export const metadata = { title: "Relatórios" };
 
 export default async function RelatoriosPage() {
-  const { usuario } = await getSessao();
+  const { usuario, conta } = await getSessao();
   // Recepção opera a clínica, mas não vê o dinheiro dela.
   const podeFinanceiro = usuario.papel !== "recepcao";
   const visiveis = RELATORIOS.filter((r) => podeFinanceiro || !r.financeiro);
+
+  // Os relatórios completos continuam listados sem o recurso, com cadeado:
+  // a lista É o catálogo, e sumir com quatro cartões faria a clínica achar
+  // que o sistema não tem relatório de faturamento.
+  const AVANCADOS = [
+    "/relatorios/faturamento",
+    "/relatorios/insumos",
+    "/relatorios/clientes",
+    "/relatorios/vacinas",
+  ];
+  const temAvancados = temRecurso(conta.plano, "relatorios_avancados");
 
   return (
     <div>
@@ -32,10 +44,16 @@ export default async function RelatoriosPage() {
               {/* items-stretch + h-full no cartão: todos da fileira ficam
                   com a mesma altura, independente do tamanho do texto. */}
               <div className="grid items-stretch gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                {daArea.map((relatorio) => (
+                {daArea.map((relatorio) => {
+                  const trancado = !temAvancados && AVANCADOS.includes(relatorio.href);
+                  return (
                   <Link
                     key={relatorio.href}
-                    href={relatorio.href}
+                    href={
+                      trancado
+                        ? "/assinatura/recurso/relatorios_avancados"
+                        : relatorio.href
+                    }
                     className="glass group flex h-full flex-col rounded-2xl p-4 transition-all hover:bg-white/20 hover:shadow-lg hover:shadow-black/10"
                   >
                     <span className="flex items-center gap-3">
@@ -49,16 +67,25 @@ export default async function RelatoriosPage() {
                       <span className="min-w-0 flex-1 font-semibold text-ink">
                         {relatorio.nome}
                       </span>
-                      <ChevronRight
-                        className="size-4 shrink-0 text-ink-muted transition-transform group-hover:translate-x-0.5"
-                        aria-hidden
-                      />
+                      {trancado ? (
+                        <Lock
+                          className="size-4 shrink-0 text-ink-muted"
+                          strokeWidth={2.2}
+                          aria-label="Disponível em outro plano"
+                        />
+                      ) : (
+                        <ChevronRight
+                          className="size-4 shrink-0 text-ink-muted transition-transform group-hover:translate-x-0.5"
+                          aria-hidden
+                        />
+                      )}
                     </span>
                     <span className="mt-2 text-sm text-pretty text-ink-muted">
                       {relatorio.descricao}
                     </span>
                   </Link>
-                ))}
+                  );
+                })}
               </div>
             </section>
           );

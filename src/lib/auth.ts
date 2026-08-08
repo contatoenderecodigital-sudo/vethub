@@ -22,7 +22,9 @@ export interface UnidadeSessao {
  */
 export interface ContaDaClinica {
   plano: string;
+  ciclo: string;
   trial_termina_em: string | null;
+  renova_em: string | null;
   limite_usuarios: number | null;
 }
 
@@ -74,7 +76,7 @@ export const getSessao = cache(async function getSessao() {
       .returns<UnidadeSessao[]>(),
     supabase
       .from("clinica")
-      .select("plano, trial_termina_em, limite_usuarios")
+      .select("plano, ciclo, trial_termina_em, renova_em, limite_usuarios")
       .eq("id", usuario.clinica_id)
       .single<ContaDaClinica>(),
   ]);
@@ -95,7 +97,9 @@ export const getSessao = cache(async function getSessao() {
   // upgrade do que o sistema inteiro fora do ar por um select que falhou.
   const conta: ContaDaClinica = clinica ?? {
     plano: "trial",
+    ciclo: "mensal",
     trial_termina_em: null,
+    renova_em: null,
     limite_usuarios: null,
   };
 

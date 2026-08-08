@@ -1,11 +1,17 @@
+import Link from "next/link";
 import { Check, Minus, Users } from "lucide-react";
 import { getSessao } from "@/lib/auth";
 import { hojeISO } from "@/lib/format";
 import {
+  CICLOS,
   DEFINICAO,
+  economiaAnual,
+  reais,
+  SOBRE_CICLO,
   SOBRE_RECURSO,
   tetoDeUsuarios,
   trialExpirou,
+  type Ciclo,
   type PlanoConta,
   type Recurso,
 } from "@/lib/plano-conta";
@@ -21,29 +27,41 @@ export const metadata = { title: "Assinatura" };
  * Chama-se "Assinatura", e não "Planos", porque /planos já é outra coisa
  * neste sistema: o plano de saúde que a clínica vende ao tutor. Dois nomes
  * iguais para coisas opostas confundiriam o dono e o suporte.
- *
- * Não há preço nesta tela de propósito: a tabela de valores ainda não foi
- * definida, e um número errado aqui é pior que número nenhum. Quando os
- * valores existirem, entram na definição de cada plano.
  */
 const VENDIDOS: PlanoConta[] = ["essencial", "profissional", "completo"];
 
 /** Todo recurso que aparece na comparação, na ordem em que faz sentido ler. */
 const LINHAS: Recurso[] = [
   "internacao",
+  "fiscal",
   "comissoes",
   "planos_de_saude",
   "relatorios_avancados",
   "multi_unidade",
   "whatsapp",
   "ia",
-  "fiscal",
 ];
 
 /** Recursos ainda não construídos: prometer sem avisar seria vender fumaça. */
 const A_CONSTRUIR: Recurso[] = ["whatsapp", "ia", "fiscal"];
 
-export default async function AssinaturaPage() {
+/**
+ * O ciclo que a tela mostra por padrão é o de 12 meses.
+ *
+ * Não é truque de vitrine: é o preço de verdade, o que foi calculado contra
+ * o custo real do concorrente. Os ciclos curtos é que são o acréscimo de
+ * quem não quer se comprometer.
+ */
+const PADRAO: Ciclo = "anual";
+
+export default async function AssinaturaPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ ciclo?: string }>;
+}) {
+  const { ciclo: pedido } = await searchParams;
+  const ciclo: Ciclo = CICLOS.includes(pedido as Ciclo) ? (pedido as Ciclo) : PADRAO;
+
   const { conta, supabase } = await getSessao();
 
   const { count: usuarios } = await supabase
@@ -89,6 +107,20 @@ export default async function AssinaturaPage() {
                 .
               </p>
             )}
+
+            {atual !== "trial" && (
+              <p className="mt-2 text-sm text-ink">
+                Pagamento {SOBRE_CICLO[(conta.ciclo as Ciclo) ?? "mensal"]?.nome}
+                {conta.renova_em && (
+                  <>
+                    {" · renova em "}
+                    <strong>
+                      {new Date(`${conta.renova_em}T12:00:00`).toLocaleDateString("pt-BR")}
+                    </strong>
+                  </>
+                )}
+              </p>
+            )}
           </div>
 
           <div className="shrink-0 text-right">
@@ -107,11 +139,48 @@ export default async function AssinaturaPage() {
         </div>
       </Card>
 
+      {/* Escolha do ciclo. São links, e não botões com JavaScript: a escolha
+          fica no endereço, então dá para mandar "o preço anual" pelo
+          WhatsApp e a pessoa abrir vendo exatamente o que você viu. */}
+      <div className="mb-5 flex flex-wrap items-center gap-3">
+        <div
+          role="group"
+          aria-label="Forma de pagamento"
+          className="glass-forte inline-flex rounded-xl p-1"
+        >
+          {CICLOS.map((c) => {
+            const escolhido = c === ciclo;
+            return (
+              <Link
+                key={c}
+                href={`/assinatura?ciclo=${c}`}
+                scroll={false}
+                aria-current={escolhido ? "true" : undefined}
+                className={`flex min-h-11 items-center rounded-lg px-4 text-sm font-medium transition-colors ${
+                  escolhido
+                    ? "bg-white font-semibold text-brand-dark"
+                    : "text-ink-muted hover:bg-white/15 hover:text-ink"
+                }`}
+              >
+                {SOBRE_CICLO[c].nome}
+              </Link>
+            );
+          })}
+        </div>
+        {SOBRE_CICLO[ciclo].descontoRotulo && (
+          <span className="text-sm font-semibold text-ink">
+            {SOBRE_CICLO[ciclo].descontoRotulo}
+          </span>
+        )}
+      </div>
+
       {/* Os três planos */}
       <div className="mb-6 grid gap-4 lg:grid-cols-3">
         {VENDIDOS.map((id) => {
           const p = DEFINICAO[id];
           const ehAtual = id === atual;
+          const economia = economiaAnual(id, ciclo);
+
           return (
             <Card
               key={id}
@@ -122,6 +191,32 @@ export default async function AssinaturaPage() {
                 {ehAtual && <Badge tom="brand">Seu plano</Badge>}
               </div>
               <p className="mt-1 min-h-10 text-sm text-ink-muted">{p.resumo}</p>
+
+              {p.preco && (
+                <div className="mt-3">
+                  <p className="flex items-baseline gap-1">
+                    <span className="text-3xl font-bold text-ink tabular-nums">
+                      {reais(p.preco[ciclo])}
+                    </span>
+                    <span className="text-sm text-ink-muted">/mês</span>
+                  </p>
+
+                  {/* O preço cheio riscado ao lado: sem ele, o desconto é uma
+                      afirmação; com ele, é uma conta que a pessoa confere. */}
+                  {ciclo !== "mensal" && (
+                    <p className="mt-0.5 text-sm text-ink-muted">
+                      <span className="line-through">{reais(p.preco.mensal)}</span> no
+                      mês a mês
+                    </p>
+                  )}
+
+                  {economia > 0 && (
+                    <p className="mt-2 inline-block rounded-lg bg-emerald-300/25 px-2 py-1 text-sm font-semibold text-ink">
+                      Economize {reais(economia)} por ano
+                    </p>
+                  )}
+                </div>
+              )}
 
               <p className="mt-3 flex items-center gap-1.5 text-sm text-ink">
                 <Users className="size-4 shrink-0 text-ink-muted" strokeWidth={1.8} aria-hidden />
@@ -135,7 +230,7 @@ export default async function AssinaturaPage() {
                     <li
                       key={r}
                       className={`flex items-start gap-2 text-sm ${
-                        tem ? "text-ink" : "text-ink-muted/70"
+                        tem ? "text-ink" : "text-ink-muted"
                       }`}
                     >
                       {tem ? (
@@ -169,6 +264,11 @@ export default async function AssinaturaPage() {
           Todos os planos incluem agenda, prontuário, receituário, banho e tosa,
           cadastro de tutores e pets, estoque, compras, PDV e financeiro. A
           diferença entre eles está na lista acima.
+        </p>
+        <p className="mt-2 text-sm text-ink-muted">
+          Sem taxa de implantação e sem multa de cancelamento. Nos planos de 6 e
+          12 meses o desconto vale enquanto o período contratado estiver
+          correndo, e o pagamento pode ser parcelado no cartão.
         </p>
         <p className="mt-2 text-sm text-ink-muted">
           Para trocar de plano, fale com o VetHub pelo e-mail de contato da sua

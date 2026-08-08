@@ -41,6 +41,26 @@ export type Recurso =
   | "ia"
   | "fiscal";
 
+/**
+ * De quanto em quanto tempo a clínica paga.
+ *
+ * O desconto não sai do nosso bolso: o preço de 12 meses é o que ganha a
+ * comparação com SimplesVet, Vetsoft e Vetus, então ELE é o preço de
+ * verdade. Os ciclos curtos é que custam mais caro — quem não quer se
+ * comprometer paga pela flexibilidade.
+ */
+export const CICLOS = ["mensal", "semestral", "anual"] as const;
+export type Ciclo = (typeof CICLOS)[number];
+
+export const SOBRE_CICLO: Record<
+  Ciclo,
+  { nome: string; meses: number; descontoRotulo: string }
+> = {
+  mensal: { nome: "1 mês", meses: 1, descontoRotulo: "" },
+  semestral: { nome: "6 meses", meses: 6, descontoRotulo: "10% de desconto" },
+  anual: { nome: "12 meses", meses: 12, descontoRotulo: "20% de desconto" },
+};
+
 interface Definicao {
   nome: string;
   /** Frase curta para a tela de planos e para o cadeado. */
@@ -48,6 +68,17 @@ interface Definicao {
   /** Teto de usuários. `null` = sem teto. */
   usuarios: number | null;
   recursos: Recurso[];
+  /**
+   * Quanto custa POR MÊS em cada ciclo, em reais.
+   *
+   * Os degraus são parelhos de propósito — 10 pontos do mensal para o
+   * semestral, 10 do semestral para o anual. Um degrau que encolhe (10 e
+   * depois 5) pune quem se compromete mais, e o plano do meio deixa de ter
+   * razão de existir.
+   *
+   * `null` = plano que não se vende (o teste gratuito).
+   */
+  preco: Record<Ciclo, number> | null;
 }
 
 /**
@@ -80,25 +111,47 @@ export const DEFINICAO: Record<PlanoConta, Definicao> = {
       "ia",
       "fiscal",
     ],
+    preco: null,
   },
 
+  // Três usuários, e não dois: dois é exatamente onde o Vetus (R$ 229,89)
+  // machuca o cliente dele. Copiar a fraqueza do concorrente e ainda cobrar
+  // por ela seria o pior dos dois mundos. A R$ 149 por 3, o custo por
+  // usuário fica em R$ 49,67 contra R$ 114,95 do Vetus e R$ 87 do Vetsoft —
+  // e é esse número, não o preço cheio, que ganha a comparação.
   essencial: {
     nome: "Essencial",
     resumo: "O dia a dia da clínica: agenda, prontuário, estoque e caixa.",
-    usuarios: 2,
+    usuarios: 3,
     recursos: [],
+    preco: { mensal: 189, semestral: 169, anual: 149 },
   },
 
+  // O plano que precisa vender. A nota fiscal está AQUI, e não só no
+  // Completo, porque fatiar internação e fiscal é justamente a pegadinha
+  // que criticamos nos outros — e é o que sustenta a comparação que ganha a
+  // venda: a mesma clínica paga R$ 648 na SimplesVet, R$ 509 no Vetsoft e
+  // R$ 449,80 na Vetwork somando os módulos.
   profissional: {
     nome: "Profissional",
-    resumo: "Para a clínica que interna, paga comissão e vende planos.",
-    usuarios: 5,
-    recursos: ["internacao", "comissoes", "planos_de_saude", "relatorios_avancados"],
+    resumo: "Para a clínica que interna, emite nota e paga comissão.",
+    usuarios: 8,
+    recursos: [
+      "internacao",
+      "comissoes",
+      "planos_de_saude",
+      "relatorios_avancados",
+      "fiscal",
+    ],
+    preco: { mensal: 419, semestral: 379, anual: 329 },
   },
 
+  // Guarda o que é diferença real de porte (várias unidades) e o que tem
+  // custo variável de verdade (IA e WhatsApp saem em dólar, por consulta e
+  // por mensagem).
   completo: {
     nome: "Completo",
-    resumo: "Tudo, com WhatsApp, inteligência artificial e nota fiscal.",
+    resumo: "Tudo, com várias unidades, WhatsApp e inteligência artificial.",
     usuarios: null,
     recursos: [
       "internacao",
@@ -110,6 +163,7 @@ export const DEFINICAO: Record<PlanoConta, Definicao> = {
       "ia",
       "fiscal",
     ],
+    preco: { mensal: 879, semestral: 789, anual: 699 },
   },
 };
 
@@ -176,6 +230,29 @@ export function tetoDeUsuarios(
   if (limiteNegociado != null) return limiteNegociado;
   const def = DEFINICAO[(plano ?? "trial") as PlanoConta] ?? DEFINICAO.trial;
   return def.usuarios;
+}
+
+/** "R$ 1.234" — preço sem centavos, que é como todos os planos são cotados. */
+export function reais(valor: number): string {
+  return valor.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+}
+
+/**
+ * Quanto a clínica deixa de gastar no ano ao escolher este ciclo.
+ *
+ * É o número que vai grande no site: "economize R$ 1.080 por ano" convence
+ * mais que "20% de desconto", porque 20% de um valor que a pessoa ainda não
+ * decorou não quer dizer nada.
+ */
+export function economiaAnual(plano: PlanoConta, ciclo: Ciclo): number {
+  const preco = DEFINICAO[plano].preco;
+  if (!preco) return 0;
+  return (preco.mensal - preco[ciclo]) * 12;
 }
 
 /** O primeiro plano que inclui o recurso — é o que a tela de upgrade oferece. */

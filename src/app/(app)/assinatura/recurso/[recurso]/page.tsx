@@ -4,6 +4,7 @@ import { getSessao } from "@/lib/auth";
 import {
   DEFINICAO,
   planoQueInclui,
+  reais,
   SOBRE_RECURSO,
   temRecurso,
   type Recurso,
@@ -123,6 +124,20 @@ export default async function RecursoDoPlanoPage({
             </p>
             <p className="mt-1 text-lg font-bold text-ink">{definicao.nome}</p>
             <p className="mt-1 text-sm text-ink-muted">{definicao.resumo}</p>
+
+            {/* O preço aparece já aqui. Mandar a pessoa para outra tela só
+                para descobrir quanto custa é o atrito que faz ela desistir
+                no meio do caminho. */}
+            {definicao.preco && (
+              <p className="mt-2 flex items-baseline gap-1.5">
+                <span className="text-2xl font-bold text-ink tabular-nums">
+                  {reais(definicao.preco.anual)}
+                </span>
+                <span className="text-sm text-ink-muted">
+                  /mês no plano de 12 meses
+                </span>
+              </p>
+            )}
           </div>
 
           <ButtonLink href="/assinatura" className="mt-4 w-full">

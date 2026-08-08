@@ -16,10 +16,11 @@
  *      pega demais é tão ruim quanto uma que não pega);
  *   5. confere que o menu mostra cadeado nesses itens;
  *   6. sobe a clínica para 'completo' e confere que TUDO destrava;
- *   7. volta para 'essencial' (2 usuários) e tenta criar o terceiro usuário
+ *   7. confere que os nove preços (3 planos × 3 ciclos) aparecem na tela;
+ *   8. volta para 'essencial' (3 usuários) e tenta criar o quarto usuário
  *      pelo formulário — tem que ser recusado no servidor.
  *
- * O passo 7 é o que separa este teste de uma inspeção visual: ele posta o
+ * O passo 8 é o que separa este teste de uma inspeção visual: ele posta o
  * formulário de verdade e depois pergunta ao BANCO quantos usuários existem.
  *
  * Como rodar:
@@ -74,6 +75,22 @@ const TRANCADAS = [
   { rota: "/relatorios/vacinas", recurso: "relatorios_avancados" },
   { rota: "/configuracoes/unidades", recurso: "multi_unidade" },
 ];
+
+/**
+ * O texto da tela, com o espaço "duro" virando espaço comum.
+ *
+ * `Intl.NumberFormat` separa o "R$" do número com um espaço não-separável
+ * (U+00A0), invisível a olho nu. Sem esta troca, procurar "R$ 189" no texto
+ * nunca acha nada e o teste acusa um defeito que não existe.
+ */
+const semEspacoDuro = (texto) => String(texto).replace(/ /g, " ");
+
+/** Cada plano cobra três preços; nenhum pode faltar nem sair da ordem. */
+const PRECOS = {
+  essencial: { mensal: 189, semestral: 169, anual: 149 },
+  profissional: { mensal: 419, semestral: 379, anual: 329 },
+  completo: { mensal: 879, semestral: 789, anual: 699 },
+};
 
 /** O dia a dia. Nenhuma delas pode ser afetada por plano nenhum. */
 const LIVRES = [
@@ -306,10 +323,49 @@ async function main() {
     );
 
     // ---------------------------------------------------------------
-    // 5. O teto de usuários
+    // 5. Os nove preços aparecem, e o desconto bate
     // ---------------------------------------------------------------
-    // O Essencial permite 2. A clínica nasce com 1 (o admin), então o
-    // segundo tem que entrar e o terceiro tem que ser recusado.
+    // Preço errado na tela é o defeito mais caro que existe neste app: ou a
+    // clínica paga menos do que devia, ou desiste da compra achando caro.
+    for (const ciclo of ["mensal", "semestral", "anual"]) {
+      await irPara(pagina, `/assinatura?ciclo=${ciclo}`);
+      const texto = semEspacoDuro(await pagina.locator("main").innerText());
+      const ausentes = Object.entries(PRECOS)
+        .map(([plano, precos]) => ({ plano, valor: precos[ciclo] }))
+        .filter(({ valor }) => !texto.includes(`R$ ${valor}`))
+        .map(({ plano, valor }) => `${plano}=${valor}`);
+      registro(
+        `ciclo ${ciclo}: os 3 preços na tela`,
+        ausentes.length === 0,
+        ausentes.length ? `não achei ${ausentes.join(", ")}` : ""
+      );
+    }
+
+    // A economia anunciada tem que ser a conta de verdade, não um número
+    // bonito: (mensal − anual) × 12.
+    await irPara(pagina, "/assinatura?ciclo=anual");
+    const textoAnual = semEspacoDuro(await pagina.locator("main").innerText());
+    const economias = Object.entries(PRECOS).map(
+      ([plano, p]) => ({ plano, esperada: (p.mensal - p.anual) * 12 })
+    );
+    const errada = economias.filter(
+      ({ esperada }) =>
+        !textoAnual.includes(`R$ ${esperada.toLocaleString("pt-BR")}`) &&
+        !textoAnual.includes(`R$ ${esperada}`)
+    );
+    registro(
+      "economia anual anunciada bate com a conta",
+      errada.length === 0,
+      errada.length
+        ? `errado em ${errada.map((e) => `${e.plano}=${e.esperada}`).join(", ")}`
+        : economias.map((e) => `${e.plano}=${e.esperada}`).join(" · ")
+    );
+
+    // ---------------------------------------------------------------
+    // 6. O teto de usuários
+    // ---------------------------------------------------------------
+    // O Essencial permite 3. A clínica nasce com 1 (o admin), então o
+    // segundo e o terceiro entram e o quarto tem que ser recusado.
     await definirPlano(clinicaId, "essencial");
 
     async function tentarCriarUsuario(nome, email) {
@@ -324,33 +380,36 @@ async function main() {
       return pagina.url();
     }
 
+    async function quantosUsuarios() {
+      const { count } = await banco
+        .from("usuario")
+        .select("id", { count: "exact", head: true })
+        .eq("clinica_id", clinicaId);
+      return count;
+    }
+
     await tentarCriarUsuario(`${MARCA} dois`, `zz.robo.planos.${SUFIXO}.b@example.com`);
-    const { count: depoisDoSegundo } = await banco
-      .from("usuario")
-      .select("id", { count: "exact", head: true })
-      .eq("clinica_id", clinicaId);
+    await tentarCriarUsuario(`${MARCA} tres`, `zz.robo.planos.${SUFIXO}.c@example.com`);
+    const dentroDoTeto = await quantosUsuarios();
     registro(
-      "segundo usuário cabe no Essencial",
-      depoisDoSegundo === 2,
-      `${depoisDoSegundo} usuários`
+      "os 3 usuários do Essencial cabem",
+      dentroDoTeto === 3,
+      `${dentroDoTeto} usuários`
     );
 
     const ondeParou = await tentarCriarUsuario(
-      `${MARCA} tres`,
-      `zz.robo.planos.${SUFIXO}.c@example.com`
+      `${MARCA} quatro`,
+      `zz.robo.planos.${SUFIXO}.d@example.com`
     );
-    const { count: depoisDoTerceiro } = await banco
-      .from("usuario")
-      .select("id", { count: "exact", head: true })
-      .eq("clinica_id", clinicaId);
+    const depoisDoQuarto = await quantosUsuarios();
     registro(
-      "terceiro usuário é recusado pelo servidor",
-      depoisDoTerceiro === 2,
-      `${depoisDoTerceiro} usuários — parou em ${ondeParou}`
+      "quarto usuário é recusado pelo servidor",
+      depoisDoQuarto === 3,
+      `${depoisDoQuarto} usuários — parou em ${ondeParou}`
     );
 
     // ---------------------------------------------------------------
-    // 6. O plano não muda pela aplicação
+    // 7. O plano não muda pela aplicação
     // ---------------------------------------------------------------
     // Um admin que conseguisse gravar plano='completo' teria o sistema
     // inteiro de graça. O trigger da migração é quem impede.

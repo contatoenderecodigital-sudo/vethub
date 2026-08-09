@@ -53,6 +53,7 @@ const TELAS = [
   { nome: "tablet", largura: 768, altura: 1024, toque: true },
   { nome: "notebook-pequeno", largura: 1024, altura: 700, toque: false },
   { nome: "notebook", largura: 1280, altura: 800, toque: false },
+  { nome: "notebook-1366", largura: 1366, altura: 768, toque: false },
   { nome: "tela-grande", largura: 1440, altura: 900, toque: false },
 ];
 
@@ -437,6 +438,80 @@ function auditarNaPagina({ AA_NORMAL, AA_GRANDE, ALVO_MIN, ALVO_AA, exigirToque 
     );
   }
 
+  // ---------- texto cortado ----------
+  // Elemento com overflow escondido cujo conteúdo não cabe: a letra some sem
+  // aviso, e é o defeito que ninguém percebe porque nada "quebra" na tela —
+  // simplesmente falta pedaço da palavra.
+  //
+  // `truncate` do Tailwind corta de propósito e põe reticências, então fica
+  // de fora: ali o corte é decisão, não acidente.
+  for (const el of document.querySelectorAll("body *")) {
+    if (!visivel(el)) continue;
+    const cs = getComputedStyle(el);
+    if (cs.overflowX !== "hidden" && cs.overflow !== "hidden") continue;
+    if (cs.textOverflow === "ellipsis") continue;
+    if (el.children.length > 0) continue; // só folha, senão acusa o pai junto
+
+    // `sr-only` é 1px de propósito: existe para o leitor de tela e some da
+    // vista. Acusar isso seria confundir técnica com defeito.
+    const cx = el.getBoundingClientRect();
+    if (cx.width <= 1 || cx.height <= 1) continue;
+
+    const texto = (el.textContent || "").trim();
+    if (!texto) continue;
+    if (el.scrollWidth > el.clientWidth + 2) {
+      reg(
+        "texto-cortado",
+        `"${texto.slice(0, 40)}" precisa de ${el.scrollWidth}px e tem ${el.clientWidth}px`
+      );
+    }
+  }
+
+  // ---------- rótulo quebrando linha ----------
+  // Botão, etiqueta e aba são feitos para uma linha. Quando o rótulo quebra
+  // em duas, a caixa incha e empurra o resto — foi assim que "Marcar como
+  // paga" estourou a célula da tabela de comissões num notebook menor.
+  //
+  // A medida é o TEXTO, não a altura da caixa: medir a caixa acusava botão
+  // de altura fixa (`h-10`) e item de menu com ícone em cima do rótulo, onde
+  // nada quebrou. Aqui se pergunta ao navegador em quantas linhas ele
+  // desenhou aquele texto, com a API de Range, que é a única resposta certa.
+  const faixa = document.createRange();
+  //
+  // Só CONTROLE entra: botão, aba e link em forma de pílula. Célula de
+  // tabela ficou de fora depois da primeira varredura, que acusou 140 nomes
+  // de tutor quebrando em duas linhas — e nome comprido em coluna estreita
+  // DEVE quebrar. Forçar uma linha ali cortaria o nome ou esticaria a
+  // tabela, que é pior que a quebra.
+  for (const el of document.querySelectorAll(
+    'button, a[class*="rounded"], [role="tab"]'
+  )) {
+    if (!visivel(el)) continue;
+    const texto = (el.textContent || "").trim();
+    // Rótulo longo pode quebrar sem ser defeito; o problema é o rótulo curto
+    // que quebra por falta de espaço.
+    if (!texto || texto.length > 28) continue;
+    const cs = getComputedStyle(el);
+    if (cs.whiteSpace === "nowrap" || cs.whiteSpace === "pre") continue;
+
+    // Só os nós de texto: o ícone ao lado não conta como linha.
+    let linhas = 0;
+    for (const no of el.childNodes) {
+      if (no.nodeType !== Node.TEXT_NODE || !no.textContent.trim()) continue;
+      faixa.selectNodeContents(no);
+      const alturas = new Set(
+        [...faixa.getClientRects()]
+          .filter((r) => r.width > 0.5 && r.height > 0.5)
+          .map((r) => Math.round(r.top))
+      );
+      linhas = Math.max(linhas, alturas.size);
+    }
+
+    if (linhas > 1) {
+      reg("rotulo-quebrado", `"${texto}" desenhado em ${linhas} linhas`);
+    }
+  }
+
   return problemas;
 }
 
@@ -608,12 +683,16 @@ async function principal() {
     emoji: "Emoji na interface (o sistema usa ícones Lucide)",
     ingles: "Texto em inglês numa interface em português",
     "rolagem-lateral": "Rolagem lateral indevida",
+    "texto-cortado": "Texto cortado dentro da caixa",
+    "rotulo-quebrado": "Rótulo de botão quebrando em duas linhas",
     "foco-invisivel": "Foco do teclado invisível",
     "erro-ao-auditar": "A auditoria não conseguiu rodar",
   };
 
   const GRAVIDADE = [
     "rolagem-lateral",
+    "texto-cortado",
+    "rotulo-quebrado",
     "contraste",
     "campo-sem-etiqueta",
     "sem-nome",

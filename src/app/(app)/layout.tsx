@@ -51,7 +51,11 @@ export default async function AppLayout({
       <header className="sticky top-0 z-40 border-b border-white/20 bg-white/10 backdrop-blur-xl">
         <div className="flex h-14 items-center justify-between gap-3 px-4 sm:px-5">
           <div className="flex min-w-0 items-center gap-3">
-            <Link href="/dashboard" aria-label="Ir para o início">
+            <Link
+              href="/dashboard"
+              aria-label="Ir para o início"
+              className="flex min-h-11 items-center"
+            >
               <Wordmark sobre="escuro" className="text-xl" />
             </Link>
             {clinica && (
@@ -80,7 +84,7 @@ export default async function AppLayout({
                 type="submit"
                 aria-label="Sair"
                 title="Sair"
-                className="flex size-8 cursor-pointer items-center justify-center rounded-lg bg-white/15 text-white transition-colors hover:bg-white/25"
+                className="flex size-11 cursor-pointer items-center justify-center rounded-lg bg-white/15 text-white transition-colors hover:bg-white/25 sm:size-10"
               >
                 <LogOut className="size-4" />
               </button>
@@ -117,7 +121,7 @@ export default async function AppLayout({
                   type="submit"
                   aria-label="Sair"
                   title="Sair"
-                  className="flex size-8 cursor-pointer items-center justify-center rounded-lg text-ink-muted transition-colors hover:bg-white/15 hover:text-red-100"
+                  className="flex size-11 cursor-pointer items-center justify-center rounded-lg text-ink-muted transition-colors hover:bg-white/15 hover:text-red-100"
                 >
                   <LogOut className="size-4" />
                 </button>

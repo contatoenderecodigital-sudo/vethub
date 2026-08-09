@@ -277,7 +277,7 @@ export function NavLateral({
       <Link
         href={INICIO.href}
         prefetch={INICIO.quente === true}
-        className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+        className={`flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors lg:min-h-0 ${
           inicioAtivo
             ? "bg-white/25 text-white"
             : "text-ink-muted hover:bg-white/15 hover:text-ink"
@@ -293,7 +293,7 @@ export function NavLateral({
       <Link
         href={BALCAO.href}
         prefetch
-        className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+        className={`flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors lg:min-h-0 ${
           estaAtivo(pathname, BALCAO.href)
             ? "bg-white/25 text-white"
             : "text-ink-muted hover:bg-white/15 hover:text-ink"
@@ -321,7 +321,7 @@ export function NavLateral({
               type="button"
               onClick={() => alternar(grupo)}
               aria-expanded={aberto}
-              className={`flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+              className={`flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors lg:min-h-0 ${
                 temAtivo && !aberto
                   ? "bg-white/15 text-white"
                   : "text-ink-muted hover:bg-white/15 hover:text-ink"
@@ -364,7 +364,7 @@ export function NavLateral({
                           href={destinoDoItem(item, bloqueado)}
                           prefetch={!bloqueado && item.quente === true}
                           title={bloqueado ? "Disponível em outro plano" : undefined}
-                          className={`flex items-center gap-2.5 rounded-lg px-3 py-1.5 text-sm transition-colors ${
+                          className={`flex min-h-11 items-center gap-2.5 rounded-lg px-3 py-1.5 text-sm transition-colors lg:min-h-0 ${
                             !bloqueado && estaAtivo(pathname, item.href)
                               ? "bg-white/25 font-semibold text-white"
                               : "text-ink-muted hover:bg-white/15 hover:text-ink"

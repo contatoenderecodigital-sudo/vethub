@@ -95,7 +95,7 @@ export function SeletorTema() {
         aria-expanded={aberto}
         aria-label="Cor do sistema"
         title="Cor do sistema"
-        className="flex size-8 cursor-pointer items-center justify-center rounded-lg bg-white/15 text-white transition-colors hover:bg-white/25"
+        className="flex size-11 cursor-pointer items-center justify-center rounded-lg bg-white/15 text-white transition-colors hover:bg-white/25 sm:size-10"
       >
         <Palette className="size-4" strokeWidth={1.8} />
       </button>

@@ -338,6 +338,33 @@ export function cotaDe(plano: string | null | undefined, recurso: Recurso): Cota
   return COTAS[recurso]?.[(plano ?? "trial") as PlanoConta] ?? null;
 }
 
+/**
+ * Implantação: migrar a base do sistema antigo e treinar a equipe.
+ *
+ * É trabalho de gente, não de servidor — 3 h numa base limpa, 15 h numa base
+ * bagunçada. O custo em si é pequeno (R$ 45 a R$ 226 de hora trabalhada);
+ * cobrar não é para cobrir esse custo, é por dois outros motivos:
+ *
+ *   * CAIXA na hora que mais falta. Com 50 clientes a implantação soma 36% à
+ *     sobra do mês, e 50 clientes é exatamente o vale onde a equipe já custa
+ *     e a receita ainda não chegou (ver scripts/simulacao-precos.mjs).
+ *   * FILTRO. Quem entra no mês a mês pode sair no segundo mês, e a migração
+ *     já foi feita. Cobrar dele é cobrar de quem carrega o risco.
+ *
+ * Por isso é grátis em 6 e 12 meses: quem se compromete já pagou adiantado, e
+ * a isenção vira mais um empurrão para o ciclo que interessa. A promessa de
+ * "sem taxa de implantação" continua verdadeira onde ela vende.
+ */
+export const IMPLANTACAO = {
+  valor: 497,
+  gratisEm: ["semestral", "anual"] as Ciclo[],
+};
+
+/** Quanto custa entrar, neste ciclo. Zero quando é cortesia do compromisso. */
+export function custoDeImplantacao(ciclo: Ciclo): number {
+  return IMPLANTACAO.gratisEm.includes(ciclo) ? 0 : IMPLANTACAO.valor;
+}
+
 /** "R$ 1.234" — preço sem centavos, que é como todos os planos são cotados. */
 export function reais(valor: number): string {
   return valor.toLocaleString("pt-BR", {

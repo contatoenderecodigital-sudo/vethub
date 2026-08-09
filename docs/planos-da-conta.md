@@ -204,7 +204,18 @@ fim, avisa. **Nunca corta** — cortar no dia 20 é o que faz cancelar.
 
 ### Condições
 
-- **Sem taxa de implantação** — ataque direto à Peti9, que cobra.
+- **Implantação: R$ 497 no mês a mês, grátis em 6 e 12 meses.** A migração
+  da base e o treinamento são trabalho de gente: 3 h numa base limpa, 15 h
+  numa bagunçada, o que dá R$ 45 a R$ 226 de hora trabalhada. Cobrar não é
+  para cobrir esse custo — é por **caixa** (com 50 clientes a implantação
+  soma 36% à sobra do mês, e 50 é o vale onde a equipe já custa e a receita
+  ainda não chegou) e por **filtro** (quem entra no mês a mês pode sair no
+  segundo mês com a migração já feita; é ele quem carrega o risco).
+
+  A isenção nos ciclos longos vira mais um empurrão para o anual, e a
+  promessa de "sem taxa de implantação" continua verdadeira exatamente onde
+  ela vende. A Peti9, que cobra implantação em cima da mensalidade sem
+  isentar ninguém, continua sendo o contraste.
 - **Sem multa de cancelamento.** O desconto de 6 e 12 meses é
   pré-pagamento, não contrato de fidelidade: quem sai antes para de pagar as
   parcelas seguintes e perde o desconto retroativo. A frase "sem fidelidade"

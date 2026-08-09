@@ -15,6 +15,8 @@ import { hojeISO } from "@/lib/format";
 import {
   CICLOS,
   cotaDe,
+  custoDeImplantacao,
+  IMPLANTACAO,
   DEFINICAO,
   economiaAnual,
   reais,
@@ -30,7 +32,6 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { IconeWhatsapp } from "@/components/icone-whatsapp";
-import { Comparacao } from "./comparacao";
 
 export const metadata = { title: "Assinatura" };
 
@@ -123,9 +124,9 @@ const dataBR = (iso: string) => new Date(`${iso}T12:00:00`).toLocaleDateString("
 
 const GARANTIAS = [
   {
-    icone: Wallet,
-    titulo: "Sem taxa de implantação",
-    texto: "Zero para começar. Nunca cobramos instalação.",
+    icone: HeartHandshake,
+    titulo: "Nós migramos sua base",
+    texto: "Trazemos tutores, pets e histórico do sistema atual. Grátis nos planos de 6 e 12 meses.",
   },
   {
     icone: ShieldCheck,
@@ -133,14 +134,14 @@ const GARANTIAS = [
     texto: "Sai quando quiser. Não existe fidelidade.",
   },
   {
-    icone: HeartHandshake,
-    titulo: "Migração gratuita",
-    texto: "Trazemos sua base do sistema atual, sem cobrar.",
-  },
-  {
     icone: Clock,
     titulo: "14 dias de teste",
     texto: "Tudo liberado, sem pedir cartão.",
+  },
+  {
+    icone: Wallet,
+    titulo: "Preço na tela",
+    texto: "Sem \"fale com um consultor\" para saber quanto custa.",
   },
 ];
 
@@ -157,6 +158,10 @@ const DUVIDAS = [
   {
     p: "O que acontece se eu passar da cota de notas ou mensagens?",
     r: "O que passar entra na fatura do mês, pelo valor do excedente. A emissão de nota fiscal nunca é interrompida: sua clínica não para de vender por causa disso.",
+  },
+  {
+    p: "O que é a taxa de implantação?",
+    r: "É a migração da sua base do sistema antigo — tutores, pets e histórico — mais o treinamento da equipe. Custa R$ 497 no plano mês a mês e é gratuita nos planos de 6 e 12 meses.",
   },
   {
     p: "Preciso pagar tudo de uma vez no plano anual?",
@@ -302,6 +307,7 @@ export default async function AssinaturaPage({
           const ehAtual = id === atual;
           const ehDestaque = id === DESTAQUE;
           const economia = economiaAnual(id, ciclo);
+          const implantacao = custoDeImplantacao(ciclo);
 
           return (
             <div
@@ -354,6 +360,23 @@ export default async function AssinaturaPage({
                       Economize {reais(economia)} por ano
                     </p>
                   )}
+
+                  {/* A implantação fica colada no preço, e não escondida no
+                      rodapé: condição que só aparece na hora de fechar é o
+                      que faz a pessoa desistir com razão. */}
+                  <p className="mt-2 text-sm text-ink-muted">
+                    {implantacao > 0 ? (
+                      <>
+                        + {reais(implantacao)} de implantação —{" "}
+                        <strong className="text-ink">grátis em 6 ou 12 meses</strong>
+                      </>
+                    ) : (
+                      <>
+                        <strong className="text-ink">Implantação grátis</strong> (
+                        {reais(IMPLANTACAO.valor)} no mês a mês)
+                      </>
+                    )}
+                  </p>
                 </div>
               )}
 
@@ -455,10 +478,6 @@ export default async function AssinaturaPage({
           ))}
         </ul>
       </Card>
-
-      <div className="mb-5">
-        <Comparacao />
-      </div>
 
       <div className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {GARANTIAS.map((g) => (

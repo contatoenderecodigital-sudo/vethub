@@ -11,7 +11,18 @@ o resto pode ser feito em qualquer ordem.
 ## 1. Meta / WhatsApp: comece por aqui, demora dias
 
 Sem isso não existem **mensagens automáticas** nem **chatbot**, que são o
-principal diferencial de venda do VetHub.
+principal diferencial de venda do VetHub. O que exatamente vai ser construído
+está em [whatsapp-crm.md](whatsapp-crm.md).
+
+> **Atualização de 08/08/2026.** A verificação da empresa (1.2) é do
+> **Portfólio Empresarial**, não do app. Se você já tem um portfólio
+> verificado — o do EndereçoDigital, por exemplo — um segundo app criado
+> dentro dele **pula a parte lenta** e vai direto para o App Review.
+>
+> Dá para usar o mesmo app dos dois produtos, mas não é o que eu recomendo:
+> o webhook é UM por app (os dois sistemas teriam que dividir e rotear por
+> `phone_number_id`), a tela de consentimento mostraria o nome do outro
+> produto para a clínica, e uma restrição da Meta derrubaria os dois juntos.
 
 - [ ] **1.1** Criar o Portfólio Empresarial em https://business.facebook.com
 - [ ] **1.2** Fazer a **verificação da empresa** (Configurações do negócio →

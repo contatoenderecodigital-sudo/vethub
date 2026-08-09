@@ -145,14 +145,14 @@ const CATALOGO = [
   ["servico", "Consulta de retorno", 0, 0, false, { duracao_minutos: 20 }],
   ["servico", "Consulta de urgência", 220, 0, false, { duracao_minutos: 40, comissao_percentual: 30 }],
   ["servico", "Aplicação de vacina", 45, 0, false, { duracao_minutos: 15 }],
-  ["servico", "Banho — porte pequeno", 55, 0, false, { duracao_minutos: 60, comissao_percentual: 40 }],
-  ["servico", "Banho — porte médio", 75, 0, false, { duracao_minutos: 75, comissao_percentual: 40 }],
-  ["servico", "Banho — porte grande", 95, 0, false, { duracao_minutos: 90, comissao_percentual: 40 }],
+  ["servico", "Banho porte pequeno", 55, 0, false, { duracao_minutos: 60, comissao_percentual: 40 }],
+  ["servico", "Banho porte médio", 75, 0, false, { duracao_minutos: 75, comissao_percentual: 40 }],
+  ["servico", "Banho porte grande", 95, 0, false, { duracao_minutos: 90, comissao_percentual: 40 }],
   ["servico", "Tosa higiênica", 60, 0, false, { duracao_minutos: 45, comissao_percentual: 40 }],
   ["servico", "Tosa na máquina", 90, 0, false, { duracao_minutos: 75, comissao_percentual: 40 }],
   ["servico", "Corte de unhas", 25, 0, false, { duracao_minutos: 15 }],
-  ["servico", "Castração — cadela", 780, 0, false, { duracao_minutos: 120, comissao_percentual: 25 }],
-  ["servico", "Castração — gato", 420, 0, false, { duracao_minutos: 90, comissao_percentual: 25 }],
+  ["servico", "Castração de cadela", 780, 0, false, { duracao_minutos: 120, comissao_percentual: 25 }],
+  ["servico", "Castração de gato", 420, 0, false, { duracao_minutos: 90, comissao_percentual: 25 }],
   ["servico", "Diária de internação", 190, 0, false, {}],
   ["servico", "Hemograma completo", 95, 40, false, {}],
   ["servico", "Raio-X (2 posições)", 180, 0, false, {}],
@@ -220,7 +220,7 @@ async function main() {
   if (SO_LIMPAR) return console.log("Pronto: só limpei.");
 
   const { data: unidades } = await db.from("unidade").select("id").eq("clinica_id", clinica).limit(1);
-  if (!unidades?.length) throw new Error("clínica sem unidade — algo errado no cadastro");
+  if (!unidades?.length) throw new Error("clínica sem unidade: algo errado no cadastro");
 
   // ----------------------------------------------------------------
   // Equipe
@@ -328,13 +328,13 @@ async function main() {
 
   // Planos de saúde que a clínica VENDE ao tutor (item com tipo 'plano').
   const planos = await inserir("item", [
-    { clinica_id: clinica, tipo: "plano", nome: "Plano Amigo — cães e gatos", preco_venda: 89.9, descricao: "Consultas ilimitadas, vacinas anuais e 15% em banho e tosa." },
+    { clinica_id: clinica, tipo: "plano", nome: "Plano Amigo para cães e gatos", preco_venda: 89.9, descricao: "Consultas ilimitadas, vacinas anuais e 15% em banho e tosa." },
     { clinica_id: clinica, tipo: "plano", nome: "Plano Amigo Plus", preco_venda: 149.9, descricao: "Tudo do Amigo, mais exames de rotina e uma castração." },
   ]);
   await inserir("plano_beneficio", [
     { clinica_id: clinica, plano_item_id: planos[0], item_id: item["Consulta clínica"], descricao: "Consulta clínica", quantidade_mes: 2 },
     { clinica_id: clinica, plano_item_id: planos[0], item_id: item["Aplicação de vacina"], descricao: "Aplicação de vacina", quantidade_mes: 1 },
-    { clinica_id: clinica, plano_item_id: planos[0], item_id: item["Banho — porte médio"], descricao: "Banho com 15% de desconto", desconto_percentual: 15 },
+    { clinica_id: clinica, plano_item_id: planos[0], item_id: item["Banho porte médio"], descricao: "Banho com 15% de desconto", desconto_percentual: 15 },
     { clinica_id: clinica, plano_item_id: planos[1], item_id: item["Consulta clínica"], descricao: "Consulta clínica", quantidade_mes: 4 },
     { clinica_id: clinica, plano_item_id: planos[1], item_id: item["Hemograma completo"], descricao: "Hemograma completo", quantidade_mes: 1 },
     { clinica_id: clinica, plano_item_id: planos[1], item_id: item["Ultrassonografia abdominal"], descricao: "Ultrassom com 30% de desconto", desconto_percentual: 30 },
@@ -380,7 +380,7 @@ async function main() {
       microchip: i % 3 === 0 ? `9820000${100000 + i * 137}` : null,
       pelagem: escolha(["Curta", "Longa", "Dupla", "Encaracolada"], i),
       alergias: i % 5 === 0 ? "Frango e corantes artificiais" : null,
-      observacoes: i % 4 === 0 ? "Fica agitado no consultório — atender com calma." : null,
+      observacoes: i % 4 === 0 ? "Fica agitado no consultório, atender com calma." : null,
     };
   });
   const pets = await inserir("pet", petsLinhas);

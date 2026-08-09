@@ -102,7 +102,7 @@ export default async function RecursoDoPlanoPage({
                     />
                     <span className="min-w-0">
                       <span className="font-medium text-ink">{o.nome}</span>
-                      <span className="text-ink-muted"> — {o.explicacao}</span>
+                      <span className="text-ink-muted">: {o.explicacao}</span>
                     </span>
                   </li>
                 ))}

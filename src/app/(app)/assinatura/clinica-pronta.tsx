@@ -80,7 +80,7 @@ export function ClinicaPronta({ whatsapp }: { whatsapp: string }) {
           {/* Escassez que é verdade, não truque de venda: são 28 horas por
               clínica, e o mês tem o que tem. */}
           <p className="mt-3 text-xs opacity-70">
-            Poucas vagas por mês — cada implantação é acompanhada de perto.
+            Poucas vagas por mês: cada implantação é acompanhada de perto.
           </p>
         </div>
       </div>

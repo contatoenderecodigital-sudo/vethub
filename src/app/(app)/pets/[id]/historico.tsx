@@ -195,7 +195,7 @@ export async function HistoricoDoPet({ petId }: { petId: string }) {
       chave: `i${i.id}`,
       quando: i.data_entrada,
       genero: "internacao",
-      titulo: `Entrada — ${i.motivo}`,
+      titulo: `Entrada: ${i.motivo}`,
       detalhe: i.diagnostico,
       origem: i.box,
       href: `/internacao/${i.id}`,
@@ -295,7 +295,7 @@ export async function HistoricoDoPet({ petId }: { petId: string }) {
       ) : (
         <>
           <p className="mb-3 text-sm text-ink-muted">
-            Tudo que já foi feito com este pet, do mais recente ao mais antigo —
+            Tudo que já foi feito com este pet, do mais recente ao mais antigo,
             inclusive o que foi aplicado durante internações.
           </p>
 

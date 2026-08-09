@@ -145,7 +145,7 @@ export default async function BalcaoPage() {
         titulo="Balcão"
         subtitulo={
           total === 0
-            ? "Nada pendente — tudo que o veterinário fez já foi entregue"
+            ? "Nada pendente. Tudo que o veterinário fez já foi entregue"
             : `${total} ${total === 1 ? "item" : "itens"} para a recepção resolver`
         }
       />
@@ -272,9 +272,9 @@ export default async function BalcaoPage() {
                       <p className="flex flex-wrap items-center gap-2 font-medium text-ink">
                         {e.nome}
                         {e.status === "pronto" ? (
-                          <Badge tom="success">Resultado pronto — entregar</Badge>
+                          <Badge tom="success">Resultado pronto</Badge>
                         ) : (
-                          <Badge tom="info">Requisição — imprimir</Badge>
+                          <Badge tom="info">Requisição</Badge>
                         )}
                       </p>
                       <Quem

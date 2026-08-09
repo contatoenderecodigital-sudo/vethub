@@ -155,7 +155,7 @@ const DUVIDAS = [
   },
   {
     p: "O plano de 12 meses tem fidelidade?",
-    r: "Não. O desconto é por pagamento adiantado, não é contrato. Quem sai antes para de pagar as parcelas seguintes e perde o desconto dos meses já usados — sem multa.",
+    r: "Não. O desconto é por pagamento adiantado, não é contrato. Quem sai antes para de pagar as parcelas seguintes e perde o desconto dos meses já usados, sem multa.",
   },
   {
     p: "O que acontece se eu passar da cota de notas ou mensagens?",
@@ -163,11 +163,11 @@ const DUVIDAS = [
   },
   {
     p: "O que é a taxa de implantação?",
-    r: "É a migração da sua base do sistema antigo — tutores, pets e histórico — mais o treinamento da equipe. Custa R$ 497 no plano mês a mês e é gratuita nos planos de 6 e 12 meses.",
+    r: "É a migração da sua base do sistema antigo (tutores, pets e histórico) mais o treinamento da equipe. Custa R$ 497 no plano mês a mês e é gratuita nos planos de 6 e 12 meses.",
   },
   {
     p: "Qual a diferença entre a implantação e a Clínica Pronta?",
-    r: `A implantação (R$ 497, grátis em 6 e 12 meses) traz sua base do sistema antigo — tutores, pets e histórico — e o resto você configura. A Clínica Pronta (${reais(CLINICA_PRONTA.valor)} em ${CLINICA_PRONTA.parcelas}×) é tudo pronto: catálogo com preços, agenda, financeiro, WhatsApp, fiscal e a equipe treinada. Você abre o sistema e começa a atender.`,
+    r: `A implantação (R$ 497, grátis em 6 e 12 meses) traz sua base do sistema antigo (tutores, pets e histórico) e o resto você configura. A Clínica Pronta (${reais(CLINICA_PRONTA.valor)} em ${CLINICA_PRONTA.parcelas}×) é tudo pronto: catálogo com preços, agenda, financeiro, WhatsApp, fiscal e a equipe treinada. Você abre o sistema e começa a atender.`,
   },
   {
     p: "Preciso pagar tudo de uma vez no plano anual?",
@@ -175,7 +175,7 @@ const DUVIDAS = [
   },
   {
     p: "E se eu tiver mais gente que o limite do plano?",
-    r: "O sistema avisa antes de você criar o usuário que não cabe. Aí é só subir de plano — ou falar com a gente, porque limite negociado existe.",
+    r: "O sistema avisa antes de você criar o usuário que não cabe. Aí é só subir de plano, ou falar com a gente, porque limite negociado existe.",
   },
 ];
 
@@ -373,7 +373,7 @@ export default async function AssinaturaPage({
                   <p className="mt-2 text-sm text-ink-muted">
                     {implantacao > 0 ? (
                       <>
-                        + {reais(implantacao)} de implantação —{" "}
+                        + {reais(implantacao)} de implantação,{" "}
                         <strong className="text-ink">grátis em 6 ou 12 meses</strong>
                       </>
                     ) : (

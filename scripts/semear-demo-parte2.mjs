@@ -13,8 +13,8 @@ const QUEIXAS = [
   ["Vômito há dois dias", "Vomitou 4 vezes desde ontem, recusa ração, bebe água normalmente.", "Desidratação leve (~5%), abdome sensível à palpação. T 39,1 °C.", "Gastrite aguda", "Jejum de 12h, antiemético, dieta úmida fracionada. Retorno se persistir."],
   ["Mancando da pata traseira direita", "Começou depois de correr no parque no domingo.", "Dor à extensão do joelho direito, sem instabilidade franca. Sem edema.", "Suspeita de lesão de ligamento", "Repouso 10 dias, anti-inflamatório, raio-X solicitado."],
   ["Consulta de rotina e vacina", "Sem queixas. Tutor quer atualizar carteira de vacinação.", "Exame físico dentro da normalidade. Escore corporal 5/9.", "Animal hígido", "V10 aplicada hoje. Retorno em 21 dias para reforço."],
-  ["Emagrecimento e sede excessiva", "Perdeu peso no último mês mesmo comendo bem. Bebe muita água.", "Escore corporal 3/9, desidratação leve, linfonodos normais.", "Suspeita de diabetes — aguardando exames", "Hemograma e glicemia solicitados. Retorno com resultados."],
-  ["Otite — balança a cabeça", "Coça a orelha esquerda e balança a cabeça há uma semana.", "Conduto auditivo esquerdo hiperêmico, secreção marrom com odor.", "Otite externa", "Limpeza auricular e antibiótico tópico por 10 dias."],
+  ["Emagrecimento e sede excessiva", "Perdeu peso no último mês mesmo comendo bem. Bebe muita água.", "Escore corporal 3/9, desidratação leve, linfonodos normais.", "Suspeita de diabetes, aguardando exames", "Hemograma e glicemia solicitados. Retorno com resultados."],
+  ["Otite, balança a cabeça", "Coça a orelha esquerda e balança a cabeça há uma semana.", "Conduto auditivo esquerdo hiperêmico, secreção marrom com odor.", "Otite externa", "Limpeza auricular e antibiótico tópico por 10 dias."],
   ["Check-up pré-operatório", "Castração agendada. Sem queixas.", "Exame físico normal, ausculta cardiopulmonar sem alterações.", "Apto para cirurgia", "Jejum de 12h. Cirurgia mantida."],
   ["Dificuldade para urinar", "Vai à caixa de areia várias vezes e sai pouca urina.", "Bexiga repleta e dolorosa à palpação. Animal apático.", "Obstrução uretral felina", "Sondagem de urgência, internação para fluidoterapia."],
 ];
@@ -229,7 +229,7 @@ export async function semearAtendimento(db, ctx, aux) {
       perfume: escolha(["Baby", "Frutas vermelhas", "Sem perfume"], i),
       restricoes: i % 3 === 0 ? "Alergia a perfume forte" : null,
       temperamento: escolha(["docil", "agitado", "medroso"], i),
-      observacoes: i % 2 === 0 ? "Não gosta de secador no rosto — usar toalha." : null,
+      observacoes: i % 2 === 0 ? "Não gosta de secador no rosto, usar toalha." : null,
     }))
   );
 
@@ -267,12 +267,12 @@ export async function semearAtendimento(db, ctx, aux) {
 
   const CESTAS = [
     [["Consulta clínica", 1], ["Vacina V10 (múltipla canina)", 1], ["Aplicação de vacina", 1]],
-    [["Banho — porte médio", 1], ["Tosa higiênica", 1]],
+    [["Banho porte médio", 1], ["Tosa higiênica", 1]],
     [["Consulta clínica", 1], ["Hemograma completo", 1]],
     [["Ração seca cães adultos 15 kg", 1], ["Antipulgas 10–20 kg", 1]],
     [["Consulta de urgência", 1], ["Raio-X (2 posições)", 1], ["Anti-inflamatório 20 cp", 1]],
-    [["Banho — porte pequeno", 1], ["Corte de unhas", 1], ["Shampoo hipoalergênico 500 ml", 1]],
-    [["Castração — gato", 1], ["Diária de internação", 2]],
+    [["Banho porte pequeno", 1], ["Corte de unhas", 1], ["Shampoo hipoalergênico 500 ml", 1]],
+    [["Castração de gato", 1], ["Diária de internação", 2]],
     [["Ração úmida sachê 85 g", 12], ["Areia sanitária 4 kg", 2]],
   ];
   const FORMAS = ["pix", "credito", "dinheiro", "debito", "fiado"];
@@ -355,7 +355,7 @@ export async function semearAtendimento(db, ctx, aux) {
   const contasReceber = fiados.map((f, i) => ({
     clinica_id: clinica,
     tipo: "receber",
-    descricao: `Venda #${i + 1} — pagamento combinado`,
+    descricao: `Venda #${i + 1}, pagamento combinado`,
     categoria_id: catReceita,
     tutor_id: vendasLinhas[f.indice].tutor_id,
     venda_id: f.venda,
@@ -371,8 +371,8 @@ export async function semearAtendimento(db, ctx, aux) {
     ["Energia elétrica", 690.4, 0, "aberta", catDespesa],
     ["Água e esgoto", 210.9, 6, "aberta", catDespesa],
     ["Internet e telefonia", 189.9, 8, "aberta", catDespesa],
-    ["Distribuidora VetSul — nota 184223", 5840, -12, "paga", catDespesa],
-    ["AgroPet Oeste — nota 77120", 3120, 12, "aberta", catDespesa],
+    ["Distribuidora VetSul, nota 184223", 5840, -12, "paga", catDespesa],
+    ["AgroPet Oeste, nota 77120", 3120, 12, "aberta", catDespesa],
     ["Contabilidade", 780, 10, "aberta", catDespesa],
     ["Coleta de resíduos de saúde", 340, -2, "aberta", catDespesa],
     ["Salários e encargos", 11800, 5, "aberta", catDespesa],
@@ -381,7 +381,7 @@ export async function semearAtendimento(db, ctx, aux) {
     tipo: "pagar",
     descricao,
     categoria_id,
-    fornecedor: /VetSul|AgroPet/.test(descricao) ? descricao.split(" —")[0] : null,
+    fornecedor: /VetSul|AgroPet/.test(descricao) ? descricao.split(",")[0] : null,
     valor,
     valor_pago: status === "paga" ? valor : 0,
     vencimento: dia(venc),
@@ -461,7 +461,7 @@ export async function semearAtendimento(db, ctx, aux) {
   // começar do zero.
   const CATALOGO_EXAMES = [
     ["Hemograma completo", "laboratorial", "Apatia e emagrecimento. Avaliar anemia e infecção."],
-    ["Bioquímico — ureia e creatinina", "laboratorial", "Suspeita de doença renal crônica."],
+    ["Bioquímico de ureia e creatinina", "laboratorial", "Suspeita de doença renal crônica."],
     ["Urinálise (EAS)", "laboratorial", "Disúria e polaciúria."],
     ["Raio-X de tórax", "imagem", "Tosse persistente há duas semanas."],
     ["Ultrassonografia abdominal", "imagem", "Vômitos recorrentes sem causa aparente."],
@@ -516,7 +516,7 @@ export async function semearAtendimento(db, ctx, aux) {
     }))
   );
   await inserir("orcamento_item", [
-    { orcamento_id: orcamentos[0], descricao: "Castração — cadela", quantidade: 1, valor_unitario: 780 },
+    { orcamento_id: orcamentos[0], descricao: "Castração de cadela", quantidade: 1, valor_unitario: 780 },
     { orcamento_id: orcamentos[0], descricao: "Hemograma pré-operatório", quantidade: 1, valor_unitario: 95 },
     { orcamento_id: orcamentos[0], descricao: "Diária de internação", quantidade: 1, valor_unitario: 190 },
     { orcamento_id: orcamentos[1], descricao: "Ultrassonografia abdominal", quantidade: 1, valor_unitario: 240 },

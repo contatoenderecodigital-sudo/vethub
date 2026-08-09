@@ -170,7 +170,7 @@ export default async function ImprimirOrcamentoPage({
           <div className="mt-6 grid gap-6 sm:grid-cols-[1fr_10rem]">
             <div className="border-t border-zinc-900 pt-1">
               <p className="text-[10px] text-zinc-600">
-                Assinatura do tutor — {tutor?.nome ?? ""}
+                {tutor?.nome ? `Assinatura de ${tutor.nome}` : "Assinatura do tutor"}
               </p>
             </div>
             <div className="border-t border-zinc-900 pt-1">

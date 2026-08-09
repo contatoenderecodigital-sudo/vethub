@@ -201,7 +201,7 @@ export const SOBRE_RECURSO: Record<Recurso, { nome: string; explicacao: string }
   relatorios_avancados: {
     nome: "Relatórios completos",
     explicacao:
-      "Faturamento, clientes, insumos e vacinas a vencer — para saber o que dá lucro e quem parou de aparecer.",
+      "Faturamento, clientes, insumos e vacinas a vencer, para saber o que dá lucro e quem parou de aparecer.",
   },
   multi_unidade: {
     nome: "Várias unidades",

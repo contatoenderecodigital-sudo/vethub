@@ -12,6 +12,7 @@ import {
 import {
   BadgeCheck,
   Bath,
+  ConciergeBell,
   BedDouble,
   Boxes,
   Building2,
@@ -21,6 +22,7 @@ import {
   ClipboardList,
   DollarSign,
   FileText,
+  FlaskConical,
   Handshake,
   History,
   LayoutDashboard,
@@ -101,6 +103,13 @@ const INICIO: Item = {
   quente: true,
 };
 
+const BALCAO: Item = {
+  href: "/balcao",
+  rotulo: "Balcão",
+  icone: ConciergeBell,
+  quente: true,
+};
+
 const GRUPOS: Grupo[] = [
   {
     titulo: "Atendimento",
@@ -110,6 +119,7 @@ const GRUPOS: Grupo[] = [
       { href: "/consultas", rotulo: "Consultas", icone: Stethoscope, quente: true },
       { href: "/receitas", rotulo: "Receituário", icone: Pill },
       { href: "/receitas/medicamentos", rotulo: "Medicamentos", icone: Syringe },
+      { href: "/exames", rotulo: "Exames", icone: FlaskConical },
       { href: "/internacao", rotulo: "Internação", icone: BedDouble, recurso: "internacao" },
       { href: "/banho-tosa", rotulo: "Banho e tosa", icone: Bath },
       { href: "/banho-tosa/fichas", rotulo: "Fichas de tosa", icone: ClipboardList },
@@ -181,7 +191,7 @@ const GRUPOS: Grupo[] = [
 ];
 
 /** Todos os endereços do menu, para saber qual deles casa melhor. */
-const TODOS_OS_HREFS = [INICIO.href, ...GRUPOS.flatMap((g) => g.itens.map((i) => i.href))];
+const TODOS_OS_HREFS = [INICIO.href, BALCAO.href, ...GRUPOS.flatMap((g) => g.itens.map((i) => i.href))];
 
 /**
  * O endereço do menu que melhor descreve a tela atual.
@@ -269,6 +279,22 @@ export function NavLateral({ ehAdmin, plano }: { ehAdmin: boolean; plano: string
           strokeWidth={inicioAtivo ? 2.2 : 1.8}
         />
         {INICIO.rotulo}
+      </Link>
+
+      <Link
+        href={BALCAO.href}
+        prefetch
+        className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+          estaAtivo(pathname, BALCAO.href)
+            ? "bg-white/25 text-white"
+            : "text-ink-muted hover:bg-white/15 hover:text-ink"
+        }`}
+      >
+        <BALCAO.icone
+          className={`size-[18px] shrink-0 ${estaAtivo(pathname, BALCAO.href) ? "text-brand-mint" : ""}`}
+          strokeWidth={estaAtivo(pathname, BALCAO.href) ? 2.2 : 1.8}
+        />
+        {BALCAO.rotulo}
       </Link>
 
       {visiveis.map((grupo) => {
@@ -439,6 +465,19 @@ export function NavInferior({ ehAdmin, plano }: { ehAdmin: boolean; plano: strin
             >
               <INICIO.icone className="size-[18px] shrink-0" strokeWidth={1.8} />
               <span className="min-w-0 truncate">{INICIO.rotulo}</span>
+            </Link>
+
+            <Link
+              href={BALCAO.href}
+              onClick={() => setAberto(false)}
+              className={`flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium ${
+                estaAtivo(pathname, BALCAO.href)
+                  ? "bg-white/25 text-white"
+                  : "text-ink-muted hover:bg-white/15 hover:text-ink"
+              }`}
+            >
+              <BALCAO.icone className="size-[18px] shrink-0" strokeWidth={1.8} />
+              <span className="min-w-0 truncate">{BALCAO.rotulo}</span>
             </Link>
 
             {/* Uma linha fina separa os grupos. Antes só o espaço em branco

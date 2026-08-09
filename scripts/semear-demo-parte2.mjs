@@ -23,7 +23,7 @@ export async function semearAtendimento(db, ctx, aux) {
   const { dia, quando, escolha, inserir } = aux;
   const {
     clinica, admin, vets, vetA, vetB, recep,
-    item, precoDe, petDe, pets, tutores, tutorDoPet, planos, fornecedores,
+    item, precoDe, petDe, pets, tutorDoPet, planos,
   } = ctx;
 
   // ----------------------------------------------------------------
@@ -451,6 +451,53 @@ export async function semearAtendimento(db, ctx, aux) {
       status: i === 6 ? "suspensa" : "ativa",
     }))
   );
+
+  // ----------------------------------------------------------------
+  // Exames
+  // ----------------------------------------------------------------
+  // Espalhados nos quatro estados de propósito: um esperando coleta, um
+  // coletado, um com laudo pronto (que é o que aparece no balcão para a
+  // recepção entregar) e outros já entregues, para o histórico do pet não
+  // começar do zero.
+  const CATALOGO_EXAMES = [
+    ["Hemograma completo", "laboratorial", "Apatia e emagrecimento. Avaliar anemia e infecção."],
+    ["Bioquímico — ureia e creatinina", "laboratorial", "Suspeita de doença renal crônica."],
+    ["Urinálise (EAS)", "laboratorial", "Disúria e polaciúria."],
+    ["Raio-X de tórax", "imagem", "Tosse persistente há duas semanas."],
+    ["Ultrassonografia abdominal", "imagem", "Vômitos recorrentes sem causa aparente."],
+    ["Citologia de pele", "laboratorial", "Lesão em região dorsal, descartar neoplasia."],
+    ["Perfil tireoidiano (T4)", "laboratorial", "Ganho de peso e alopecia bilateral."],
+  ];
+  const LAUDOS = {
+    "Hemograma completo": [
+      "Hemácias 6,2 M/uL · Hematócrito 38% · Leucócitos 14.800/uL com neutrofilia.",
+      "Compatível com processo inflamatório agudo.",
+    ].join("\n"),
+    "Urinálise (EAS)": [
+      "Densidade 1.012 · pH 7,5 · Proteína traços · Sedimento com cristais de estruvita.",
+      "Sugere-se dieta acidificante e reavaliação em 30 dias.",
+    ].join("\n"),
+  };
+
+  const examesLinhas = CATALOGO_EXAMES.map(([nome, tipo, indicacao], i) => {
+    const estado = ["solicitado", "coletado", "pronto", "entregue", "entregue", "pronto", "solicitado"][i];
+    const pronto = estado === "pronto" || estado === "entregue";
+    return {
+      clinica_id: clinica,
+      pet_id: escolha(pets, i * 3 + 1),
+      veterinario_id: escolha(vets, i),
+      nome,
+      tipo,
+      indicacao,
+      status: estado,
+      solicitado_em: quando(-(i * 4 + 1), 10, 30),
+      previsto_para: estado === "solicitado" ? dia(2 + i) : null,
+      resultado: pronto ? (LAUDOS[nome] ?? "Sem alterações dignas de nota.") : null,
+      resultado_em: pronto ? quando(-(i * 4 - 1), 15, 0) : null,
+    };
+  });
+  await inserir("exame", examesLinhas);
+  console.log(`Exames: ${examesLinhas.length}`);
 
   // ----------------------------------------------------------------
   // Orçamentos

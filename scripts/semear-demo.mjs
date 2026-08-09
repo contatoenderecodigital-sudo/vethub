@@ -269,7 +269,7 @@ async function main() {
   // ----------------------------------------------------------------
   // Apoio do catálogo
   // ----------------------------------------------------------------
-  const [un, cx, ml, kg] = await inserir("unidade_medida", [
+  const [un, , ml, kg] = await inserir("unidade_medida", [
     { clinica_id: clinica, nome: "Unidade", sigla: "un" },
     { clinica_id: clinica, nome: "Caixa", sigla: "cx" },
     { clinica_id: clinica, nome: "Mililitro", sigla: "ml", fracionavel: true },

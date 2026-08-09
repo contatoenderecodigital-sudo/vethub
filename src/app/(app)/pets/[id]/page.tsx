@@ -41,6 +41,7 @@ import { FotoUpload } from "../foto-upload";
 import { PesoHistorico } from "./peso-historico";
 import { Protocolos } from "./protocolos";
 import { HistoricoDoPet } from "./historico";
+import { ExamesDoPet } from "./exames";
 
 export const metadata = { title: "Pet" };
 
@@ -318,6 +319,10 @@ export default async function PetPage({
         {/* A linha do tempo vem ANTES das listas por assunto: a pergunta que
             o veterinário faz ao abrir a ficha é "o que já fizeram com ele?",
             e não "quantas consultas ele teve". */}
+        <div className="lg:col-span-2">
+          <ExamesDoPet petId={pet.id} />
+        </div>
+
         <div className="lg:col-span-2">
           <HistoricoDoPet petId={pet.id} />
         </div>

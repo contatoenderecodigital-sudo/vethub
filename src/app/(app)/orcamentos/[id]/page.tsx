@@ -4,10 +4,11 @@ import {
   CircleCheck,
   CircleX,
   Pencil,
+  Printer,
   RotateCcw,
+  ShoppingCart,
   Stethoscope,
   Trash2,
-  ShoppingCart,
 } from "lucide-react";
 import { getSessao } from "@/lib/auth";
 import { formatBRL, formatDataHora } from "@/lib/format";
@@ -134,6 +135,13 @@ export default async function OrcamentoPage({
                 <ButtonLink href={`/orcamentos/${id}/editar`} variante="ghost">
                   <Pencil className="size-4 shrink-0" />
                   Editar itens
+                </ButtonLink>
+                {/* Orçamento que não sai da tela não fecha venda: o tutor
+                    precisa levar o número para casa e mostrar para quem
+                    decide junto. */}
+                <ButtonLink href={`/orcamentos/${id}/imprimir`} variante="secondary">
+                  <Printer className="size-4 shrink-0" />
+                  Imprimir
                 </ButtonLink>
                 <form action={excluir}>
                   <ConfirmButton

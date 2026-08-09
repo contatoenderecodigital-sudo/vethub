@@ -293,3 +293,79 @@ const melhor = conta(CENARIOS["otimista    25/55/20"], 100).sobra;
 console.log(`  diferença de ${real(melhor - pior)} por mês, ${real((melhor - pior) * 12)} no ano`);
 console.log(`  ou seja: o MIX vale ${((melhor / pior - 1) * 100).toFixed(0)}% a mais, com o mesmo`);
 console.log(`  número de clientes e o mesmo trabalho de vender.`);
+
+console.log("\n" + "=".repeat(74));
+console.log("8. E SE O SUPORTE CUSTAR MAIS DO QUE EU ACHO?");
+console.log("=".repeat(74));
+console.log("É o número mais incerto da conta inteira, e o único que ninguém");
+console.log("sabe antes de ter cliente. Vale saber onde ele começa a doer.\n");
+console.log("R$/cliente   Essencial   Profissional   Completo   sobra c/ 100 (mix base)");
+for (const s of [20, 40, 80, 120, 200]) {
+  const m = (p) => `${(((precoMedio(p) - custoVariavel(p) - s) / precoMedio(p)) * 100).toFixed(0)}%`;
+  const mixBase = { essencial: 0.45, profissional: 0.45, completo: 0.1 };
+  const arpu = Object.entries(mixBase).reduce((a, [p, w]) => a + precoMedio(p) * w, 0);
+  const exc = Object.entries(mixBase).reduce((a, [p, w]) => a + excedente(p).receita * w, 0);
+  const cv = Object.entries(mixBase).reduce(
+    (a, [p, w]) => a + (custoVariavel(p) + excedente(p).custo) * w, 0);
+  const receita = (arpu + exc) * 100;
+  const sobra = receita - receita * TAXA_GATEWAY -
+    receita * aliquotaEfetiva(receita * 12) - cv * 100 - s * 100 - FIXO_PLATAFORMA;
+  console.log(
+    `R$ ${String(s).padStart(3)}`.padEnd(13),
+    m("essencial").padStart(9), m("profissional").padStart(14),
+    m("completo").padStart(11), real(sobra).padStart(23)
+  );
+}
+console.log("\nRepare: o Essencial é o primeiro a virar prejuízo. A R$ 200 de");
+console.log("suporte ele já dá negativo enquanto o Completo ainda deixa 60%.");
+
+console.log("\n" + "=".repeat(74));
+console.log("9. VALE BAIXAR O PREÇO DO PROFISSIONAL?");
+console.log("=".repeat(74));
+
+const SUP = 40;
+function sobraCom(precoProf, share, n = 100) {
+  const orig = { ...PLANOS.profissional.preco };
+  const fator = precoProf / orig.anual;
+  PLANOS.profissional.preco = {
+    mensal: orig.mensal * fator, semestral: orig.semestral * fator, anual: precoProf,
+  };
+  const mix = { essencial: 0.9 - share, profissional: share, completo: 0.1 };
+  const arpu = Object.entries(mix).reduce((a, [p, w]) => a + precoMedio(p) * w, 0);
+  const exc = Object.entries(mix).reduce((a, [p, w]) => a + excedente(p).receita * w, 0);
+  const cv = Object.entries(mix).reduce(
+    (a, [p, w]) => a + (custoVariavel(p) + excedente(p).custo) * w, 0);
+  const receita = (arpu + exc) * n;
+  const s = receita - receita * TAXA_GATEWAY - receita * aliquotaEfetiva(receita * 12)
+    - cv * n - SUP * n - FIXO_PLATAFORMA;
+  PLANOS.profissional.preco = orig;
+  return s;
+}
+
+const ALVO = sobraCom(329, 0.45);
+console.log(`Referência: R$ 329 com 45% da base no Profissional = ${real(ALVO)}/mês\n`);
+console.log("preço anual   sobra no mesmo mix   share necessário para empatar");
+for (const preco of [279, 299, 329, 359, 399]) {
+  const mesmo = sobraCom(preco, 0.45);
+  let share = 0.05;
+  while (sobraCom(preco, share) < ALVO && share < 0.9) share += 0.005;
+  const txt = share >= 0.895 ? "não empata nem com 90%" : `${(share * 100).toFixed(0)}% da base`;
+  console.log(
+    `R$ ${preco}`.padEnd(13), real(mesmo).padStart(19),
+    (preco === 329 ? "— referência —" : txt).padStart(33)
+  );
+}
+
+console.log("\n" + "=".repeat(74));
+console.log("10. CANCELAMENTO: QUANTOS CLIENTES SÓ PARA NÃO ENCOLHER");
+console.log("=".repeat(74));
+console.log("base    churn 1%/mês   churn 3%/mês   churn 5%/mês   (novos por mês)");
+for (const base of [50, 100, 250, 500]) {
+  console.log(
+    String(base).padStart(5),
+    ...[0.01, 0.03, 0.05].map((c) => `${Math.ceil(base * c)} clientes`.padStart(15))
+  );
+}
+console.log("\nCom 3%/mês, metade da base troca em menos de 2 anos. É por isso que");
+console.log("o plano de 12 meses vale mais do que o desconto custa: quem pagou o");
+console.log("ano não cancela em março.");

@@ -88,6 +88,47 @@ function itensParaBanco(valores: ReceitaFormValores, receitaId: string) {
   }));
 }
 
+/**
+ * Marca no caderno da clínica que estes medicamentos foram receitados.
+ *
+ * É o que faz a busca da próxima receita já vir com os de sempre no topo —
+ * o veterinário prescreve os mesmos vinte a vida inteira, e ordem alfabética
+ * o faria rolar a lista toda vez.
+ *
+ * Casa por NOME, e não por id, porque a linha da receita é texto livre: o
+ * veterinário pode ter escolhido no caderno, digitado na mão ou ajustado a
+ * dose depois de escolher. Contar por nome pega os três casos.
+ *
+ * Falhar aqui NÃO derruba a receita. Contador de conveniência não é motivo
+ * para a pessoa perder o que acabou de escrever.
+ */
+async function contarUsoDosMedicamentos(
+  supabase: Awaited<ReturnType<typeof getSessao>>["supabase"],
+  nomes: string[]
+) {
+  const unicos = [...new Set(nomes.map((n) => n.trim()).filter(Boolean))];
+  if (!unicos.length) return;
+
+  try {
+    const { data } = await supabase
+      .from("medicamento_receita")
+      .select("id, nome, vezes_usado")
+      .in("nome", unicos)
+      .returns<{ id: string; nome: string; vezes_usado: number }[]>();
+
+    await Promise.all(
+      (data ?? []).map((m) =>
+        supabase
+          .from("medicamento_receita")
+          .update({ vezes_usado: m.vezes_usado + 1 })
+          .eq("id", m.id)
+      )
+    );
+  } catch {
+    // conta errada no ranking é menos grave que receita perdida
+  }
+}
+
 export async function criarReceita(formData: FormData) {
   const { supabase, usuario } = await getSessao();
   if (usuario.papel === "recepcao") return redirecionarComAviso(`/receitas?erro=${ERRO_PERMISSAO}`);
@@ -125,7 +166,13 @@ export async function criarReceita(formData: FormData) {
     redirect(urlErro("Não foi possível salvar os medicamentos."));
   }
 
+  await contarUsoDosMedicamentos(
+    supabase,
+    validado.dados.medicamentos.map((m) => m.medicamento)
+  );
+
   revalidatePath("/receitas");
+  revalidatePath("/receitas/medicamentos");
   revalidatePath(`/pets/${validado.dados.pet_id}`);
   redirect(`/receitas/${receita.id}`);
 }

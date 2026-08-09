@@ -22,8 +22,12 @@ const TAMANHOS: Record<Tamanho, string> = {
   lg: "h-12 px-6 text-base rounded-lg",
 };
 
+// `whitespace-nowrap`: rótulo de botão nunca quebra linha. Sem isso, dentro
+// de tabela estreita o "Marcar como paga" virava duas linhas e estourava a
+// célula — apareceu num notebook de tela menor, mas valia para toda tabela
+// com coluna de ações. Tabela apertada deve ROLAR, não amassar o botão.
 const BASE =
-  "inline-flex items-center justify-center gap-2 font-medium transition-colors " +
+  "inline-flex items-center justify-center gap-2 font-medium whitespace-nowrap transition-colors " +
   "disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-2 " +
   "focus-visible:outline-offset-2 focus-visible:outline-white cursor-pointer";
 

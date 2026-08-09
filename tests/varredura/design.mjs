@@ -42,10 +42,18 @@ const AA_GRANDE = 3.0;
 const ALVO_AA = 24;
 const ALVO_MIN = 44;
 
+// As larguras que existem na mesa do cliente, não as redondas do figma.
+//
+// 1280 é o notebook comum, e 1024 é esse mesmo notebook com o Windows em
+// 125% de zoom — que é como metade das pessoas usa. Era justamente a faixa
+// que faltava: o app foi conferido a 768 e a 1440 e passou nos dois,
+// enquanto no meio a tabela de comissões amassava o botão de ação.
 const TELAS = [
   { nome: "celular", largura: 390, altura: 844, toque: true },
   { nome: "tablet", largura: 768, altura: 1024, toque: true },
-  { nome: "notebook", largura: 1440, altura: 900, toque: false },
+  { nome: "notebook-pequeno", largura: 1024, altura: 700, toque: false },
+  { nome: "notebook", largura: 1280, altura: 800, toque: false },
+  { nome: "tela-grande", largura: 1440, altura: 900, toque: false },
 ];
 
 const achados = [];

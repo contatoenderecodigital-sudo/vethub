@@ -180,11 +180,38 @@ export async function semearAtendimento(db, ctx, aux) {
   }
   await inserir("evolucao", evolucoes);
 
-  await inserir("prescricao", [
+  const prescricoes = await inserir("prescricao", [
     { clinica_id: clinica, internacao_id: internacoes[0], medicamento: "Ringer com lactato", dose: "4 ml/kg/h", via: "IV", frequencia_horas: 24, horarios: ["06:00"], inicio: quando(-2, 19, 0), prescrito_por: vetA, observacao: "Bomba de infusão" },
     { clinica_id: clinica, internacao_id: internacoes[0], medicamento: "Dipirona", dose: "25 mg/kg", via: "IV", frequencia_horas: 8, horarios: ["06:00", "14:00", "22:00"], inicio: quando(-2, 20, 0), prescrito_por: vetA },
     { clinica_id: clinica, internacao_id: internacoes[0], medicamento: "Amoxicilina + Clavulanato", dose: "20 mg/kg", via: "IV", frequencia_horas: 12, horarios: ["08:00", "20:00"], inicio: quando(-2, 20, 0), prescrito_por: vetA },
   ]);
+
+  // As APLICAÇÕES, e não só a prescrição. Prescrição é intenção; aplicação é
+  // o que aconteceu com o animal — e é ela que responde "o que deram pra
+  // ele?" no histórico do pet. Sem esta parte, a internação aparece na ficha
+  // sem uma única medicação, que é justamente o buraco que o histórico veio
+  // tapar.
+  const aplicacoes = [];
+  for (const [k, presc] of prescricoes.entries()) {
+    const porDia = [1, 3, 2][k];
+    for (let d = 2; d >= 0; d--) {
+      for (let h = 0; h < porDia; h++) {
+        const hora = 6 + Math.floor((h * 16) / porDia);
+        const passou = d > 0 || hora <= new Date().getHours();
+        aplicacoes.push({
+          clinica_id: clinica,
+          prescricao_id: presc,
+          horario_previsto: quando(-d, hora, 0),
+          horario_realizado: passou ? quando(-d, hora, 5 + k) : null,
+          status: passou ? "aplicado" : "pendente",
+          responsavel_id: escolha(vets, d + h),
+          observacao: passou && d === 1 && h === 0 ? "Aceitou bem, sem reação." : null,
+        });
+      }
+    }
+  }
+  await inserir("administracao_medicamento", aplicacoes);
+  console.log(`Medicação da internação: ${aplicacoes.length} aplicações`);
   console.log(`Internação: ${internacoes.length} (1 em andamento)`);
 
   // ----------------------------------------------------------------

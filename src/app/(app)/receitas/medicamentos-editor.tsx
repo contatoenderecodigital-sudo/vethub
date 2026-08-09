@@ -5,6 +5,7 @@ import { Plus, X } from "lucide-react";
 import { FORMAS_FARMACEUTICAS, VIAS_ADMINISTRACAO } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input, Select, Textarea } from "@/components/ui/form";
+import { BuscaCombobox, type OpcaoBusca } from "@/components/busca-combobox";
 import {
   MAX_MEDICAMENTOS,
   MEDICAMENTO_VAZIO,
@@ -58,6 +59,35 @@ export function MedicamentosEditor({
 
   const foiTocado = (chave: string, campo: CampoLinha) =>
     !!tocados[`${chave}:${campo}`];
+
+  /**
+   * Despeja na linha o medicamento escolhido no caderno da clínica.
+   *
+   * Sobrescreve o que estava digitado: quem escolheu no caderno quer o que
+   * está no caderno. Limpar a seleção (o X do combobox) não apaga nada — a
+   * pessoa pode ter ajustado a dose depois de escolher, e apagar o trabalho
+   * dela seria pior que deixar o campo preenchido.
+   */
+  function preencherDoModelo(chave: string, opcao: OpcaoBusca | null) {
+    const v = opcao?.valores;
+    if (!v) return;
+    setLinhas((atuais) =>
+      atuais.map((l) =>
+        l.chave === chave
+          ? {
+              ...l,
+              medicamento: v.medicamento ?? l.medicamento,
+              concentracao: v.concentracao ?? l.concentracao,
+              forma_farmaceutica: v.forma_farmaceutica ?? l.forma_farmaceutica,
+              quantidade: v.quantidade ?? l.quantidade,
+              posologia: v.posologia ?? l.posologia,
+              via: v.via ?? l.via,
+              observacao: v.observacao ?? l.observacao,
+            }
+          : l
+      )
+    );
+  }
 
   function marcarTocado(chave: string, campo: CampoLinha) {
     const id = `${chave}:${campo}`;
@@ -122,6 +152,21 @@ export function MedicamentosEditor({
                 >
                   <X className="size-4" />
                 </button>
+              </div>
+
+              {/* Buscar no caderno da clínica preenche a linha inteira. Fica
+                  ACIMA dos campos, e não no lugar deles: o veterinário
+                  precisa poder receitar o que ainda não cadastrou, sem ter
+                  que passar pelo cadastro antes. */}
+              <div className="mb-3">
+                <RotuloCampo>Buscar nos medicamentos da clínica</RotuloCampo>
+                <BuscaCombobox
+                  name={`modelo_${linha.chave}`}
+                  rotulo="Buscar medicamento cadastrado"
+                  endpoint="/api/busca/medicamentos"
+                  placeholder="Digite o nome ou escolha um dos mais usados…"
+                  aoSelecionar={(opcao) => preencherDoModelo(linha.chave, opcao)}
+                />
               </div>
 
               <div className="grid gap-2 sm:grid-cols-2">

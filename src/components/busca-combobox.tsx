@@ -6,6 +6,15 @@ export interface OpcaoBusca {
   id: string;
   rotulo: string;
   detalhe?: string;
+  /**
+   * Campos prontos para preencher um formulário na hora da escolha.
+   *
+   * Existe para a busca de medicamentos do receituário: escolher já
+   * preenche mg, forma, via e posologia da linha. Buscar de novo no servidor
+   * a cada seleção deixaria lento justamente o passo que existe para ser
+   * rápido. As outras buscas não usam e seguem devolvendo só id e rótulo.
+   */
+  valores?: Record<string, string>;
 }
 
 /**

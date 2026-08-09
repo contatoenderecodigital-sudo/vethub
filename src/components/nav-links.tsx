@@ -109,6 +109,7 @@ const GRUPOS: Grupo[] = [
       { href: "/agenda", rotulo: "Agenda", icone: CalendarDays, quente: true },
       { href: "/consultas", rotulo: "Consultas", icone: Stethoscope, quente: true },
       { href: "/receitas", rotulo: "Receituário", icone: Pill },
+      { href: "/receitas/medicamentos", rotulo: "Medicamentos", icone: Syringe },
       { href: "/internacao", rotulo: "Internação", icone: BedDouble, recurso: "internacao" },
       { href: "/banho-tosa", rotulo: "Banho e tosa", icone: Bath },
       { href: "/banho-tosa/fichas", rotulo: "Fichas de tosa", icone: ClipboardList },

@@ -441,10 +441,10 @@ export default async function ComissoesPage({
                   <th scope="col" className={CABECALHO}>
                     Descrição
                   </th>
-                  <th scope="col" className={`${CABECALHO} text-right`}>
+                  <th scope="col" className={`${CABECALHO} text-right hidden xl:table-cell`}>
                     Base de cálculo
                   </th>
-                  <th scope="col" className={`${CABECALHO} text-right`}>
+                  <th scope="col" className={`${CABECALHO} text-right hidden xl:table-cell`}>
                     Percentual
                   </th>
                   <th scope="col" className={`${CABECALHO} text-right`}>
@@ -470,10 +470,10 @@ export default async function ComissoesPage({
                       {c.profissional?.nome ?? "Sem profissional"}
                     </td>
                     <td className={CELULA}>{c.descricao}</td>
-                    <td className={`${CELULA} text-right tabular-nums`}>
+                    <td className={`${CELULA} text-right tabular-nums hidden xl:table-cell`}>
                       {formatBRL(c.base_calculo)}
                     </td>
-                    <td className={`${CELULA} text-right tabular-nums`}>
+                    <td className={`${CELULA} text-right tabular-nums hidden xl:table-cell`}>
                       {formatPercentual(c.percentual)}
                     </td>
                     <td className={`${CELULA} text-right font-semibold tabular-nums`}>
@@ -490,7 +490,7 @@ export default async function ComissoesPage({
                       )}
                     </td>
                     {ehAdmin && (
-                      <td className={`${CELULA} text-right`}>
+                      <td className={`${CELULA} text-right whitespace-nowrap`}>
                         <div className="flex justify-end gap-1.5">
                           {c.pago ? (
                             <form action={estornarComissao.bind(null, c.id, voltar)}>

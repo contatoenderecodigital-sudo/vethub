@@ -4,6 +4,7 @@ import { getSessao } from "@/lib/auth";
 import { hojeISO } from "@/lib/format";
 import {
   CICLOS,
+  cotaDe,
   DEFINICAO,
   economiaAnual,
   reais,
@@ -226,6 +227,7 @@ export default async function AssinaturaPage({
               <ul className="mt-3 space-y-1.5 border-t border-edge pt-3">
                 {LINHAS.map((r) => {
                   const tem = p.recursos.includes(r);
+                  const cota = cotaDe(id, r);
                   return (
                     <li
                       key={r}
@@ -249,6 +251,14 @@ export default async function AssinaturaPage({
                             em breve
                           </span>
                         )}
+                        {/* A cota do que é cobrado por uso. Dizer só
+                            "WhatsApp incluso" seria a meia verdade que gera a
+                            ligação de reclamação no primeiro mês. */}
+                        {tem && cota && (
+                          <span className="block text-ink-muted">
+                            {cota.incluso.toLocaleString("pt-BR")} {cota.unidade}/mês
+                          </span>
+                        )}
                       </span>
                     </li>
                   );
@@ -264,6 +274,12 @@ export default async function AssinaturaPage({
           Todos os planos incluem agenda, prontuário, receituário, banho e tosa,
           cadastro de tutores e pets, estoque, compras, PDV e financeiro. A
           diferença entre eles está na lista acima.
+        </p>
+        <p className="mt-2 text-sm text-ink-muted">
+          Nota fiscal, WhatsApp e inteligência artificial vêm com cota mensal
+          inclusa. O que passar da cota entra na fatura do mês, e o painel
+          mostra o consumo antes disso — a emissão de nota nunca é
+          interrompida.
         </p>
         <p className="mt-2 text-sm text-ink-muted">
           Sem taxa de implantação e sem multa de cancelamento. Nos planos de 6 e

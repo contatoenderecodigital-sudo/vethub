@@ -132,9 +132,16 @@ export const DEFINICAO: Record<PlanoConta, Definicao> = {
   // que criticamos nos outros — e é o que sustenta a comparação que ganha a
   // venda: a mesma clínica paga R$ 648 na SimplesVet, R$ 509 no Vetsoft e
   // R$ 449,80 na Vetwork somando os módulos.
+  //
+  // O WhatsApp também: lembrete de vacina e confirmação de horário saindo
+  // sozinhos é a razão pela qual a clínica pequena troca de sistema, e
+  // mensagem dentro da janela de 24 h não custa nada pela Meta. Trancar isso
+  // no plano de R$ 699 seria esconder o melhor argumento de venda de quem
+  // mais precisa dele. A IA fica no Completo, onde o custo é real e por
+  // consulta.
   profissional: {
     nome: "Profissional",
-    resumo: "Para a clínica que interna, emite nota e paga comissão.",
+    resumo: "Para a clínica que interna, emite nota e fala no WhatsApp.",
     usuarios: 8,
     recursos: [
       "internacao",
@@ -142,16 +149,17 @@ export const DEFINICAO: Record<PlanoConta, Definicao> = {
       "planos_de_saude",
       "relatorios_avancados",
       "fiscal",
+      "whatsapp",
     ],
     preco: { mensal: 419, semestral: 379, anual: 329 },
   },
 
-  // Guarda o que é diferença real de porte (várias unidades) e o que tem
-  // custo variável de verdade (IA e WhatsApp saem em dólar, por consulta e
-  // por mensagem).
+  // Guarda o que é diferença real de porte — usuários sem teto e várias
+  // unidades — e a IA, cujo custo é por consulta gravada. O WhatsApp aparece
+  // aqui com cota maior, não como exclusividade.
   completo: {
     nome: "Completo",
-    resumo: "Tudo, com várias unidades, WhatsApp e inteligência artificial.",
+    resumo: "Tudo, com várias unidades, inteligência artificial e cotas maiores.",
     usuarios: null,
     recursos: [
       "internacao",
@@ -230,6 +238,104 @@ export function tetoDeUsuarios(
   if (limiteNegociado != null) return limiteNegociado;
   const def = DEFINICAO[(plano ?? "trial") as PlanoConta] ?? DEFINICAO.trial;
   return def.usuarios;
+}
+
+// ==================================================================
+// CONSUMO: cota inclusa, excedente e o que nunca pode parar
+// ==================================================================
+//
+// Nota fiscal, WhatsApp e IA são os únicos recursos com custo por USO: cada
+// nota, cada mensagem e cada consulta gravada saem dinheiro para nós. Os
+// outros são software puro — depois de escritos, o milésimo cliente custa o
+// mesmo que o primeiro.
+//
+// A regra que vale para os três: **vem incluso no plano, com cota**. O
+// excedente é exceção, não é o modelo de cobrança. Fatura surpresa é o tema
+// número 1 de reclamação do setor (ver docs/concorrentes/mercado.md), e um
+// sistema mais barato que assusta na fatura é cancelado no segundo mês.
+//
+// E a unidade cobrada é sempre a coisa que a pessoa FEZ — nota, mensagem,
+// consulta. Nunca token, nunca minuto de áudio, nunca requisição: token é
+// como nós pagamos a OpenAI, não é como a clínica paga a gente. Converter é
+// trabalho nosso.
+
+export interface Cota {
+  /** Quantas unidades já vêm no plano, por mês. */
+  incluso: number;
+  /** Palavra que a clínica lê na conta. Nunca um termo técnico. */
+  unidade: string;
+  /** Preço de cada unidade acima da cota, em reais. */
+  excedente: number;
+  /**
+   * Pode ser interrompido quando estoura o teto?
+   *
+   * `false` para a nota fiscal, e isso não é generosidade: sem emitir nota a
+   * clínica não vende legalmente. Ela não culparia o próprio descuido, ela
+   * culparia o VetHub — com razão, porque o custo de uma nota é de centavos e
+   * travar a operação inteira por causa disso seria desproporcional.
+   */
+  podeParar: boolean;
+}
+
+/**
+ * Custo real por unidade, para não precificar no escuro (reais, 04/08/2026).
+ *
+ *   nota      R$ 0,10   Focus NFe, em pacote de volume (docs/fiscal.md)
+ *   mensagem  R$ 0,0350 utility, tabela oficial da Meta em BRL
+ *             R$ 0,3217 marketing — 9× mais cara, é ela que explode
+ *   consulta  R$ 0,26 a R$ 1,30, dominado pela transcrição, não pelo texto
+ *
+ * O excedente cobrado abaixo fica acima disso de propósito: ele paga também
+ * o suporte, que no fiscal é o campeão de chamado do setor.
+ */
+export const COTAS: Partial<Record<Recurso, Partial<Record<PlanoConta, Cota>>>> = {
+  fiscal: {
+    profissional: { incluso: 200, unidade: "notas", excedente: 0.25, podeParar: false },
+    completo: { incluso: 800, unidade: "notas", excedente: 0.25, podeParar: false },
+  },
+  whatsapp: {
+    profissional: { incluso: 500, unidade: "mensagens", excedente: 0.12, podeParar: true },
+    completo: { incluso: 2000, unidade: "mensagens", excedente: 0.12, podeParar: true },
+  },
+  ia: {
+    completo: { incluso: 150, unidade: "consultas gravadas", excedente: 1.9, podeParar: true },
+  },
+};
+
+/**
+ * Quanto de excedente uma conta pode acumular antes de precisar autorizar.
+ *
+ * 30% do valor do plano. Abaixo disso o consumo entra na fatura e nada é
+ * interrompido; acima, a clínica confirma de novo ou deposita saldo.
+ *
+ * Existe para tampar o buraco do "gastou e não pagou" sem criar o problema
+ * pior, que é o sistema parar no meio do mês. O cartão da assinatura já está
+ * em arquivo: cobrar R$ 18 de excedente nele tem o mesmo risco de calote que
+ * cobrar a mensalidade, não é um risco novo. O que precisa de tampa é o
+ * gasto GRANDE e repentino, e é esse o que o teto pega.
+ */
+export function tetoDeExcedente(plano: PlanoConta, ciclo: Ciclo = "mensal"): number {
+  const preco = DEFINICAO[plano].preco;
+  if (!preco) return 0;
+  return Math.round(preco[ciclo] * 0.3);
+}
+
+/**
+ * Disparo em massa é a única coisa que exige saldo depositado antes.
+ *
+ * Uma campanha de marketing para 5.000 tutores custa R$ 1.608 em um clique —
+ * cinco vezes a mensalidade do Profissional. Nenhum teto mensal protege
+ * disso, porque o gasto acontece de uma vez. Aqui o pré-pago é o desenho
+ * certo: sem saldo, sem campanha, e o risco fica com quem decidiu disparar.
+ *
+ * Fora daí, saldo é ruim: crédito que expira é contestável no CDC, e crédito
+ * depositado é passivo no caixa, não receita. Só se usa onde ganha.
+ */
+export const EXIGE_SALDO_PREPAGO = ["whatsapp_marketing"] as const;
+
+/** A cota deste recurso neste plano, se houver. */
+export function cotaDe(plano: string | null | undefined, recurso: Recurso): Cota | null {
+  return COTAS[recurso]?.[(plano ?? "trial") as PlanoConta] ?? null;
 }
 
 /** "R$ 1.234" — preço sem centavos, que é como todos os planos são cotados. */

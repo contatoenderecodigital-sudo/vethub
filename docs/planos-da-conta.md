@@ -26,13 +26,13 @@ consulta, que é exatamente o contrário do que queremos.
 | **1 mês** | R$ 189 | R$ 419 | R$ 879 |
 | Usuários | 3 | 8 | sem limite |
 | Internação | — | ✓ | ✓ |
-| Nota fiscal | — | ✓ | ✓ |
+| Nota fiscal | — | 200 notas/mês | 800 notas/mês |
 | Comissões | — | ✓ | ✓ |
 | Planos e assinaturas | — | ✓ | ✓ |
 | Relatórios completos | — | ✓ | ✓ |
+| WhatsApp | — | 500 msg/mês | 2.000 msg/mês |
 | Várias unidades | — | — | ✓ |
-| WhatsApp | — | — | ✓ |
-| Inteligência artificial | — | — | ✓ |
+| Inteligência artificial | — | — | 150 consultas/mês |
 
 Agenda, prontuário, receituário, banho e tosa, tutores, pets, estoque,
 compras, PDV e financeiro estão em **todos**. Um sistema de gestão sem isso
@@ -122,8 +122,85 @@ seria estranho cobrá-la enquanto se anuncia o contrário.
 
 **Completo, R$ 699 ilimitado.** SimplesVet Ilimitado com internação e fiscal
 dá R$ 1.268; ficamos 45% abaixo com ticket alto e saudável. Ele guarda o que
-é diferença real de porte (várias unidades) e o que tem custo variável de
-verdade — IA e WhatsApp saem em dólar, por consulta e por mensagem.
+é diferença real de porte — usuários sem teto e várias unidades — mais a IA,
+cujo custo é por consulta gravada.
+
+**O WhatsApp está no Profissional, não só no Completo.** Lembrete de vacina e
+confirmação de horário saindo sozinhos é a razão pela qual a clínica pequena
+troca de sistema, e mensagem dentro da janela de 24 h não custa nada pela
+Meta. Trancar isso em R$ 699 seria esconder o melhor argumento de venda de
+quem mais precisa dele. No Completo ele aparece com cota maior, não como
+exclusividade.
+
+### O que é cobrado por uso, e como
+
+Nota fiscal, WhatsApp e IA são os únicos recursos com custo por unidade: cada
+nota emitida, cada mensagem e cada consulta gravada saem dinheiro. Os outros
+são software puro — depois de escritos, o milésimo cliente custa o mesmo que
+o primeiro.
+
+**A regra é uma só: vem incluso no plano, com cota. O excedente é exceção,
+não é o modelo.** Fatura surpresa é o tema nº 1 de reclamação do setor, e um
+sistema mais barato que assusta na fatura é cancelado no segundo mês.
+
+| | Custo real por unidade | Profissional | Completo | Excedente |
+| --- | --- | --- | --- | --- |
+| Nota fiscal | R$ 0,10 (Focus NFe em volume) | 200 notas | 800 notas | R$ 0,25 |
+| WhatsApp | R$ 0,035 (utility, tabela Meta) | 500 mensagens | 2.000 mensagens | R$ 0,12 |
+| IA | R$ 0,26 a R$ 1,30 por consulta | — | 150 consultas | R$ 1,90 |
+
+#### A unidade é sempre o que a pessoa fez
+
+Nota, mensagem, consulta. **Nunca token, nunca minuto de áudio, nunca
+requisição.** Token é como nós pagamos a OpenAI, não é como a clínica paga a
+gente — converter é trabalho nosso. Uma fatura que diz "1,4 milhão de tokens"
+vira ligação para o suporte.
+
+#### A nota fiscal nunca para
+
+É a única exceção do sistema (`Cota.podeParar = false`). Sem emitir nota, a
+clínica não vende legalmente. Ela não culparia o próprio descuido — culparia
+o VetHub, e com razão: a nota custa centavos, e travar a operação inteira por
+causa disso seria desproporcional. Emite, cobra depois.
+
+#### O teto de excedente, e por que ele basta
+
+Cada conta acumula excedente até **30% do valor do plano**. Abaixo disso,
+entra na fatura e nada é interrompido; acima, a clínica autoriza de novo ou
+deposita saldo.
+
+O medo natural é "o cliente gasta e não paga". Mas **o cartão da assinatura
+já está em arquivo**: cobrar R$ 18 de excedente nele tem exatamente o mesmo
+risco de calote que cobrar a mensalidade — não é um risco novo. O que precisa
+de tampa é o gasto grande e repentino, e é isso que o teto pega.
+
+#### Saldo pré-pago: só para disparo em massa
+
+Uma campanha de marketing para 5.000 tutores custa **R$ 1.608 em um clique**
+(marketing sai a R$ 0,3217 por mensagem, 9× a de utilidade). Nenhum teto
+mensal protege disso, porque o gasto acontece de uma vez. Ali o pré-pago é o
+desenho certo: sem saldo, sem campanha, e o risco fica com quem disparou.
+
+Fora daí, saldo é ruim, por duas razões que precisam estar resolvidas antes
+da primeira linha de código:
+
+- **Crédito não pode expirar.** Validade em crédito pago é contestável no CDC
+  e vira reclamação. Ele fica como passivo até ser usado ou devolvido.
+- **Crédito depositado não é receita.** R$ 500 de saldo é obrigação, não
+  faturamento. Misturar os dois no fluxo de caixa é como quebra SaaS pequeno.
+
+#### O medidor fica em um lugar só
+
+Na `/assinatura`, não espalhado por aba:
+
+```
+Notas fiscais    ▓▓▓▓▓▓░░░░   118 de 200 emitidas este mês
+WhatsApp         ▓▓▓░░░░░░░   412 de 500 mensagens
+IA               ▓▓▓▓▓▓▓▓░░   47 de 150 consultas gravadas
+```
+
+Ver o consumo antes da fatura é o que evita a ligação de reclamação. Perto do
+fim, avisa. **Nunca corta** — cortar no dia 20 é o que faz cancelar.
 
 ### Condições
 

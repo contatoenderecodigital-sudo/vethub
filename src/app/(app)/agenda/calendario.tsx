@@ -152,7 +152,7 @@ export function FiltroVeterinario({
         name="vet"
         defaultValue={vet ?? ""}
         aria-label="Filtrar por veterinário"
-        className="h-8 w-auto max-w-56 min-w-0 text-sm max-sm:min-h-11"
+        className="h-8 w-auto max-w-56 min-w-0 text-sm max-lg:min-h-11"
       >
         <option value="">Todos os veterinários</option>
         {veterinarios.map((v) => (
@@ -165,7 +165,7 @@ export function FiltroVeterinario({
         type="submit"
         variante="secondary"
         tamanho="sm"
-        className="max-sm:min-h-11"
+        className="max-lg:min-h-11"
       >
         <SlidersHorizontal className="size-4" />
         Filtrar

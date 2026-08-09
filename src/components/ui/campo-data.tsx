@@ -190,7 +190,7 @@ export function CampoData({
               definir("");
               setTexto("");
             }}
-            className="flex size-6 shrink-0 cursor-pointer items-center justify-center rounded text-white/75 hover:bg-white/20 hover:text-white"
+            className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded text-white/75 hover:bg-white/20 hover:text-white lg:size-6"
           >
             <X className="size-3.5" />
           </button>
@@ -202,7 +202,7 @@ export function CampoData({
               type="button"
               disabled={disabled}
               aria-label="Abrir calendário"
-              className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded text-white/70 hover:bg-white/20 hover:text-white focus-visible:outline-2 focus-visible:outline-white/40 sm:size-8"
+              className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded text-white/70 hover:bg-white/20 hover:text-white focus-visible:outline-2 focus-visible:outline-white/40 lg:size-8"
             >
               <CalendarDays className="size-4" strokeWidth={1.8} aria-hidden />
             </button>

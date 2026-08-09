@@ -17,12 +17,16 @@ export default function PublicoLayout({
     <div className="flex min-h-dvh flex-col">
       <header className="glass-marca sticky top-0 z-40">
         <div className="mx-auto flex w-full max-w-3xl items-center justify-between px-4 py-4 sm:px-6">
-          <Link href="/" aria-label="Página inicial do VetHub">
+          <Link
+            href="/"
+            aria-label="Página inicial do VetHub"
+            className="flex min-h-11 items-center"
+          >
             <Wordmark sobre="escuro" className="text-2xl" />
           </Link>
           <Link
             href="/login"
-            className="rounded-lg px-3 py-1.5 text-sm font-medium text-white hover:bg-white/10"
+            className="flex min-h-11 items-center rounded-lg px-3 text-sm font-medium text-white hover:bg-white/10"
           >
             Entrar
           </Link>

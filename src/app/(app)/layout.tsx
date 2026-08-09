@@ -84,7 +84,7 @@ export default async function AppLayout({
                 type="submit"
                 aria-label="Sair"
                 title="Sair"
-                className="flex size-11 cursor-pointer items-center justify-center rounded-lg bg-white/15 text-white transition-colors hover:bg-white/25 sm:size-10"
+                className="flex size-11 cursor-pointer items-center justify-center rounded-lg bg-white/15 text-white transition-colors hover:bg-white/25 lg:size-10"
               >
                 <LogOut className="size-4" />
               </button>

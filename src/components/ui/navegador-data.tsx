@@ -72,7 +72,7 @@ export function NavegadorData({
         tamanho="sm"
         aria-label={passo === "mes" ? "Mês anterior" : passo === "semana" ? "Semana anterior" : "Dia anterior"}
         onClick={() => irPara(deslocar(-1))}
-        className="shrink-0 max-sm:min-h-11 max-sm:min-w-11"
+        className="shrink-0 max-lg:min-h-11 max-lg:min-w-11"
       >
         <ChevronLeft className="size-4" />
       </Button>
@@ -89,7 +89,7 @@ export function NavegadorData({
         tamanho="sm"
         aria-label={passo === "mes" ? "Próximo mês" : passo === "semana" ? "Próxima semana" : "Próximo dia"}
         onClick={() => irPara(deslocar(1))}
-        className="shrink-0 max-sm:min-h-11 max-sm:min-w-11"
+        className="shrink-0 max-lg:min-h-11 max-lg:min-w-11"
       >
         <ChevronRight className="size-4" />
       </Button>
@@ -101,7 +101,7 @@ export function NavegadorData({
           variante="secondary"
           tamanho="sm"
           onClick={() => irPara(hoje)}
-          className="shrink-0 max-sm:min-h-11"
+          className="shrink-0 max-lg:min-h-11"
         >
           Hoje
         </Button>

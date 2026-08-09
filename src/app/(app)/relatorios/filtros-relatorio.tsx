@@ -70,7 +70,7 @@ export function FiltrosRelatorio({
                   ate: atalho.ate,
                 })}
                 aria-current={ativo ? "page" : undefined}
-                className={`inline-flex h-7 items-center rounded-full px-3 text-xs font-medium transition-colors ${
+                className={`inline-flex h-11 items-center rounded-full px-3 text-xs font-medium transition-colors lg:h-7 ${
                   ativo
                     ? "bg-white text-brand-dark shadow-sm"
                     : "border border-white/40 bg-white/15 text-ink-muted hover:bg-white/25 hover:text-white"

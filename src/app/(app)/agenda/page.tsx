@@ -145,7 +145,7 @@ export default async function AgendaPage({
             name="vet"
             defaultValue={vet ?? ""}
             aria-label="Filtrar por veterinário"
-            className="h-8 w-auto min-w-0 max-w-56 text-sm max-sm:min-h-11 max-sm:max-w-none max-sm:flex-1"
+            className="h-8 w-auto min-w-0 max-w-56 text-sm max-lg:min-h-11 max-sm:max-w-none max-sm:flex-1"
           >
             <option value="">Todos os veterinários</option>
             {(veterinarios ?? []).map((v) => (
@@ -158,7 +158,7 @@ export default async function AgendaPage({
             type="submit"
             variante="secondary"
             tamanho="sm"
-            className="max-sm:min-h-11 max-sm:shrink-0"
+            className="max-lg:min-h-11 max-sm:shrink-0"
           >
             <SlidersHorizontal className="size-4" />
             Filtrar
@@ -221,7 +221,7 @@ export default async function AgendaPage({
                 {a.status === "agendado" && (
                   <div className="flex flex-wrap items-center gap-2">
                     <form action={atualizarStatus.bind(null, a.id, "check_in", data)}>
-                      <Button tamanho="sm" className="max-sm:min-h-11">
+                      <Button tamanho="sm" className="max-lg:min-h-11">
                         <LogIn className="size-4" />
                         Check-in
                       </Button>
@@ -231,7 +231,7 @@ export default async function AgendaPage({
                         variante="ghost"
                         tamanho="sm"
                         mensagem="Cancelar este agendamento?"
-                        className="max-sm:min-h-11"
+                        className="max-lg:min-h-11"
                       >
                         <X className="size-4" />
                         Cancelar
@@ -245,13 +245,13 @@ export default async function AgendaPage({
                     <ButtonLink
                       href={`/consultas/nova?agendamento=${a.id}&pet=${a.pet_id}`}
                       tamanho="sm"
-                      className="max-sm:min-h-11"
+                      className="max-lg:min-h-11"
                     >
                       <Stethoscope className="size-4" />
                       Iniciar atendimento
                     </ButtonLink>
                     <form action={atualizarStatus.bind(null, a.id, "atendido", data)}>
-                      <Button variante="secondary" tamanho="sm" className="max-sm:min-h-11">
+                      <Button variante="secondary" tamanho="sm" className="max-lg:min-h-11">
                         <Check className="size-4" />
                         Marcar atendido
                       </Button>
@@ -261,7 +261,7 @@ export default async function AgendaPage({
 
                 {a.status === "atendido" && (
                   <form action={atualizarStatus.bind(null, a.id, "check_out", data)}>
-                    <Button tamanho="sm" className="max-sm:min-h-11">
+                    <Button tamanho="sm" className="max-lg:min-h-11">
                       <LogOut className="size-4" />
                       Check-out
                     </Button>

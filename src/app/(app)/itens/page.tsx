@@ -109,7 +109,7 @@ export default async function ItensPage({
               key={aba.rotulo}
               href={href}
               aria-current={ativa ? "page" : undefined}
-              className={`inline-flex h-8 items-center rounded-full px-3.5 text-sm font-medium transition-colors ${
+              className={`inline-flex h-11 items-center rounded-full px-3.5 text-sm font-medium transition-colors lg:h-8 ${
                 ativa
                   ? "bg-white text-brand-dark shadow-sm"
                   : "border border-white/40 bg-white/15 text-ink-muted backdrop-blur-md hover:bg-white/25 hover:text-ink"

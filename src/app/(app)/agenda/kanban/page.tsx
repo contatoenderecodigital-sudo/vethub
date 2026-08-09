@@ -156,7 +156,7 @@ export default async function AgendaKanbanPage({
             name="vet"
             defaultValue={vet ?? ""}
             aria-label="Filtrar por veterinário"
-            className="h-8 w-auto min-w-0 max-w-56 text-sm max-sm:min-h-11"
+            className="h-8 w-auto min-w-0 max-w-56 text-sm max-lg:min-h-11"
           >
             <option value="">Todos os veterinários</option>
             {(veterinarios ?? []).map((v) => (
@@ -169,7 +169,7 @@ export default async function AgendaKanbanPage({
             type="submit"
             variante="secondary"
             tamanho="sm"
-            className="max-sm:min-h-11"
+            className="max-lg:min-h-11"
           >
             <SlidersHorizontal className="size-4" />
             Filtrar

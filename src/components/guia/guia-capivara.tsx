@@ -57,6 +57,15 @@ interface Holofote {
 const FOLGA = 8;
 
 const CHAVE_AUTOMATICO = "vethub:guia:automatico";
+
+/**
+ * Onde a capivara NÃO entra sozinha.
+ *
+ * Em tela de venda ela atrapalha em vez de ajudar: o balão cobre um dos
+ * planos, e justamente na hora em que a pessoa está comparando preço. O
+ * botão "?" continua ali para quem quiser chamar.
+ */
+const SEM_ABERTURA_AUTOMATICA = ["/assinatura"];
 const chaveVista = (rota: string) => `vethub:guia:visto:${rota}`;
 
 function leu(chave: string): boolean {
@@ -86,6 +95,7 @@ export function GuiaCapivara() {
 }
 
 function Guia({ chave, passos }: { chave: string; passos: Passo[] }) {
+  const pathname = usePathname();
   const [aberto, setAberto] = useState(false);
   const [indice, setIndice] = useState(0);
   const [holofote, setHolofote] = useState<Holofote | null>(null);
@@ -131,6 +141,7 @@ function Guia({ chave, passos }: { chave: string; passos: Passo[] }) {
   // desligar o automático só vê o guia clicando no "?". O respiro de 700ms
   // deixa a página assentar antes de a capivara entrar em cena.
   useEffect(() => {
+    if (SEM_ABERTURA_AUTOMATICA.some((r) => pathname.startsWith(r))) return;
     if (leu(chaveVista(chave))) return;
 
     const relogio = setTimeout(() => {
@@ -139,7 +150,7 @@ function Guia({ chave, passos }: { chave: string; passos: Passo[] }) {
     }, 700);
 
     return () => clearTimeout(relogio);
-  }, [chave]);
+  }, [chave, pathname]);
 
   // Leva o alvo para o meio da tela quando o passo muda.
   useEffect(() => {

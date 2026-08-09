@@ -29,6 +29,7 @@ import {
 import { PageHeader } from "@/components/ui/page-header";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { IconeWhatsapp } from "@/components/icone-whatsapp";
 import { Comparacao } from "./comparacao";
 
 export const metadata = { title: "Assinatura" };
@@ -88,14 +89,26 @@ const EM_TODOS = [
   "PDV e financeiro",
 ];
 
+/** WhatsApp de vendas do VetHub, no formato que o wa.me exige (55 + DDD). */
+const WHATSAPP_VENDAS = "5549999533072";
+
 /**
  * Para onde vai quem clica em "Quero este plano".
  *
- * Enquanto não existe pagamento no app, contratar é conversa. TROQUE este
- * endereço pelo canal real de vendas — e, quando o checkout existir, pela
- * rota dele.
+ * Enquanto não existe checkout, contratar é conversa — e a conversa começa
+ * com a mensagem PRONTA, dizendo qual plano e qual ciclo. Sem isso a pessoa
+ * chega no WhatsApp com a tela em branco, tem que explicar tudo de novo, e é
+ * exatamente aí que ela desiste.
+ *
+ * Quando o pagamento existir, este link vira a rota do checkout.
  */
-const COMO_CONTRATAR = "/configuracoes/clinica";
+function linkDeContratacao(plano: PlanoConta, ciclo: Ciclo) {
+  const def = DEFINICAO[plano];
+  const texto =
+    `Olá! Quero contratar o plano ${def.nome} do VetHub ` +
+    `(${SOBRE_CICLO[ciclo].nome}${def.preco ? `, ${reais(def.preco[ciclo])}/mês` : ""}).`;
+  return `https://wa.me/${WHATSAPP_VENDAS}?text=${encodeURIComponent(texto)}`;
+}
 
 const PADRAO: Ciclo = "anual";
 
@@ -404,16 +417,19 @@ export default async function AssinaturaPage({
                     Seu plano atual
                   </span>
                 ) : (
-                  <Link
-                    href={COMO_CONTRATAR}
-                    className={`flex min-h-11 w-full items-center justify-center rounded-lg px-4 text-sm font-semibold transition-colors ${
+                  <a
+                    href={linkDeContratacao(id, ciclo)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`flex min-h-11 w-full items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold transition-colors ${
                       ehDestaque
                         ? "bg-white text-brand-dark shadow-lg shadow-black/10 hover:bg-white/90"
                         : "border border-white/40 bg-white/15 text-ink backdrop-blur-md hover:bg-white/25"
                     }`}
                   >
+                    <IconeWhatsapp className="size-4 shrink-0" aria-hidden />
                     Quero o {p.nome}
-                  </Link>
+                  </a>
                 )}
               </div>
             </div>

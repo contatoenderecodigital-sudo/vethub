@@ -362,6 +362,33 @@ async function main() {
     );
 
     // ---------------------------------------------------------------
+    // 5b. O botão de contratar leva a algum lugar
+    // ---------------------------------------------------------------
+    // Uma tela de planos sem para onde clicar é a versão cara de não ter
+    // tela nenhuma: a pessoa se convence e vai embora.
+    await irPara(pagina, "/assinatura?ciclo=anual");
+    const contratar = await pagina.evaluate(() =>
+      [...document.querySelectorAll('main a[href*="wa.me"]')].map((a) => a.href)
+    );
+    registro(
+      "cada plano tem botão de contratar",
+      contratar.length >= 2 && contratar.every((h) => h.includes("text=")),
+      `${contratar.length} botões, com mensagem pronta`
+    );
+
+    // O guia da capivara cobria justamente o cartão do plano mais caro.
+    await pagina.waitForTimeout(1500);
+    const guiaAberto = await pagina
+      .locator('[role="dialog"], [aria-label*="Bento"]')
+      .count()
+      .catch(() => 0);
+    registro(
+      "o guia não abre sozinho na tela de venda",
+      guiaAberto === 0,
+      guiaAberto ? `${guiaAberto} painel(éis) aberto(s)` : ""
+    );
+
+    // ---------------------------------------------------------------
     // 6. O teto de usuários
     // ---------------------------------------------------------------
     // O Essencial permite 3. A clínica nasce com 1 (o admin), então o

@@ -20,6 +20,7 @@ import {
 import { PageHeader } from "@/components/ui/page-header";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardTitulo } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { MenuAcoes } from "@/components/ui/menu-acoes";
 import { IconeEspecie } from "@/components/icone-especie";
@@ -36,6 +37,7 @@ interface ReceitaDetalhe {
   data: string;
   orientacoes: string | null;
   retorno_em: string | null;
+  entregue_em: string | null;
   pet: {
     id: string;
     nome: string;
@@ -60,7 +62,7 @@ export default async function ReceitaPage({
   const { data: receita } = await supabase
     .from("receita")
     .select(
-      "id, pet_id, consulta_id, tipo, data, orientacoes, retorno_em, pet:pet_id (id, nome, especie, raca, tutor:tutor_id (id, nome)), veterinario:veterinario_id (id, nome)"
+      "id, pet_id, consulta_id, tipo, data, orientacoes, retorno_em, entregue_em, pet:pet_id (id, nome, especie, raca, tutor:tutor_id (id, nome)), veterinario:veterinario_id (id, nome)"
     )
     .eq("id", id)
     .single<ReceitaDetalhe>();
@@ -126,6 +128,21 @@ export default async function ReceitaPage({
       <div className="grid gap-4 lg:grid-cols-3">
         <Card className="self-start lg:col-span-1">
           <CardTitulo>Receita</CardTitulo>
+
+          {/* Fecha o ciclo com o balcão: sem isto o veterinário não tem
+              como saber se o papel chegou na mão do tutor, e acaba
+              perguntando à recepção — que é a conversa que este recurso
+              veio evitar. */}
+          <p className="mb-3">
+            {receita.entregue_em ? (
+              <Badge tom="success">
+                Entregue ao tutor em{" "}
+                {new Date(receita.entregue_em).toLocaleDateString("pt-BR")}
+              </Badge>
+            ) : (
+              <Badge tom="pending">Aguardando a recepção entregar</Badge>
+            )}
+          </p>
           <div className="flex items-center gap-3">
             <IconeEspecie especie={pet?.especie} tamanho="md" />
             <div className="min-w-0">

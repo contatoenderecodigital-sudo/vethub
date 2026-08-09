@@ -241,7 +241,16 @@ function destinoDoItem(item: Item, bloqueado: boolean) {
 }
 
 /** Navegação lateral (desktop), com submenus expansíveis. */
-export function NavLateral({ ehAdmin, plano }: { ehAdmin: boolean; plano: string }) {
+export function NavLateral({
+  ehAdmin,
+  plano,
+  pendencias = 0,
+}: {
+  ehAdmin: boolean;
+  plano: string;
+  /** Quantos itens esperam a recepção. Zero não mostra nada. */
+  pendencias?: number;
+}) {
   const pathname = usePathname();
   const visiveis = GRUPOS.filter((g) => !g.somenteAdmin || ehAdmin);
 
@@ -294,7 +303,12 @@ export function NavLateral({ ehAdmin, plano }: { ehAdmin: boolean; plano: string
           className={`size-[18px] shrink-0 ${estaAtivo(pathname, BALCAO.href) ? "text-brand-mint" : ""}`}
           strokeWidth={estaAtivo(pathname, BALCAO.href) ? 2.2 : 1.8}
         />
-        {BALCAO.rotulo}
+        <span className="flex-1 text-left">{BALCAO.rotulo}</span>
+        {pendencias > 0 && (
+          <span className="min-w-5 rounded-full bg-white px-1.5 text-center text-xs font-bold text-brand-dark">
+            {pendencias > 99 ? "99+" : pendencias}
+          </span>
+        )}
       </Link>
 
       {visiveis.map((grupo) => {
@@ -392,7 +406,15 @@ const ITENS_MOBILE: Item[] = [
  * de baixo para cima com TODAS as seções do menu lateral. Sem ele o celular
  * não alcançaria Itens, Financeiro, Relatórios e Configurações.
  */
-export function NavInferior({ ehAdmin, plano }: { ehAdmin: boolean; plano: string }) {
+export function NavInferior({
+  ehAdmin,
+  plano,
+  pendencias = 0,
+}: {
+  ehAdmin: boolean;
+  plano: string;
+  pendencias?: number;
+}) {
   const pathname = usePathname();
   const [aberto, setAberto] = useState(false);
   const visiveis = GRUPOS.filter((g) => !g.somenteAdmin || ehAdmin);
@@ -477,7 +499,12 @@ export function NavInferior({ ehAdmin, plano }: { ehAdmin: boolean; plano: strin
               }`}
             >
               <BALCAO.icone className="size-[18px] shrink-0" strokeWidth={1.8} />
-              <span className="min-w-0 truncate">{BALCAO.rotulo}</span>
+              <span className="min-w-0 flex-1 truncate">{BALCAO.rotulo}</span>
+              {pendencias > 0 && (
+                <span className="min-w-5 shrink-0 rounded-full bg-white px-1.5 text-center text-xs font-bold text-brand-dark">
+                  {pendencias > 99 ? "99+" : pendencias}
+                </span>
+              )}
             </Link>
 
             {/* Uma linha fina separa os grupos. Antes só o espaço em branco

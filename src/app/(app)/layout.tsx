@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { getSessao } from "@/lib/auth";
+import { contarBalcao } from "@/lib/balcao";
 import { createClient } from "@/lib/supabase/server";
 import { Wordmark } from "@/components/wordmark";
 import { NavInferior, NavLateral } from "@/components/nav-links";
@@ -29,11 +30,12 @@ export default async function AppLayout({
 }) {
   const { supabase, usuario, unidade, unidades, conta } = await getSessao();
 
-  const { data: clinica } = await supabase
-    .from("clinica")
-    .select("nome")
-    .eq("id", usuario.clinica_id)
-    .single();
+  // O número do balcão vem junto da clínica, na mesma espera: sem ele no
+  // menu ninguém abre a tela, e uma fila que ninguém abre não é uma fila.
+  const [{ data: clinica }, balcao] = await Promise.all([
+    supabase.from("clinica").select("nome").eq("id", usuario.clinica_id).single(),
+    contarBalcao(supabase),
+  ]);
 
   async function sair() {
     "use server";
@@ -90,7 +92,11 @@ export default async function AppLayout({
       <div className="flex flex-1">
         {/* Navegação lateral (desktop): painel de vidro flutuante */}
         <aside data-guia="menu" className="glass sticky top-[4.25rem] ml-3 mt-3 hidden h-[calc(100dvh-4.5rem)] w-60 shrink-0 flex-col justify-between self-start overflow-y-auto rounded-2xl md:flex 2xl:w-64">
-          <NavLateral ehAdmin={usuario.papel === "admin"} plano={conta.plano} />
+          <NavLateral
+            ehAdmin={usuario.papel === "admin"}
+            plano={conta.plano}
+            pendencias={balcao.total}
+          />
 
           {/* Bloco do usuário */}
           <div className="border-t border-white/20 p-3">
@@ -129,7 +135,11 @@ export default async function AppLayout({
       </div>
 
       {/* Navegação inferior (mobile) */}
-      <NavInferior ehAdmin={usuario.papel === "admin"} plano={conta.plano} />
+      <NavInferior
+        ehAdmin={usuario.papel === "admin"}
+        plano={conta.plano}
+        pendencias={balcao.total}
+      />
 
       {/* O Bento: o "?" do canto que explica a página */}
       <GuiaCapivara />

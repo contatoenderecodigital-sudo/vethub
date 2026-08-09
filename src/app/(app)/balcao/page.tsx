@@ -1,11 +1,13 @@
 import Link from "next/link";
 import {
+  BellRing,
   CalendarPlus,
   Check,
   ClipboardList,
   FileText,
   FlaskConical,
   Printer,
+  Wallet,
 } from "lucide-react";
 import { getSessao } from "@/lib/auth";
 import { formatBRL, formatDataISO, formatTelefone, hojeISO } from "@/lib/format";
@@ -14,6 +16,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { EmptyState } from "@/components/ui/empty-state";
+import { desdeQuando, JANELA_DIAS } from "@/lib/balcao";
 import { entregarExame, entregarOrcamento, entregarReceita } from "./actions";
 
 export const metadata = { title: "Balcão" };
@@ -34,9 +37,6 @@ export const metadata = { title: "Balcão" };
  * primeira vez que alguém edita o documento. O único estado que existe aqui
  * é "já entreguei", que é justamente o que não dá para adivinhar.
  */
-
-/** Até quantos dias atrás a fila olha. Mais que isso é arquivo, não pendência. */
-const JANELA_DIAS = 7;
 
 interface ReceitaPendente {
   id: string;
@@ -63,6 +63,21 @@ interface ExamePendente {
   veterinario: { nome: string } | null;
 }
 
+interface EsperandoLinha {
+  id: string;
+  data_hora: string;
+  tipo: string;
+  pet: { id: string; nome: string; tutor: { nome: string; telefone: string | null } | null } | null;
+  veterinario: { nome: string } | null;
+}
+
+interface ConsultaSemCobranca {
+  id: string;
+  data: string;
+  pet: { id: string; nome: string; tutor: { id: string; nome: string; telefone: string | null } | null } | null;
+  veterinario: { nome: string } | null;
+}
+
 interface RetornoPendente {
   id: string;
   retorno_em: string;
@@ -80,9 +95,12 @@ function Quem({
 }) {
   return (
     <p className="text-sm text-ink-muted">
-      {pet ?? "-"}
-      {tutor && ` · ${tutor}`}
-      {telefone && ` · ${formatTelefone(telefone)}`}
+      {/* Sem pet, começa pelo tutor: o traço de "campo vazio" só faz sentido
+          quando o dado deveria estar ali. Em "Esperando no balcão" o nome do
+          pet já está na linha de cima, e o traço aparecia solto. */}
+      {[pet, tutor, telefone ? formatTelefone(telefone) : null]
+        .filter(Boolean)
+        .join(" · ") || "-"}
     </p>
   );
 }
@@ -90,12 +108,18 @@ function Quem({
 export default async function BalcaoPage() {
   const { supabase } = await getSessao();
 
-  const desde = new Date();
-  desde.setDate(desde.getDate() - JANELA_DIAS);
-  const desdeISO = desde.toISOString().slice(0, 10);
+  const desdeISO = desdeQuando();
+  const hoje = hojeISO();
 
-  const [{ data: receitas }, { data: orcamentos }, { data: exames }, { data: retornos }] =
-    await Promise.all([
+  const [
+    { data: receitas },
+    { data: orcamentos },
+    { data: exames },
+    { data: retornos },
+    { data: esperando },
+    { data: consultas },
+    { data: vendas },
+  ] = await Promise.all([
       supabase
         .from("receita")
         .select(
@@ -132,12 +156,46 @@ export default async function BalcaoPage() {
         .order("retorno_em")
         .limit(15)
         .returns<RetornoPendente[]>(),
+      // O veterinário liberou e o tutor está indo para o balcão AGORA. Vem
+      // no topo: é a única linha da tela com alguém em pé esperando.
+      supabase
+        .from("agendamento")
+        .select(
+          "id, data_hora, tipo, pet:pet_id (id, nome, tutor:tutor_id (nome, telefone)), veterinario:veterinario_id (nome)"
+        )
+        .eq("status", "pronto")
+        .gte("data_hora", `${hoje}T00:00:00`)
+        .lte("data_hora", `${hoje}T23:59:59`)
+        .order("data_hora")
+        .returns<EsperandoLinha[]>(),
+      supabase
+        .from("consulta")
+        .select(
+          "id, data, pet:pet_id (id, nome, tutor:tutor_id (id, nome, telefone)), veterinario:veterinario_id (nome)"
+        )
+        .gte("data", `${desdeISO}T00:00:00`)
+        .order("data", { ascending: false })
+        .returns<ConsultaSemCobranca[]>(),
+      supabase
+        .from("venda")
+        .select("consulta_id")
+        .not("consulta_id", "is", null)
+        .gte("data", `${desdeISO}T00:00:00`)
+        .returns<{ consulta_id: string }[]>(),
     ]);
+
+  // Consulta atendida que ninguém cobrou é dinheiro que a clínica já
+  // entregou e vai esquecer de receber. É a razão número 1 pela qual o tutor
+  // vai ao balcão, e era justamente o que faltava nesta tela.
+  const cobradas = new Set((vendas ?? []).map((v) => v.consulta_id));
+  const aCobrar = (consultas ?? []).filter((c) => !cobradas.has(c.id));
 
   const nReceitas = receitas?.length ?? 0;
   const nOrcamentos = orcamentos?.length ?? 0;
   const nExames = exames?.length ?? 0;
-  const total = nReceitas + nOrcamentos + nExames;
+  const nEsperando = esperando?.length ?? 0;
+  const nCobrar = aCobrar.length;
+  const total = nEsperando + nReceitas + nOrcamentos + nExames + nCobrar;
 
   return (
     <div>
@@ -160,6 +218,103 @@ export default async function BalcaoPage() {
         </Card>
       ) : (
         <div className="space-y-5">
+          {/* Quem já está a caminho do balcão */}
+          {nEsperando > 0 && (
+            <Card className="ring-2 ring-brand-mint">
+              <h2 className="mb-1 flex items-center gap-2 text-base font-semibold text-ink">
+                <BellRing className="size-4 shrink-0" strokeWidth={2} aria-hidden />
+                Esperando no balcão ({nEsperando})
+              </h2>
+              <p className="mb-3 text-sm text-ink-muted">
+                O veterinário liberou. O tutor está indo até você.
+              </p>
+              <ul className="divide-y divide-edge">
+                {esperando!.map((a) => (
+                  <li
+                    key={a.id}
+                    className="flex flex-wrap items-center justify-between gap-3 py-3 first:pt-0"
+                  >
+                    <div className="min-w-0">
+                      <p className="font-medium text-ink">
+                        {new Date(a.data_hora).toLocaleTimeString("pt-BR", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}{" "}
+                        {a.pet?.nome ?? "-"}
+                      </p>
+                      <Quem
+                        tutor={a.pet?.tutor?.nome}
+                        telefone={a.pet?.tutor?.telefone}
+                      />
+                    </div>
+                    <Link
+                      href="/agenda"
+                      className="glass flex min-h-11 shrink-0 items-center gap-2 rounded-lg px-3 text-sm font-medium text-ink"
+                    >
+                      Ver na agenda
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          )}
+
+          {/* Cobrança */}
+          {nCobrar > 0 && (
+            <Card>
+              <h2 className="mb-1 flex items-center gap-2 text-base font-semibold text-ink">
+                <Wallet className="size-4 shrink-0" strokeWidth={2} aria-hidden />
+                Consultas para cobrar ({nCobrar})
+              </h2>
+              <p className="mb-3 text-sm text-ink-muted">
+                Atendimentos dos últimos {JANELA_DIAS} dias que ainda não viraram
+                venda.
+              </p>
+              <ul className="divide-y divide-edge">
+                {aCobrar.slice(0, 20).map((c) => (
+                  <li
+                    key={c.id}
+                    className="flex flex-wrap items-center justify-between gap-3 py-3 first:pt-0"
+                  >
+                    <div className="min-w-0">
+                      <p className="font-medium text-ink">
+                        {formatDataISO(c.data.slice(0, 10))}
+                        {c.veterinario?.nome && (
+                          <span className="text-ink-muted"> · {c.veterinario.nome}</span>
+                        )}
+                      </p>
+                      <Quem
+                        pet={c.pet?.nome}
+                        tutor={c.pet?.tutor?.nome}
+                        telefone={c.pet?.tutor?.telefone}
+                      />
+                    </div>
+                    <div className="flex shrink-0 flex-wrap items-center gap-2">
+                      <Link
+                        href={`/consultas/${c.id}`}
+                        className="glass flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-medium text-ink"
+                      >
+                        Ver consulta
+                      </Link>
+                      <Link
+                        href="/pdv"
+                        className="flex min-h-11 items-center gap-2 rounded-lg bg-white px-3 text-sm font-semibold text-brand-dark"
+                      >
+                        <Wallet className="size-4" strokeWidth={2} aria-hidden />
+                        Cobrar
+                      </Link>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              {nCobrar > 20 && (
+                <p className="mt-3 text-sm text-ink-muted">
+                  Mostrando 20 de {nCobrar}.
+                </p>
+              )}
+            </Card>
+          )}
+
           {/* Receitas */}
           {nReceitas > 0 && (
             <Card>

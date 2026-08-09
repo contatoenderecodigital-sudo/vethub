@@ -249,7 +249,19 @@ console.log("=".repeat(74));
 // O suporte é o custo que não aparece na margem por unidade e é quase igual
 // para todo cliente: a dúvida de quem paga R$ 149 é a mesma de quem paga
 // R$ 699. É ele que derruba a margem REAL do plano de entrada.
-const SUPORTE_POR_CLIENTE = 40;
+//
+// De onde sai o número, para não ser chute:
+//
+//   salário de suporte técnico          R$ 1.700
+//   + FGTS, 13º, férias, multa, VT/VR   R$   947
+//   = custo real do atendente           R$ 2.647   (1,56× o salário)
+//
+// Não é 2× o salário, que é a regra de bolso do Lucro Presumido: numa
+// empresa do SIMPLES a CPP de 20% já está dentro do DAS e não sai por fora.
+//
+// Dividido por ~100 clientes que um atendente dá conta, dá R$ 26. Usamos
+// R$ 30 para deixar folga de férias e pico de fim de mês.
+const SUPORTE_POR_CLIENTE = 30;
 
 const CENARIOS = {
   "pessimista  70/25/05": { essencial: 0.7, profissional: 0.25, completo: 0.05 },
@@ -271,7 +283,8 @@ function conta(mix, n) {
   return { arpu, receita, sobra, porCliente: arpu + exc - cv - SUPORTE_POR_CLIENTE };
 }
 
-console.log("Com 100 clientes, já descontando R$ 40/cliente de suporte:\n");
+console.log(`Com 100 clientes, já descontando R$ ${SUPORTE_POR_CLIENTE}/cliente de suporte:
+`);
 console.log("cenário                  ARPU   receita/mês    SOBRA/mês   p/ R$30k precisa de");
 for (const [nome, mix] of Object.entries(CENARIOS)) {
   const r = conta(mix, 100);
@@ -300,7 +313,8 @@ console.log("=".repeat(74));
 console.log("É o número mais incerto da conta inteira, e o único que ninguém");
 console.log("sabe antes de ter cliente. Vale saber onde ele começa a doer.\n");
 console.log("R$/cliente   Essencial   Profissional   Completo   sobra c/ 100 (mix base)");
-for (const s of [20, 40, 80, 120, 200]) {
+console.log("(R$ 26 = um atendente para 100 clientes · R$ 53 = para 50 · R$ 15 = para 175)");
+for (const s of [15, 26, 30, 53, 90]) {
   const m = (p) => `${(((precoMedio(p) - custoVariavel(p) - s) / precoMedio(p)) * 100).toFixed(0)}%`;
   const mixBase = { essencial: 0.45, profissional: 0.45, completo: 0.1 };
   const arpu = Object.entries(mixBase).reduce((a, [p, w]) => a + precoMedio(p) * w, 0);
@@ -316,14 +330,15 @@ for (const s of [20, 40, 80, 120, 200]) {
     m("completo").padStart(11), real(sobra).padStart(23)
   );
 }
-console.log("\nRepare: o Essencial é o primeiro a virar prejuízo. A R$ 200 de");
-console.log("suporte ele já dá negativo enquanto o Completo ainda deixa 60%.");
+console.log("\nRepare: o Essencial é sempre o mais sensível. Quanto menor o ticket,");
+console.log("mais cedo o atendimento come o plano — a R$ 90 por cliente ele cai");
+console.log("para 46% enquanto o Completo mal sente, em 73%.");
 
 console.log("\n" + "=".repeat(74));
 console.log("9. VALE BAIXAR O PREÇO DO PROFISSIONAL?");
 console.log("=".repeat(74));
 
-const SUP = 40;
+const SUP = SUPORTE_POR_CLIENTE;
 function sobraCom(precoProf, share, n = 100) {
   const orig = { ...PLANOS.profissional.preco };
   const fator = precoProf / orig.anual;

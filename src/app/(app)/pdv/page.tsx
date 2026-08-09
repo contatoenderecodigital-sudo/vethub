@@ -36,9 +36,9 @@ function nomeDe(
 export default async function PdvPage({
   searchParams,
 }: {
-  searchParams: Promise<{ erro?: string; orcamento?: string }>;
+  searchParams: Promise<{ erro?: string; orcamento?: string; consulta?: string }>;
 }) {
-  const { erro, orcamento: orcamentoId } = await searchParams;
+  const { erro, orcamento: orcamentoId, consulta: consultaId } = await searchParams;
   const { supabase, usuario, unidade } = await getSessao();
 
   // O caixa é POR UNIDADE: cada filial abre e fecha o seu, em horários
@@ -51,11 +51,19 @@ export default async function PdvPage({
     .eq("unidade_id", unidade?.id ?? "")
     .maybeSingle<CaixaAberto>();
 
-  // Venda vinda de um orçamento aprovado. Só aprovado entra: orçamento em
-  // aberto ainda pode mudar de valor, e recusado não vira venda nenhuma.
-  const orcamentoCarregado = orcamentoId
+  // Venda que já chega começada, de uma das duas origens.
+  //
+  // Do orçamento, só o APROVADO entra: em aberto ainda pode mudar de valor e
+  // recusado não vira venda nenhuma. Da consulta, entra qualquer uma, porque
+  // ali quem decide cobrar é a recepção no balcão.
+  //
+  // O orçamento ganha quando os dois vierem na mesma URL: ele traz a lista
+  // inteira de itens, a consulta traz só a consulta.
+  const inicio = orcamentoId
     ? await carregarOrcamento(supabase, orcamentoId)
-    : undefined;
+    : consultaId
+      ? await carregarConsulta(supabase, consultaId)
+      : undefined;
 
   const alerta = erro && (
     <p
@@ -176,7 +184,7 @@ export default async function PdvPage({
       {alerta}
       <AvisoCaixaAntigo abertura={caixa.abertura} />
 
-      <PdvTerminal vendedor={usuario.nome} orcamento={orcamentoCarregado} />
+      <PdvTerminal vendedor={usuario.nome} inicio={inicio} />
     </div>
   );
 }
@@ -187,6 +195,66 @@ export default async function PdvPage({
  * O item do orçamento é texto livre com valor; quando ele tem um item do
  * catálogo por trás, o vínculo vem junto para a venda dar baixa no estoque.
  */
+/**
+ * Traz a consulta no formato que o terminal entende.
+ *
+ * Preenche o tutor e já joga a consulta no carrinho. Não adivinha o resto:
+ * o que mais foi feito no atendimento está escrito em texto na conduta, e
+ * chutar item de venda a partir de prosa daria venda errada — a recepção
+ * acrescenta o que faltar, que é o trabalho dela mesmo.
+ *
+ * O que isso economiza são os dois passos mais lentos do balcão: procurar o
+ * tutor certo entre milhares e lembrar quanto custa a consulta.
+ */
+async function carregarConsulta(
+  supabase: Awaited<ReturnType<typeof getSessao>>["supabase"],
+  id: string
+) {
+  const { data: consulta } = await supabase
+    .from("consulta")
+    .select("id, pet:pet_id (nome, tutor:tutor_id (id, nome))")
+    .eq("id", id)
+    .maybeSingle<{
+      id: string;
+      pet: {
+        nome: string;
+        tutor: { id: string; nome: string } | { id: string; nome: string }[] | null;
+      } | null;
+    }>();
+
+  if (!consulta) return undefined;
+
+  const tutorBruto = Array.isArray(consulta.pet?.tutor)
+    ? consulta.pet?.tutor[0]
+    : consulta.pet?.tutor;
+
+  // A consulta em si, pelo preço da tabela da clínica. Se ela não estiver no
+  // catálogo, o carrinho começa vazio em vez de inventar um valor.
+  const { data: servico } = await supabase
+    .from("item")
+    .select("id, nome, preco_venda")
+    .eq("tipo", "servico")
+    .eq("ativo", true)
+    .ilike("nome", "consulta%")
+    .order("preco_venda", { ascending: false })
+    .limit(1)
+    .maybeSingle<{ id: string; nome: string; preco_venda: number }>();
+
+  return {
+    tutor: tutorBruto ? { id: tutorBruto.id, rotulo: tutorBruto.nome } : null,
+    itens: servico
+      ? [
+          {
+            item_id: servico.id,
+            descricao: servico.nome,
+            quantidade: 1,
+            valor_unitario: Number(servico.preco_venda),
+          },
+        ]
+      : [],
+  };
+}
+
 async function carregarOrcamento(
   supabase: Awaited<ReturnType<typeof getSessao>>["supabase"],
   id: string

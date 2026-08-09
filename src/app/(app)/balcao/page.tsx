@@ -7,16 +7,29 @@ import {
   FileText,
   FlaskConical,
   Printer,
+  Syringe,
   Wallet,
 } from "lucide-react";
 import { getSessao } from "@/lib/auth";
-import { formatBRL, formatDataISO, formatTelefone, hojeISO } from "@/lib/format";
+import {
+  formatBRL,
+  formatDataISO,
+  formatTelefone,
+  hojeISO,
+} from "@/lib/format";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { EmptyState } from "@/components/ui/empty-state";
-import { desdeQuando, JANELA_DIAS } from "@/lib/balcao";
+import { IconeWhatsapp } from "@/components/icone-whatsapp";
+import {
+  ateQuando,
+  desdeQuando,
+  DIAS_DE_VACINA,
+  JANELA_DIAS,
+} from "@/lib/balcao";
+import { AtualizaSozinho } from "./atualiza-sozinho";
 import { entregarExame, entregarOrcamento, entregarReceita } from "./actions";
 
 export const metadata = { title: "Balcão" };
@@ -42,7 +55,10 @@ interface ReceitaPendente {
   id: string;
   data: string;
   tipo: string;
-  pet: { nome: string; tutor: { nome: string; telefone: string | null } | null } | null;
+  pet: {
+    nome: string;
+    tutor: { nome: string; telefone: string | null } | null;
+  } | null;
   veterinario: { nome: string } | null;
 }
 
@@ -50,7 +66,10 @@ interface OrcamentoPendente {
   id: string;
   created_at: string;
   valor_total: number;
-  pet: { nome: string; tutor: { nome: string; telefone: string | null } | null } | null;
+  pet: {
+    nome: string;
+    tutor: { nome: string; telefone: string | null } | null;
+  } | null;
 }
 
 interface ExamePendente {
@@ -59,7 +78,10 @@ interface ExamePendente {
   status: string;
   solicitado_em: string;
   previsto_para: string | null;
-  pet: { nome: string; tutor: { nome: string; telefone: string | null } | null } | null;
+  pet: {
+    nome: string;
+    tutor: { nome: string; telefone: string | null } | null;
+  } | null;
   veterinario: { nome: string } | null;
 }
 
@@ -67,15 +89,35 @@ interface EsperandoLinha {
   id: string;
   data_hora: string;
   tipo: string;
-  pet: { id: string; nome: string; tutor: { nome: string; telefone: string | null } | null } | null;
+  pet: {
+    id: string;
+    nome: string;
+    tutor: { nome: string; telefone: string | null } | null;
+  } | null;
   veterinario: { nome: string } | null;
 }
 
 interface ConsultaSemCobranca {
   id: string;
   data: string;
-  pet: { id: string; nome: string; tutor: { id: string; nome: string; telefone: string | null } | null } | null;
+  pet: {
+    id: string;
+    nome: string;
+    tutor: { id: string; nome: string; telefone: string | null } | null;
+  } | null;
   veterinario: { nome: string } | null;
+}
+
+interface VacinaVencendo {
+  id: string;
+  nome: string;
+  tipo: string;
+  proxima_dose: string;
+  pet: {
+    id: string;
+    nome: string;
+    tutor: { nome: string; telefone: string | null } | null;
+  } | null;
 }
 
 interface RetornoPendente {
@@ -119,70 +161,82 @@ export default async function BalcaoPage() {
     { data: esperando },
     { data: consultas },
     { data: vendas },
+    { data: vacinas },
   ] = await Promise.all([
-      supabase
-        .from("receita")
-        .select(
-          "id, data, tipo, pet:pet_id (nome, tutor:tutor_id (nome, telefone)), veterinario:veterinario_id (nome)"
-        )
-        .is("entregue_em", null)
-        .gte("data", desdeISO)
-        .order("data", { ascending: false })
-        .returns<ReceitaPendente[]>(),
-      supabase
-        .from("orcamento")
-        .select(
-          "id, created_at, valor_total, pet:pet_id (nome, tutor:tutor_id (nome, telefone))"
-        )
-        .is("entregue_em", null)
-        .eq("status", "aberto")
-        .gte("created_at", `${desdeISO}T00:00:00`)
-        .order("created_at", { ascending: false })
-        .returns<OrcamentoPendente[]>(),
-      supabase
-        .from("exame")
-        .select(
-          "id, nome, status, solicitado_em, previsto_para, pet:pet_id (nome, tutor:tutor_id (nome, telefone)), veterinario:veterinario_id (nome)"
-        )
-        .in("status", ["solicitado", "pronto"])
-        .order("solicitado_em", { ascending: false })
-        .returns<ExamePendente[]>(),
-      // Retorno que o veterinário marcou na receita e ninguém agendou ainda.
-      supabase
-        .from("receita")
-        .select("id, retorno_em, pet:pet_id (id, nome, tutor:tutor_id (nome))")
-        .not("retorno_em", "is", null)
-        .gte("retorno_em", hojeISO())
-        .order("retorno_em")
-        .limit(15)
-        .returns<RetornoPendente[]>(),
-      // O veterinário liberou e o tutor está indo para o balcão AGORA. Vem
-      // no topo: é a única linha da tela com alguém em pé esperando.
-      supabase
-        .from("agendamento")
-        .select(
-          "id, data_hora, tipo, pet:pet_id (id, nome, tutor:tutor_id (nome, telefone)), veterinario:veterinario_id (nome)"
-        )
-        .eq("status", "pronto")
-        .gte("data_hora", `${hoje}T00:00:00`)
-        .lte("data_hora", `${hoje}T23:59:59`)
-        .order("data_hora")
-        .returns<EsperandoLinha[]>(),
-      supabase
-        .from("consulta")
-        .select(
-          "id, data, pet:pet_id (id, nome, tutor:tutor_id (id, nome, telefone)), veterinario:veterinario_id (nome)"
-        )
-        .gte("data", `${desdeISO}T00:00:00`)
-        .order("data", { ascending: false })
-        .returns<ConsultaSemCobranca[]>(),
-      supabase
-        .from("venda")
-        .select("consulta_id")
-        .not("consulta_id", "is", null)
-        .gte("data", `${desdeISO}T00:00:00`)
-        .returns<{ consulta_id: string }[]>(),
-    ]);
+    supabase
+      .from("receita")
+      .select(
+        "id, data, tipo, pet:pet_id (nome, tutor:tutor_id (nome, telefone)), veterinario:veterinario_id (nome)",
+      )
+      .is("entregue_em", null)
+      .gte("data", desdeISO)
+      .order("data", { ascending: false })
+      .returns<ReceitaPendente[]>(),
+    supabase
+      .from("orcamento")
+      .select(
+        "id, created_at, valor_total, pet:pet_id (nome, tutor:tutor_id (nome, telefone))",
+      )
+      .is("entregue_em", null)
+      .eq("status", "aberto")
+      .gte("created_at", `${desdeISO}T00:00:00`)
+      .order("created_at", { ascending: false })
+      .returns<OrcamentoPendente[]>(),
+    supabase
+      .from("exame")
+      .select(
+        "id, nome, status, solicitado_em, previsto_para, pet:pet_id (nome, tutor:tutor_id (nome, telefone)), veterinario:veterinario_id (nome)",
+      )
+      .in("status", ["solicitado", "pronto"])
+      .order("solicitado_em", { ascending: false })
+      .returns<ExamePendente[]>(),
+    // Retorno que o veterinário marcou na receita e ninguém agendou ainda.
+    supabase
+      .from("receita")
+      .select("id, retorno_em, pet:pet_id (id, nome, tutor:tutor_id (nome))")
+      .not("retorno_em", "is", null)
+      .gte("retorno_em", hojeISO())
+      .order("retorno_em")
+      .limit(15)
+      .returns<RetornoPendente[]>(),
+    // O veterinário liberou e o tutor está indo para o balcão AGORA. Vem
+    // no topo: é a única linha da tela com alguém em pé esperando.
+    supabase
+      .from("agendamento")
+      .select(
+        "id, data_hora, tipo, pet:pet_id (id, nome, tutor:tutor_id (nome, telefone)), veterinario:veterinario_id (nome)",
+      )
+      .eq("status", "pronto")
+      .gte("data_hora", `${hoje}T00:00:00`)
+      .lte("data_hora", `${hoje}T23:59:59`)
+      .order("data_hora")
+      .returns<EsperandoLinha[]>(),
+    supabase
+      .from("consulta")
+      .select(
+        "id, data, pet:pet_id (id, nome, tutor:tutor_id (id, nome, telefone)), veterinario:veterinario_id (nome)",
+      )
+      .gte("data", `${desdeISO}T00:00:00`)
+      .order("data", { ascending: false })
+      .returns<ConsultaSemCobranca[]>(),
+    supabase
+      .from("venda")
+      .select("consulta_id")
+      .not("consulta_id", "is", null)
+      .gte("data", `${desdeISO}T00:00:00`)
+      .returns<{ consulta_id: string }[]>(),
+    supabase
+      .from("protocolo_saude")
+      .select(
+        "id, nome, tipo, proxima_dose, pet:pet_id (id, nome, tutor:tutor_id (nome, telefone))",
+      )
+      .not("proxima_dose", "is", null)
+      .gte("proxima_dose", hoje)
+      .lte("proxima_dose", ateQuando())
+      .order("proxima_dose")
+      .limit(30)
+      .returns<VacinaVencendo[]>(),
+  ]);
 
   // Consulta atendida que ninguém cobrou é dinheiro que a clínica já
   // entregou e vai esquecer de receber. É a razão número 1 pela qual o tutor
@@ -195,10 +249,13 @@ export default async function BalcaoPage() {
   const nExames = exames?.length ?? 0;
   const nEsperando = esperando?.length ?? 0;
   const nCobrar = aCobrar.length;
-  const total = nEsperando + nReceitas + nOrcamentos + nExames + nCobrar;
+  const nVacinas = vacinas?.length ?? 0;
+  const total =
+    nEsperando + nReceitas + nOrcamentos + nExames + nCobrar + nVacinas;
 
   return (
     <div>
+      <AtualizaSozinho />
       <PageHeader
         titulo="Balcão"
         subtitulo={
@@ -222,7 +279,11 @@ export default async function BalcaoPage() {
           {nEsperando > 0 && (
             <Card className="ring-2 ring-brand-mint">
               <h2 className="mb-1 flex items-center gap-2 text-base font-semibold text-ink">
-                <BellRing className="size-4 shrink-0" strokeWidth={2} aria-hidden />
+                <BellRing
+                  className="size-4 shrink-0"
+                  strokeWidth={2}
+                  aria-hidden
+                />
                 Esperando no balcão ({nEsperando})
               </h2>
               <p className="mb-3 text-sm text-ink-muted">
@@ -263,12 +324,16 @@ export default async function BalcaoPage() {
           {nCobrar > 0 && (
             <Card>
               <h2 className="mb-1 flex items-center gap-2 text-base font-semibold text-ink">
-                <Wallet className="size-4 shrink-0" strokeWidth={2} aria-hidden />
+                <Wallet
+                  className="size-4 shrink-0"
+                  strokeWidth={2}
+                  aria-hidden
+                />
                 Consultas para cobrar ({nCobrar})
               </h2>
               <p className="mb-3 text-sm text-ink-muted">
-                Atendimentos dos últimos {JANELA_DIAS} dias que ainda não viraram
-                venda.
+                Atendimentos dos últimos {JANELA_DIAS} dias que ainda não
+                viraram venda.
               </p>
               <ul className="divide-y divide-edge">
                 {aCobrar.slice(0, 20).map((c) => (
@@ -280,7 +345,10 @@ export default async function BalcaoPage() {
                       <p className="font-medium text-ink">
                         {formatDataISO(c.data.slice(0, 10))}
                         {c.veterinario?.nome && (
-                          <span className="text-ink-muted"> · {c.veterinario.nome}</span>
+                          <span className="text-ink-muted">
+                            {" "}
+                            · {c.veterinario.nome}
+                          </span>
                         )}
                       </p>
                       <Quem
@@ -297,10 +365,14 @@ export default async function BalcaoPage() {
                         Ver consulta
                       </Link>
                       <Link
-                        href="/pdv"
+                        href={`/pdv?consulta=${c.id}`}
                         className="flex min-h-11 items-center gap-2 rounded-lg bg-white px-3 text-sm font-semibold text-brand-dark"
                       >
-                        <Wallet className="size-4" strokeWidth={2} aria-hidden />
+                        <Wallet
+                          className="size-4"
+                          strokeWidth={2}
+                          aria-hidden
+                        />
                         Cobrar
                       </Link>
                     </div>
@@ -319,7 +391,11 @@ export default async function BalcaoPage() {
           {nReceitas > 0 && (
             <Card>
               <h2 className="mb-3 flex items-center gap-2 text-base font-semibold text-ink">
-                <ClipboardList className="size-4 shrink-0" strokeWidth={2} aria-hidden />
+                <ClipboardList
+                  className="size-4 shrink-0"
+                  strokeWidth={2}
+                  aria-hidden
+                />
                 Receitas para imprimir ({nReceitas})
               </h2>
               <ul className="divide-y divide-edge">
@@ -346,11 +422,19 @@ export default async function BalcaoPage() {
                         href={`/receitas/${r.id}/imprimir`}
                         className="glass flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-medium text-ink"
                       >
-                        <Printer className="size-4" strokeWidth={1.8} aria-hidden />
+                        <Printer
+                          className="size-4"
+                          strokeWidth={1.8}
+                          aria-hidden
+                        />
                         Imprimir
                       </Link>
                       <form action={entregarReceita.bind(null, r.id)}>
-                        <SubmitButton variante="secondary" tamanho="sm" className="min-h-11">
+                        <SubmitButton
+                          variante="secondary"
+                          tamanho="sm"
+                          className="min-h-11"
+                        >
                           <Check className="size-4" />
                           Entreguei
                         </SubmitButton>
@@ -366,7 +450,11 @@ export default async function BalcaoPage() {
           {nOrcamentos > 0 && (
             <Card>
               <h2 className="mb-3 flex items-center gap-2 text-base font-semibold text-ink">
-                <FileText className="size-4 shrink-0" strokeWidth={2} aria-hidden />
+                <FileText
+                  className="size-4 shrink-0"
+                  strokeWidth={2}
+                  aria-hidden
+                />
                 Orçamentos para entregar ({nOrcamentos})
               </h2>
               <ul className="divide-y divide-edge">
@@ -394,11 +482,19 @@ export default async function BalcaoPage() {
                         href={`/orcamentos/${o.id}/imprimir`}
                         className="glass flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-medium text-ink"
                       >
-                        <Printer className="size-4" strokeWidth={1.8} aria-hidden />
+                        <Printer
+                          className="size-4"
+                          strokeWidth={1.8}
+                          aria-hidden
+                        />
                         Imprimir
                       </Link>
                       <form action={entregarOrcamento.bind(null, o.id)}>
-                        <SubmitButton variante="secondary" tamanho="sm" className="min-h-11">
+                        <SubmitButton
+                          variante="secondary"
+                          tamanho="sm"
+                          className="min-h-11"
+                        >
                           <Check className="size-4" />
                           Entreguei
                         </SubmitButton>
@@ -414,7 +510,11 @@ export default async function BalcaoPage() {
           {nExames > 0 && (
             <Card>
               <h2 className="mb-3 flex items-center gap-2 text-base font-semibold text-ink">
-                <FlaskConical className="size-4 shrink-0" strokeWidth={2} aria-hidden />
+                <FlaskConical
+                  className="size-4 shrink-0"
+                  strokeWidth={2}
+                  aria-hidden
+                />
                 Exames ({nExames})
               </h2>
               <ul className="divide-y divide-edge">
@@ -443,11 +543,19 @@ export default async function BalcaoPage() {
                         href={`/exames/${e.id}/imprimir`}
                         className="glass flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-medium text-ink"
                       >
-                        <Printer className="size-4" strokeWidth={1.8} aria-hidden />
+                        <Printer
+                          className="size-4"
+                          strokeWidth={1.8}
+                          aria-hidden
+                        />
                         Imprimir
                       </Link>
                       <form action={entregarExame.bind(null, e.id)}>
-                        <SubmitButton variante="secondary" tamanho="sm" className="min-h-11">
+                        <SubmitButton
+                          variante="secondary"
+                          tamanho="sm"
+                          className="min-h-11"
+                        >
                           <Check className="size-4" />
                           Entreguei
                         </SubmitButton>
@@ -459,16 +567,83 @@ export default async function BalcaoPage() {
             </Card>
           )}
 
+          {/* Vacinas vencendo */}
+          {nVacinas > 0 && (
+            <Card>
+              <h2 className="mb-1 flex items-center gap-2 text-base font-semibold text-ink">
+                <Syringe
+                  className="size-4 shrink-0"
+                  strokeWidth={2}
+                  aria-hidden
+                />
+                Vacinas vencendo ({nVacinas})
+              </h2>
+              <p className="mb-3 text-sm text-ink-muted">
+                Vencem nos próximos {DIAS_DE_VACINA} dias. Ligar para o tutor
+                antes de a proteção cair é o que traz o animal de volta.
+              </p>
+              <ul className="divide-y divide-edge">
+                {vacinas!.map((v) => (
+                  <li
+                    key={v.id}
+                    className="flex flex-wrap items-center justify-between gap-3 py-3 first:pt-0"
+                  >
+                    <div className="min-w-0">
+                      <p className="font-medium text-ink">
+                        {v.nome}
+                        <span className="text-ink-muted">
+                          {" "}
+                          · vence em {formatDataISO(v.proxima_dose)}
+                        </span>
+                      </p>
+                      <Quem
+                        pet={v.pet?.nome}
+                        tutor={v.pet?.tutor?.nome}
+                        telefone={v.pet?.tutor?.telefone}
+                      />
+                    </div>
+                    <div className="flex shrink-0 flex-wrap items-center gap-2">
+                      {v.pet?.tutor?.telefone && (
+                        <a
+                          href={`https://wa.me/55${v.pet.tutor.telefone.replace(/\D/g, "")}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="glass flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-medium text-ink"
+                        >
+                          <IconeWhatsapp
+                            className="size-4 shrink-0"
+                            aria-hidden
+                          />
+                          Chamar
+                        </a>
+                      )}
+                      <Link
+                        href={`/pets/${v.pet?.id ?? ""}`}
+                        className="glass flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-medium text-ink"
+                      >
+                        Ver pet
+                      </Link>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          )}
+
           {/* Retornos a agendar */}
           {(retornos?.length ?? 0) > 0 && (
             <Card>
               <h2 className="mb-3 flex items-center gap-2 text-base font-semibold text-ink">
-                <CalendarPlus className="size-4 shrink-0" strokeWidth={2} aria-hidden />
+                <CalendarPlus
+                  className="size-4 shrink-0"
+                  strokeWidth={2}
+                  aria-hidden
+                />
                 Retornos que o veterinário pediu
               </h2>
               <p className="mb-3 text-sm text-ink-muted">
-                O veterinário marcou retorno na receita. Agende antes que o tutor
-                esqueça.
+                O veterinário marcou retorno na receita. Agende antes que o
+                tutor esqueça.
               </p>
               <ul className="divide-y divide-edge">
                 {retornos!.map((r) => (
@@ -486,7 +661,11 @@ export default async function BalcaoPage() {
                       href={`/agenda/novo?pet=${r.pet?.id ?? ""}&tipo=retorno&data=${r.retorno_em}`}
                       className="glass flex min-h-11 shrink-0 items-center gap-2 rounded-lg px-3 text-sm font-medium text-ink"
                     >
-                      <CalendarPlus className="size-4" strokeWidth={1.8} aria-hidden />
+                      <CalendarPlus
+                        className="size-4"
+                        strokeWidth={1.8}
+                        aria-hidden
+                      />
                       Agendar
                     </Link>
                   </li>

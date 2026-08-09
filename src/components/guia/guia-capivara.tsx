@@ -91,11 +91,21 @@ export function GuiaCapivara() {
 
   // A `key` reinicia o guia inteiro ao trocar de página: passo volta ao
   // começo, holofote some, tudo limpo, sem um efeito para zerar estado.
-  return <Guia key={chave} chave={chave} passos={passos} />;
+  const automatico = !SEM_ABERTURA_AUTOMATICA.some((r) => pathname.startsWith(r));
+
+  return <Guia key={chave} chave={chave} passos={passos} automatico={automatico} />;
 }
 
-function Guia({ chave, passos }: { chave: string; passos: Passo[] }) {
-  const pathname = usePathname();
+function Guia({
+  chave,
+  passos,
+  automatico,
+}: {
+  chave: string;
+  passos: Passo[];
+  /** Esta rota deixa a capivara entrar sozinha? */
+  automatico: boolean;
+}) {
   const [aberto, setAberto] = useState(false);
   const [indice, setIndice] = useState(0);
   const [holofote, setHolofote] = useState<Holofote | null>(null);
@@ -141,7 +151,7 @@ function Guia({ chave, passos }: { chave: string; passos: Passo[] }) {
   // desligar o automático só vê o guia clicando no "?". O respiro de 700ms
   // deixa a página assentar antes de a capivara entrar em cena.
   useEffect(() => {
-    if (SEM_ABERTURA_AUTOMATICA.some((r) => pathname.startsWith(r))) return;
+    if (!automatico) return;
     if (leu(chaveVista(chave))) return;
 
     const relogio = setTimeout(() => {
@@ -150,7 +160,7 @@ function Guia({ chave, passos }: { chave: string; passos: Passo[] }) {
     }, 700);
 
     return () => clearTimeout(relogio);
-  }, [chave, pathname]);
+  }, [chave, automatico]);
 
   // Leva o alvo para o meio da tela quando o passo muda.
   useEffect(() => {

@@ -84,8 +84,17 @@ export async function semearAtendimento(db, ctx, aux) {
   for (const [i, p] of pets.entries()) {
     for (const [k, [tipo, nome, fab, validade]] of VACINAS.entries()) {
       if ((i + k) % 3 === 0) continue;
-      // −20 dias joga o vencimento para trás; +40 empurra para a frente.
-      const desloc = (i + k) % 5 === 0 ? -(validade + 20) : -(validade - 40 - ((i * 7 + k * 13) % 120));
+      // O vencimento precisa cair nas TRÊS faixas que a clínica enxerga:
+      // já vencida (relatório de vacinas atrasadas), vencendo nos próximos
+      // 30 dias (a fila do balcão, para a recepção ligar) e tranquila. Antes
+      // tudo caía entre 40 e 160 dias à frente, e o balcão abria sem vacina
+      // nenhuma justamente na seção criada para elas.
+      const faixa = (i + k) % 4;
+      const daquiA =
+        faixa === 0 ? -20 - ((i * 3) % 40) // já venceu
+        : faixa === 1 ? 3 + ((i * 5 + k) % 26) // vence dentro de 30 dias
+        : 60 + ((i * 7 + k * 13) % 200); // ainda longe
+      const desloc = daquiA - validade;
       protocolos.push({
         clinica_id: clinica,
         pet_id: p,

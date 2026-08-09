@@ -13,6 +13,22 @@ import { hojeISO } from "@/lib/format";
 /** Até quantos dias atrás a fila olha. Mais que isso é arquivo, não pendência. */
 export const JANELA_DIAS = 7;
 
+/**
+ * Quantos dias à frente a fila olha vacina.
+ *
+ * Trinta dias é o que dá tempo de ligar, o tutor se organizar e trazer o
+ * animal antes de a proteção cair. Sete seria tarde; noventa encheria a
+ * tela de coisa que ainda não é para agora.
+ */
+export const DIAS_DE_VACINA = 30;
+
+/** O horizonte de vacina: de hoje até daqui a trinta dias. */
+export function ateQuando(): string {
+  const d = new Date();
+  d.setDate(d.getDate() + DIAS_DE_VACINA);
+  return d.toISOString().slice(0, 10);
+}
+
 export function desdeQuando(): string {
   const d = new Date();
   d.setDate(d.getDate() - JANELA_DIAS);
@@ -25,6 +41,7 @@ export interface ContagemBalcao {
   orcamentos: number;
   exames: number;
   cobrar: number;
+  vacinas: number;
   total: number;
 }
 
@@ -36,55 +53,66 @@ export interface ContagemBalcao {
  * em qualquer lugar do sistema.
  */
 export async function contarBalcao(
-  supabase: SupabaseClient
+  supabase: SupabaseClient,
 ): Promise<ContagemBalcao> {
   const desde = desdeQuando();
   const hoje = hojeISO();
 
   const conta = (n: number | null) => n ?? 0;
 
-  const [esperando, receitas, orcamentos, exames, consultas, vendas] = await Promise.all([
-    // Quem o veterinário já liberou e está indo para o balcão agora.
-    supabase
-      .from("agendamento")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "pronto")
-      .gte("data_hora", `${hoje}T00:00:00`)
-      .lte("data_hora", `${hoje}T23:59:59`),
-    supabase
-      .from("receita")
-      .select("id", { count: "exact", head: true })
-      .is("entregue_em", null)
-      .gte("data", desde),
-    supabase
-      .from("orcamento")
-      .select("id", { count: "exact", head: true })
-      .is("entregue_em", null)
-      .eq("status", "aberto")
-      .gte("created_at", `${desde}T00:00:00`),
-    supabase
-      .from("exame")
-      .select("id", { count: "exact", head: true })
-      .in("status", ["solicitado", "pronto"]),
-    // Consultas do período, para descobrir quais ainda não viraram venda.
-    supabase
-      .from("consulta")
-      .select("id")
-      .gte("data", `${desde}T00:00:00`)
-      .returns<{ id: string }[]>(),
-    supabase
-      .from("venda")
-      .select("consulta_id")
-      .not("consulta_id", "is", null)
-      .gte("data", `${desde}T00:00:00`)
-      .returns<{ consulta_id: string }[]>(),
-  ]);
+  const [esperando, receitas, orcamentos, exames, consultas, vendas, vacinas] =
+    await Promise.all([
+      // Quem o veterinário já liberou e está indo para o balcão agora.
+      supabase
+        .from("agendamento")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "pronto")
+        .gte("data_hora", `${hoje}T00:00:00`)
+        .lte("data_hora", `${hoje}T23:59:59`),
+      supabase
+        .from("receita")
+        .select("id", { count: "exact", head: true })
+        .is("entregue_em", null)
+        .gte("data", desde),
+      supabase
+        .from("orcamento")
+        .select("id", { count: "exact", head: true })
+        .is("entregue_em", null)
+        .eq("status", "aberto")
+        .gte("created_at", `${desde}T00:00:00`),
+      supabase
+        .from("exame")
+        .select("id", { count: "exact", head: true })
+        .in("status", ["solicitado", "pronto"]),
+      // Consultas do período, para descobrir quais ainda não viraram venda.
+      supabase
+        .from("consulta")
+        .select("id")
+        .gte("data", `${desde}T00:00:00`)
+        .returns<{ id: string }[]>(),
+      supabase
+        .from("venda")
+        .select("consulta_id")
+        .not("consulta_id", "is", null)
+        .gte("data", `${desde}T00:00:00`)
+        .returns<{ consulta_id: string }[]>(),
+      // Vacina vencendo é a ligação que a recepção faz e que traz o animal
+      // de volta. O dado já existia no sistema e não era mostrado a ninguém.
+      supabase
+        .from("protocolo_saude")
+        .select("id", { count: "exact", head: true })
+        .not("proxima_dose", "is", null)
+        .gte("proxima_dose", hoje)
+        .lte("proxima_dose", ateQuando()),
+    ]);
 
   // Cobrança é a razão número 1 pela qual o tutor vai ao balcão, e era o que
   // faltava: consulta atendida que ninguém cobrou é dinheiro que a clínica
   // já entregou e vai esquecer de receber.
   const cobradas = new Set((vendas.data ?? []).map((v) => v.consulta_id));
-  const cobrar = (consultas.data ?? []).filter((c) => !cobradas.has(c.id)).length;
+  const cobrar = (consultas.data ?? []).filter(
+    (c) => !cobradas.has(c.id),
+  ).length;
 
   const numeros = {
     esperando: conta(esperando.count),
@@ -92,6 +120,7 @@ export async function contarBalcao(
     orcamentos: conta(orcamentos.count),
     exames: conta(exames.count),
     cobrar,
+    vacinas: conta(vacinas.count),
   };
 
   return {
@@ -101,6 +130,7 @@ export async function contarBalcao(
       numeros.receitas +
       numeros.orcamentos +
       numeros.exames +
-      numeros.cobrar,
+      numeros.cobrar +
+      numeros.vacinas,
   };
 }

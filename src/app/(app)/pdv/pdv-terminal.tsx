@@ -73,17 +73,19 @@ function novaChave() {
  */
 export function PdvTerminal({
   vendedor,
-  orcamento,
+  inicio,
 }: {
   vendedor: string;
   /**
-   * Venda já começada a partir de um orçamento aprovado. Antes, aprovar um
-   * orçamento não levava a lugar nenhum: era preciso redigitar item por item
-   * no PDV, o que na prática significava que ninguém usava o módulo.
+   * Venda que já chega começada.
+   *
+   * Serve a duas origens, e por isso não se chama mais `orcamento`: o
+   * orçamento aprovado (antes, aprovar não levava a lugar nenhum e era
+   * preciso redigitar item por item, o que na prática significava que
+   * ninguém usava o módulo) e a consulta atendida que a recepção vai cobrar
+   * pelo Balcão.
    */
-  orcamento?: {
-    id: string;
-    numero: string;
+  inicio?: {
     tutor: OpcaoBusca | null;
     itens: {
       item_id: string | null;
@@ -96,7 +98,7 @@ export function PdvTerminal({
   const router = useRouter();
 
   const [linhas, setLinhas] = useState<Linha[]>(() =>
-    (orcamento?.itens ?? []).map((i) => ({
+    (inicio?.itens ?? []).map((i) => ({
       chave: crypto.randomUUID(),
       item_id: i.item_id,
       descricao: i.descricao,
@@ -108,7 +110,7 @@ export function PdvTerminal({
     }))
   );
   const [descontoGeral, setDescontoGeral] = useState("");
-  const [tutor, setTutor] = useState<OpcaoBusca | null>(orcamento?.tutor ?? null);
+  const [tutor, setTutor] = useState<OpcaoBusca | null>(inicio?.tutor ?? null);
   const [codigo, setCodigo] = useState("");
   const [chaveBusca, setChaveBusca] = useState(0);
   const [aviso, setAviso] = useState<string | null>(null);
@@ -596,11 +598,16 @@ export function PdvTerminal({
               htmlFor="pdv-tutor"
               dica="Deixe em branco para venda avulsa."
             >
+              {/* `valorInicial` é o que faz o nome APARECER no campo. Sem
+                  ele o tutor ficava só no estado: a venda saía certa, mas a
+                  recepção via um campo vazio e procurava o mesmo tutor de
+                  novo — perdendo justamente o passo que o Balcão adiantou. */}
               <BuscaCombobox
                 id="pdv-tutor"
                 name="tutor_id"
                 endpoint="/api/busca/tutores"
                 placeholder="Buscar tutor…"
+                valorInicial={inicio?.tutor ?? undefined}
                 aoSelecionar={setTutor}
               />
             </Campo>

@@ -384,3 +384,110 @@ for (const base of [50, 100, 250, 500]) {
 console.log("\nCom 3%/mês, metade da base troca em menos de 2 anos. É por isso que");
 console.log("o plano de 12 meses vale mais do que o desconto custa: quem pagou o");
 console.log("ano não cancela em março.");
+
+console.log("\n" + "=".repeat(74));
+console.log("11. A EQUIPE DE VERDADE, E O QUE SOBRA PARA VOCÊ");
+console.log("=".repeat(74));
+
+// Custo real de um atendente, detalhado na seção 8.
+const ATENDENTE = 2647;
+
+// Quantos clientes uma pessoa dá conta. O número vem de quem já foi suporte
+// técnico: 2 pessoas para 100 clientes, com IA ajudando.
+const POR_PESSOA = 50;
+
+// O que o dono tira por mês. Não é lucro — é salário do trabalho dele, e
+// conta como FOLHA para o fator R, que é o que segura o Simples no Anexo III.
+const PROLABORE = 8000;
+
+function equipe(n) {
+  const pessoas = Math.max(2, Math.ceil(n / POR_PESSOA));
+  const folha = PROLABORE + (pessoas - 1) * ATENDENTE;
+  return { pessoas, folha };
+}
+
+console.log(`Premissa: ${POR_PESSOA} clientes por pessoa · pró-labore de ${real(PROLABORE)}\n`);
+console.log("clientes  pessoas    folha    receita/mês   custos   SOBRA/mês   sobra/ano");
+for (const n of [50, 100, 150, 250, 500]) {
+  const { pessoas, folha } = equipe(n);
+  const receita = (ARPU + EXC) * n;
+  const custos = receita * TAXA_GATEWAY + receita * aliquotaEfetiva(receita * 12)
+    + CUSTO_CLI * n + FIXO_PLATAFORMA;
+  const sobra = receita - custos - folha;
+  console.log(
+    String(n).padStart(8), String(pessoas).padStart(8), real(folha).padStart(9),
+    real(receita).padStart(13), real(custos).padStart(9),
+    real(sobra).padStart(11), real(sobra * 12).padStart(12)
+  );
+}
+console.log("\nA sobra é o que fica DEPOIS de você já ter recebido o pró-labore.");
+
+console.log("\n" + "=".repeat(74));
+console.log("12. O FATOR R: a folha é o que segura o imposto baixo");
+console.log("=".repeat(74));
+console.log("Software só fica no Anexo III (6% a 17%) se a folha for >= 28% da");
+console.log("receita. Abaixo disso cai no Anexo V, que COMEÇA em 15,5%.\n");
+
+const FAIXAS_V = [
+  [180000, 0.155, 0], [360000, 0.18, 4500], [720000, 0.195, 9900],
+  [1800000, 0.205, 17100], [3600000, 0.23, 62100],
+];
+const aliqV = (r) => {
+  for (const [teto, nom, ded] of FAIXAS_V) if (r <= teto) return (r * nom - ded) / r;
+  return 0.305;
+};
+
+console.log("clientes   folha/ano   receita/ano   fator R   anexo   imposto/mês   perde");
+for (const n of [50, 100, 150, 250, 500]) {
+  const { folha } = equipe(n);
+  const recAno = (ARPU + EXC) * n * 12;
+  const fatorR = (folha * 12) / recAno;
+  const passa = fatorR >= 0.28;
+  const impostoIII = ((ARPU + EXC) * n) * aliquotaEfetiva(recAno);
+  const impostoV = ((ARPU + EXC) * n) * aliqV(recAno);
+  console.log(
+    String(n).padStart(8), real(folha * 12).padStart(11), real(recAno).padStart(13),
+    `${(fatorR * 100).toFixed(0)}%`.padStart(9), (passa ? "III" : "V").padStart(7),
+    real(passa ? impostoIII : impostoV).padStart(13),
+    (passa ? `— (evita ${real(impostoV - impostoIII)})` : `+${real(impostoV - impostoIII)}`).padStart(22)
+  );
+}
+console.log("\nPagar equipe não é só custo: é o que impede o imposto de dobrar.");
+
+console.log("\n" + "=".repeat(74));
+console.log("13. VALE AUMENTAR A FOLHA PARA SEGURAR O ANEXO III?");
+console.log("=".repeat(74));
+console.log("Quando o fator R cai abaixo de 28%, dá para EMPURRAR a folha de volta");
+console.log("(subindo o pró-labore). Só compensa enquanto o imposto que se evita");
+console.log("for maior que o dinheiro a mais que se põe na folha.\n");
+
+console.log("clientes   folha hoje   folha p/ 28%   a mais   imposto evitado   vale?");
+for (const n of [100, 150, 200, 250, 350, 500]) {
+  const { folha } = equipe(n);
+  const recAno = (ARPU + EXC) * n * 12;
+  const folhaNecessaria = (recAno * 0.28) / 12;
+  const aMais = Math.max(0, folhaNecessaria - folha);
+  const mensal = (ARPU + EXC) * n;
+  const evita = mensal * aliqV(recAno) - mensal * aliquotaEfetiva(recAno);
+  const jaPassa = folha >= folhaNecessaria;
+  console.log(
+    String(n).padStart(8), real(folha).padStart(12), real(folhaNecessaria).padStart(14),
+    real(aMais).padStart(9), real(evita).padStart(17),
+    (jaPassa ? "já passa" : evita > aMais ? `SIM (+${real(evita - aMais)})` : `não (-${real(aMais - evita)})`).padStart(20)
+  );
+}
+
+let virada = 0;
+for (let n = 100; n <= 1000; n++) {
+  const { folha } = equipe(n);
+  const recAno = (ARPU + EXC) * n * 12;
+  const aMais = Math.max(0, (recAno * 0.28) / 12 - folha);
+  const mensal = (ARPU + EXC) * n;
+  const evita = mensal * aliqV(recAno) - mensal * aliquotaEfetiva(recAno);
+  if (aMais > 0 && evita < aMais) { virada = n; break; }
+}
+console.log(`\nA conta vira por volta de ${virada} clientes. Antes disso, subir o`);
+console.log("pró-labore se paga sozinho. Depois, é melhor aceitar o Anexo V —");
+console.log("ou já ter equipe grande o bastante para o fator R vir de graça.");
+console.log("\nISTO É CONVERSA PARA CONTADOR, não para código. O que o simulador");
+console.log("faz é mostrar onde vale a pena ter a conversa.");

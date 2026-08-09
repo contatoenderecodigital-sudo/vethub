@@ -241,3 +241,55 @@ for (const n of [50, 100, 500]) {
     (CUSTO_CLI * n + FIXO_PLATAFORMA);
   console.log(`  ${String(n).padStart(4)} clientes → ${((sobra / receita) * 100).toFixed(0)}%`);
 }
+
+console.log("\n" + "=".repeat(74));
+console.log("7. E SE O MIX PENDER PARA O ESSENCIAL?");
+console.log("=".repeat(74));
+
+// O suporte é o custo que não aparece na margem por unidade e é quase igual
+// para todo cliente: a dúvida de quem paga R$ 149 é a mesma de quem paga
+// R$ 699. É ele que derruba a margem REAL do plano de entrada.
+const SUPORTE_POR_CLIENTE = 40;
+
+const CENARIOS = {
+  "pessimista  70/25/05": { essencial: 0.7, profissional: 0.25, completo: 0.05 },
+  "base        45/45/10": { essencial: 0.45, profissional: 0.45, completo: 0.10 },
+  "otimista    25/55/20": { essencial: 0.25, profissional: 0.55, completo: 0.20 },
+};
+
+function conta(mix, n) {
+  const arpu = Object.entries(mix).reduce((s, [p, w]) => s + precoMedio(p) * w, 0);
+  const exc = Object.entries(mix).reduce((s, [p, w]) => s + excedente(p).receita * w, 0);
+  const cv = Object.entries(mix).reduce(
+    (s, [p, w]) => s + (custoVariavel(p) + excedente(p).custo) * w, 0
+  );
+  const receita = (arpu + exc) * n;
+  const suporte = SUPORTE_POR_CLIENTE * n;
+  const cartao = receita * TAXA_GATEWAY;
+  const imposto = receita * aliquotaEfetiva(receita * 12);
+  const sobra = receita - cartao - imposto - cv * n - suporte - FIXO_PLATAFORMA;
+  return { arpu, receita, sobra, porCliente: arpu + exc - cv - SUPORTE_POR_CLIENTE };
+}
+
+console.log("Com 100 clientes, já descontando R$ 40/cliente de suporte:\n");
+console.log("cenário                  ARPU   receita/mês    SOBRA/mês   p/ R$30k precisa de");
+for (const [nome, mix] of Object.entries(CENARIOS)) {
+  const r = conta(mix, 100);
+  // Quantos clientes deste mix para a sobra chegar a R$ 30 mil.
+  let n = 1;
+  while (conta(mix, n).sobra < 30000 && n < 5000) n++;
+  console.log(
+    nome.padEnd(22),
+    real(r.arpu).padStart(7),
+    real(r.receita).padStart(12),
+    real(r.sobra).padStart(13),
+    `${n} clientes`.padStart(20)
+  );
+}
+
+console.log("\nA mesma base de 100 clientes, do pior ao melhor mix:");
+const pior = conta(CENARIOS["pessimista  70/25/05"], 100).sobra;
+const melhor = conta(CENARIOS["otimista    25/55/20"], 100).sobra;
+console.log(`  diferença de ${real(melhor - pior)} por mês, ${real((melhor - pior) * 12)} no ano`);
+console.log(`  ou seja: o MIX vale ${((melhor / pior - 1) * 100).toFixed(0)}% a mais, com o mesmo`);
+console.log(`  número de clientes e o mesmo trabalho de vender.`);

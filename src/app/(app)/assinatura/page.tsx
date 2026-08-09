@@ -14,6 +14,7 @@ import { getSessao } from "@/lib/auth";
 import { hojeISO } from "@/lib/format";
 import {
   CICLOS,
+  CLINICA_PRONTA,
   cotaDe,
   custoDeImplantacao,
   IMPLANTACAO,
@@ -32,6 +33,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { IconeWhatsapp } from "@/components/icone-whatsapp";
+import { ClinicaPronta } from "./clinica-pronta";
 
 export const metadata = { title: "Assinatura" };
 
@@ -162,6 +164,10 @@ const DUVIDAS = [
   {
     p: "O que é a taxa de implantação?",
     r: "É a migração da sua base do sistema antigo — tutores, pets e histórico — mais o treinamento da equipe. Custa R$ 497 no plano mês a mês e é gratuita nos planos de 6 e 12 meses.",
+  },
+  {
+    p: "Qual a diferença entre a implantação e a Clínica Pronta?",
+    r: `A implantação (R$ 497, grátis em 6 e 12 meses) traz sua base do sistema antigo — tutores, pets e histórico — e o resto você configura. A Clínica Pronta (${reais(CLINICA_PRONTA.valor)} em ${CLINICA_PRONTA.parcelas}×) é tudo pronto: catálogo com preços, agenda, financeiro, WhatsApp, fiscal e a equipe treinada. Você abre o sistema e começa a atender.`,
   },
   {
     p: "Preciso pagar tudo de uma vez no plano anual?",
@@ -478,6 +484,10 @@ export default async function AssinaturaPage({
           ))}
         </ul>
       </Card>
+
+      <div className="mb-5">
+        <ClinicaPronta whatsapp={WHATSAPP_VENDAS} />
+      </div>
 
       <div className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {GARANTIAS.map((g) => (

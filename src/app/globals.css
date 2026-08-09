@@ -543,6 +543,14 @@ select option {
 [data-modo="claro"] .border-white\/70 { border-color: rgb(15 23 42 / 0.34); }
 [data-modo="claro"] .divide-white\/15 > * + * { border-color: rgb(15 23 42 / 0.08); }
 
+/* Texto que continua branco nos DOIS temas.
+   `.text-white` vira tinta escura no modo claro, e isso está certo para o
+   texto que flutua sobre o vidro — mas errado para quem tem fundo escuro
+   PRÓPRIO embaixo, como um botão verde dentro de um cartão branco. Sem esta
+   saída, o botão ficava com letra grafite sobre verde: 2,35:1. */
+.tinta-clara-fixa,
+[data-modo="claro"] .tinta-clara-fixa { color: #ffffff; }
+
 [data-modo="claro"] .text-white { color: #0f172a; }
 [data-modo="claro"] .text-white\/50 { color: rgb(15 23 42 / 0.5); }
 [data-modo="claro"] .text-white\/55 { color: rgb(15 23 42 / 0.55); }

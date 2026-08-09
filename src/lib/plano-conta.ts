@@ -365,6 +365,39 @@ export function custoDeImplantacao(ciclo: Ciclo): number {
   return IMPLANTACAO.gratisEm.includes(ciclo) ? 0 : IMPLANTACAO.valor;
 }
 
+/**
+ * Clínica Pronta: o serviço de deixar tudo configurado e a equipe treinada.
+ *
+ * A régua veio da Tray, que cobra R$ 2.016 e R$ 4.260 (em 12×) pela "Loja
+ * Pronta" em cima de mensalidades de R$ 85 e R$ 189 — vinte e três vezes a
+ * mensalidade. Não é comparação direta, porque montar uma loja é escopo
+ * maior que migrar uma clínica; o que ela prova é que o pequeno negócio
+ * brasileiro paga milhares, parcelado, por "deixa pronto pra mim".
+ *
+ * São 28 horas de trabalho. Enquanto for o dono fazendo, a hora não é a do
+ * atendente (R$ 15) e sim a dele (R$ 45) — e nem essa é o custo verdadeiro,
+ * porque é hora que não foi construir o produto. A R$ 2.497 sobram R$ 1.224
+ * por implantação.
+ *
+ * CAPACIDADE É O TETO REAL: 28 h cada, 176 h no mês, dá seis por mês
+ * trabalhando sozinho. Preço alto não é ganância aqui, é o que raciona a
+ * procura para o tamanho da mão disponível.
+ */
+export const CLINICA_PRONTA = {
+  valor: 2497,
+  parcelas: 12,
+  /** O que a clínica recebe pronto, na ordem em que ela sente falta. */
+  entrega: [
+    "Migramos tutores, pets e todo o histórico do sistema atual",
+    "Cadastramos seu catálogo de produtos e serviços com os preços",
+    "Configuramos agenda, usuários e permissões da equipe",
+    "Deixamos o financeiro pronto: categorias e formas de pagamento",
+    "Conectamos o WhatsApp e aprovamos os modelos de mensagem na Meta",
+    "Resolvemos o fiscal: certificado, município, CNAE e alíquota de ISS",
+    "Treinamos sua equipe em duas sessões, com a clínica já funcionando",
+  ],
+};
+
 /** "R$ 1.234" — preço sem centavos, que é como todos os planos são cotados. */
 export function reais(valor: number): string {
   return valor.toLocaleString("pt-BR", {

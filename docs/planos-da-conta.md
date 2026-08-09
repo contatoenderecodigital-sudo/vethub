@@ -189,6 +189,39 @@ da primeira linha de código:
 - **Crédito depositado não é receita.** R$ 500 de saldo é obrigação, não
   faturamento. Misturar os dois no fluxo de caixa é como quebra SaaS pequeno.
 
+### Clínica Pronta: o serviço de deixar tudo configurado
+
+**R$ 2.497, em 12× de R$ 208.** Opcional, vendido depois do plano.
+
+A régua veio da **Tray** (lido em tray.com.br/planos-precos, 08/2026): ela
+cobra **R$ 2.016 e R$ 4.260**, em 12×, pela "Loja Pronta" em cima de
+mensalidades de R$ 85 e R$ 189 — vinte e três vezes a mensalidade. Não é
+comparação direta, porque montar uma loja é escopo maior que configurar uma
+clínica. O que ela prova é que o pequeno negócio brasileiro **paga milhares,
+parcelado, por "deixa pronto pra mim"** — e que os R$ 497 da implantação
+simples estavam vinte vezes abaixo da régua do mercado.
+
+São **28 horas** de trabalho:
+
+| | |
+| --- | --- |
+| Migrar tutores, pets e histórico | 4 h |
+| Cadastrar catálogo de produtos e serviços com preços | 8 h |
+| Agenda, usuários e permissões | 2 h |
+| Categorias financeiras e formas de pagamento | 2 h |
+| Conectar WhatsApp e aprovar os modelos na Meta | 3 h |
+| Fiscal: certificado, município, CNAE, ISS | 5 h |
+| Treinar a equipe (2 sessões) | 4 h |
+
+**Quem faz muda o custo.** Um atendente sai por R$ 15/h — 28 h = R$ 421.
+Enquanto for o dono, é R$ 45/h — R$ 1.273 — e nem essa é a conta verdadeira,
+porque é hora que não foi construir o produto. A R$ 2.497 sobram R$ 1.224.
+
+**Capacidade é o teto real.** 28 h cada, 176 h no mês: seis por mês
+trabalhando sozinho. Preço alto aqui não é ganância, é o que raciona a
+procura para o tamanho da mão disponível — por isso a tela diz "poucas vagas
+por mês", que é verdade e não truque.
+
 #### O medidor fica em um lugar só
 
 Na `/assinatura`, não espalhado por aba:

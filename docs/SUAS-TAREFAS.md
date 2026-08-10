@@ -102,6 +102,25 @@ Duas coisas que valem a pena ligar quando começar a ter cliente de verdade:
 
 ---
 
+## 4.5 E-mail: sair do remetente do Supabase
+
+O "esqueci minha senha" já funciona, mas os e-mails saem pelo remetente
+padrão do Supabase, que tem limite baixo (poucos por hora, compartilhado) e
+cai em spam com facilidade. Para valer em produção:
+
+- [ ] **4.5.1** Criar conta no [Resend](https://resend.com) (plano gratuito
+      dá 3.000 e-mails/mês, folgado para começar)
+- [ ] **4.5.2** Verificar o domínio lá (precisa do domínio do item 5.1)
+- [ ] **4.5.3** No Supabase → *Authentication → Emails → SMTP Settings*,
+      apontar para o Resend com a chave gerada
+- [ ] **4.5.4** Trocar o texto dos e-mails em *Authentication → Emails*, que
+      hoje está em inglês e sem a marca
+
+Enquanto isso não for feito, quem esquecer a senha pode não receber o link —
+e é o tipo de falha que a clínica não avisa, só desiste.
+
+---
+
 ## 5. Antes de vender para a primeira clínica
 
 - [ ] **5.1** Registrar um domínio (ex.: `vethub.com.br` no registro.br,

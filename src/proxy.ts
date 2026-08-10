@@ -67,6 +67,10 @@ export default async function proxy(request: NextRequest) {
   // inline do tema (que roda antes da primeira pintura).
   const cabecalhosDaRequisicao = new Headers(request.headers);
   cabecalhosDaRequisicao.set("x-nonce", nonce);
+  // O endereço da página, para o layout saber onde a pessoa está. Um layout
+  // não recebe isso do Next, e a trava do teste vencido precisa distinguir
+  // "ver o prontuário" de "criar consulta nova".
+  cabecalhosDaRequisicao.set("x-pathname", request.nextUrl.pathname);
 
   let response = NextResponse.next({
     request: { headers: cabecalhosDaRequisicao },

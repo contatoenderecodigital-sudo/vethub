@@ -1,9 +1,12 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { getSessao } from "@/lib/auth";
 import { contarBalcao } from "@/lib/balcao";
 import { ehDono } from "@/lib/dono";
+import { liberadaComTesteVencido, situacaoDoTeste } from "@/lib/trial";
+import { AvisoDoTeste } from "./aviso-teste";
 import { createClient } from "@/lib/supabase/server";
 import { Wordmark } from "@/components/wordmark";
 import { NavInferior, NavLateral } from "@/components/nav-links";
@@ -33,6 +36,14 @@ export default async function AppLayout({
 
   // O número do balcão vem junto da clínica, na mesma espera: sem ele no
   // menu ninguém abre a tela, e uma fila que ninguém abre não é uma fila.
+  // Onde a pessoa está agora: o teste vencido fecha só as telas de criar
+  // registro, e para saber quais é preciso o endereço.
+  const rota = (await headers()).get("x-pathname") ?? "";
+  const teste = situacaoDoTeste(conta);
+  if (teste.vencido && rota && !liberadaComTesteVencido(rota)) {
+    redirect("/assinatura/expirou");
+  }
+
   const [{ data: clinica }, balcao, dono] = await Promise.all([
     supabase.from("clinica").select("nome").eq("id", usuario.clinica_id).single(),
     contarBalcao(supabase),
@@ -136,6 +147,7 @@ export default async function AppLayout({
         {/* Conteúdo: largura acompanha a tela (notebook, monitor grande, TV) */}
         <main className="min-w-0 flex-1 px-4 py-6 pb-24 sm:px-6 md:pb-8 2xl:px-10">
           <div className="mx-auto max-w-5xl xl:max-w-6xl 2xl:max-w-[88rem]">
+            <AvisoDoTeste situacao={teste} />
             {children}
           </div>
         </main>

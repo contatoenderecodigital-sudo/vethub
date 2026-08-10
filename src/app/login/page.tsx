@@ -61,7 +61,7 @@ export default function LoginPage() {
 
   return (
     <main className="bg-brand-gradient flex min-h-dvh flex-col items-center justify-center px-4 py-10">
-      <Wordmark sobre="escuro" className="mb-8 text-4xl" />
+      <Wordmark sobre="auto" className="mb-8 text-4xl" />
 
       <div className="glass-forte w-full max-w-sm rounded-3xl p-6 sm:p-8">
         <h1 className="text-lg font-semibold text-ink">Entrar</h1>
@@ -101,7 +101,13 @@ export default function LoginPage() {
           </Button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-ink-muted">
+        <p className="mt-4 text-center text-sm">
+          <Link href="/esqueci-senha" className="link-vidro font-medium">
+            Esqueci minha senha
+          </Link>
+        </p>
+
+        <p className="mt-3 text-center text-sm text-ink-muted">
           Ainda não tem conta?{" "}
           <Link href="/cadastro" className="font-medium link-vidro">
             Cadastre sua clínica

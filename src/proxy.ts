@@ -102,13 +102,19 @@ export default async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const path = request.nextUrl.pathname;
-  const paginaDeAuth = path === "/login" || path === "/cadastro";
+  // `/nova-senha` entra aqui e não em "página pública" por um motivo: quem
+  // chega nela ESTÁ autenticado (o link do e-mail cria uma sessão de
+  // recuperação). Tratada como pública, o proxy mandaria a pessoa logada
+  // direto para o painel e ela nunca trocaria a senha.
+  const paginaDeAuth =
+    path === "/login" || path === "/cadastro" || path === "/esqueci-senha";
   // Páginas legais públicas: precisam abrir sem login (exigência da Meta/LGPD)
   // e continuar acessíveis para quem já está logado.
   const paginaPublica =
     path === "/politica-de-privacidade" ||
     path === "/termos-de-uso" ||
-    path === "/exclusao-de-dados";
+    path === "/exclusao-de-dados" ||
+    path === "/nova-senha";
 
   if (!user && !paginaDeAuth && !paginaPublica) {
     const url = request.nextUrl.clone();

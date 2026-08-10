@@ -70,7 +70,7 @@ export default function CadastroPage() {
 
   return (
     <main className="bg-brand-gradient flex min-h-dvh flex-col items-center justify-center px-4 py-10">
-      <Wordmark sobre="escuro" className="mb-8 text-4xl" />
+      <Wordmark sobre="auto" className="mb-8 text-4xl" />
 
       <div className="glass-forte w-full max-w-sm rounded-3xl p-6 sm:p-8">
         <h1 className="text-lg font-semibold text-ink">Cadastre sua clínica</h1>

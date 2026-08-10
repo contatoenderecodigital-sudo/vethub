@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,6 +28,8 @@ export default function CadastroPage() {
     formState: { errors },
   } = form;
 
+  const ref = useSearchParams().get("ref");
+
   // Botão sempre clicável: quem clica com erro recebe o resumo e é
   // levado ao primeiro campo, em vez de encarar um botão apagado.
   const { enviar, aviso } = useEnvioComAviso(form, cadastrar);
@@ -39,7 +41,10 @@ export default function CadastroPage() {
     const res = await fetch("/api/cadastro", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(valores),
+      // O código do parceiro viaja pela URL e nunca aparece num campo: se
+      // fosse editável, qualquer um poderia se creditar a indicação de uma
+      // clínica que não trouxe.
+      body: JSON.stringify({ ...valores, ref: ref ?? undefined }),
     });
 
     if (!res.ok) {

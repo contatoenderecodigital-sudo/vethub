@@ -35,6 +35,7 @@ import {
   Pill,
   Repeat,
   Ruler,
+  ShieldCheck,
   ShoppingCart,
   Stethoscope,
   Store,
@@ -191,7 +192,7 @@ const GRUPOS: Grupo[] = [
 ];
 
 /** Todos os endereços do menu, para saber qual deles casa melhor. */
-const TODOS_OS_HREFS = [INICIO.href, BALCAO.href, ...GRUPOS.flatMap((g) => g.itens.map((i) => i.href))];
+const TODOS_OS_HREFS = [INICIO.href, BALCAO.href, "/dono", ...GRUPOS.flatMap((g) => g.itens.map((i) => i.href))];
 
 /**
  * O endereço do menu que melhor descreve a tela atual.
@@ -245,11 +246,14 @@ export function NavLateral({
   ehAdmin,
   plano,
   pendencias = 0,
+  dono = false,
 }: {
   ehAdmin: boolean;
   plano: string;
   /** Quantos itens esperam a recepção. Zero não mostra nada. */
   pendencias?: number;
+  /** É o dono do VetHub? Só ele vê o painel de todas as clínicas. */
+  dono?: boolean;
 }) {
   const pathname = usePathname();
   const visiveis = GRUPOS.filter((g) => !g.somenteAdmin || ehAdmin);
@@ -310,6 +314,20 @@ export function NavLateral({
           </span>
         )}
       </Link>
+
+      {dono && (
+        <Link
+          href="/dono"
+          className={`flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors lg:min-h-0 ${
+            estaAtivo(pathname, "/dono")
+              ? "bg-white/25 text-white"
+              : "text-ink-muted hover:bg-white/15 hover:text-ink"
+          }`}
+        >
+          <ShieldCheck className="size-[18px] shrink-0" strokeWidth={1.8} />
+          Painel do dono
+        </Link>
+      )}
 
       {visiveis.map((grupo) => {
         const aberto = estaAberto(grupo);
@@ -410,10 +428,12 @@ export function NavInferior({
   ehAdmin,
   plano,
   pendencias = 0,
+  dono = false,
 }: {
   ehAdmin: boolean;
   plano: string;
   pendencias?: number;
+  dono?: boolean;
 }) {
   const pathname = usePathname();
   const [aberto, setAberto] = useState(false);
@@ -506,6 +526,17 @@ export function NavInferior({
                 </span>
               )}
             </Link>
+
+            {dono && (
+              <Link
+                href="/dono"
+                onClick={() => setAberto(false)}
+                className="flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium text-ink-muted hover:bg-white/15 hover:text-ink"
+              >
+                <ShieldCheck className="size-[18px] shrink-0" strokeWidth={1.8} />
+                <span className="min-w-0 truncate">Painel do dono</span>
+              </Link>
+            )}
 
             {/* Uma linha fina separa os grupos. Antes só o espaço em branco
                 fazia esse trabalho, e a folha inteira lia como uma lista

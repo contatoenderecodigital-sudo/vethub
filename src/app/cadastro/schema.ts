@@ -14,6 +14,15 @@ export const cadastroSchema = z.object({
   nome: schemaNome,
   email: schemaEmailObrigatorio,
   senha: schemaSenhaForte,
+  /**
+   * Código do parceiro que indicou, vindo de `/cadastro?ref=CODIGO`.
+   *
+   * Opcional e nunca digitado por ninguém: chega pela URL. Um código que não
+   * existe não impede o cadastro — a clínica entra sem indicação, porque
+   * perder um cliente por causa de um link errado seria o pior desfecho
+   * possível.
+   */
+  ref: z.string().trim().max(40).optional(),
 });
 
 export type CadastroValores = z.infer<typeof cadastroSchema>;

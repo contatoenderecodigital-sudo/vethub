@@ -65,7 +65,7 @@ const CHAVE_AUTOMATICO = "vethub:guia:automatico";
  * planos, e justamente na hora em que a pessoa está comparando preço. O
  * botão "?" continua ali para quem quiser chamar.
  */
-const SEM_ABERTURA_AUTOMATICA = ["/assinatura"];
+const SEM_ABERTURA_AUTOMATICA = ["/assinatura", "/dono"];
 const chaveVista = (rota: string) => `vethub:guia:visto:${rota}`;
 
 function leu(chave: string): boolean {

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { getSessao } from "@/lib/auth";
 import { contarBalcao } from "@/lib/balcao";
+import { ehDono } from "@/lib/dono";
 import { createClient } from "@/lib/supabase/server";
 import { Wordmark } from "@/components/wordmark";
 import { NavInferior, NavLateral } from "@/components/nav-links";
@@ -32,9 +33,10 @@ export default async function AppLayout({
 
   // O número do balcão vem junto da clínica, na mesma espera: sem ele no
   // menu ninguém abre a tela, e uma fila que ninguém abre não é uma fila.
-  const [{ data: clinica }, balcao] = await Promise.all([
+  const [{ data: clinica }, balcao, dono] = await Promise.all([
     supabase.from("clinica").select("nome").eq("id", usuario.clinica_id).single(),
     contarBalcao(supabase),
+    ehDono(usuario.email),
   ]);
 
   async function sair() {
@@ -100,6 +102,7 @@ export default async function AppLayout({
             ehAdmin={usuario.papel === "admin"}
             plano={conta.plano}
             pendencias={balcao.total}
+            dono={dono}
           />
 
           {/* Bloco do usuário */}
@@ -143,6 +146,7 @@ export default async function AppLayout({
         ehAdmin={usuario.papel === "admin"}
         plano={conta.plano}
         pendencias={balcao.total}
+        dono={dono}
       />
 
       {/* O Bento: o "?" do canto que explica a página */}

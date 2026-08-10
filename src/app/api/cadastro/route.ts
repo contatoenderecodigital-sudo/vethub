@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { clinica, nome, senha } = resultado.data;
+  const { clinica, nome, senha, ref } = resultado.data;
   const email = resultado.data.email.toLowerCase();
 
   const admin = createAdminClient();
@@ -47,9 +47,29 @@ export async function POST(request: NextRequest) {
   const userId = criado.user.id;
 
   // 2. clínica
+  //
+  // De onde ela veio. O código fica gravado como veio no link mesmo que o
+  // parceiro seja removido depois: a pergunta "quem trouxe essa clínica?"
+  // continua valendo, e sem isso a conversa de comissão no fim do mês vira
+  // a palavra de um contra a do outro.
+  let parceiroId: string | null = null;
+  if (ref) {
+    const { data: parceiro } = await admin
+      .from("parceiro")
+      .select("id")
+      .eq("codigo", ref.toLowerCase())
+      .eq("ativo", true)
+      .maybeSingle<{ id: string }>();
+    parceiroId = parceiro?.id ?? null;
+  }
+
   const { data: novaClinica, error: erroClinica } = await admin
     .from("clinica")
-    .insert({ nome: clinica })
+    .insert({
+      nome: clinica,
+      parceiro_id: parceiroId,
+      origem_ref: ref ? ref.toLowerCase() : null,
+    })
     .select("id")
     .single();
   if (erroClinica || !novaClinica) {

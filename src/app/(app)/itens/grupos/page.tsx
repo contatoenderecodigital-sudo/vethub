@@ -38,7 +38,14 @@ function GrupoForm({
 
   return (
     <form action={acao} className="space-y-2">
-      <div className="flex flex-col gap-2 sm:flex-row">
+      {/* Empilhado até `lg`, e não até `sm`.
+
+          Os dois seletores têm largura fixa e somam 384px. A partir de
+          640px a linha virava horizontal, e no tablet sobrava 26px de
+          largura para o campo do NOME do grupo — o único que a pessoa
+          realmente digita. Abaixo de 1024px vale mais uma coisa por
+          linha do que três espremidas. */}
+      <div className="flex flex-col gap-2 lg:flex-row">
         <Input
           name="nome"
           defaultValue={grupo?.nome}
@@ -46,13 +53,13 @@ function GrupoForm({
           maxLength={60}
           placeholder="Nome do grupo (ex.: Medicamentos)"
           aria-label={grupo ? `Nome do grupo ${grupo.nome}` : "Nome do novo grupo"}
-          className="sm:flex-1"
+          className="lg:flex-1"
         />
         <Select
           name="grupo_pai_id"
           defaultValue={grupo?.grupo_pai_id ?? ""}
           aria-label="Grupo pai"
-          className="sm:w-52"
+          className="lg:w-52"
         >
           <option value="">Grupo principal</option>
           {opcoesPai.map((p) => (
@@ -65,7 +72,7 @@ function GrupoForm({
           name="tipo"
           defaultValue={grupo?.tipo ?? "produto"}
           aria-label="Tipo do grupo"
-          className="sm:w-44"
+          className="lg:w-44"
         >
           {TIPOS_GRUPO.map((t) => (
             <option key={t.valor} value={t.valor}>

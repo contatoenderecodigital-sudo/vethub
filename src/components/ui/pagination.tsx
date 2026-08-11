@@ -28,7 +28,7 @@ export function Pagination({
 
   // min-h-11 no toque: alvo de 44px no celular, altura normal no desktop.
   const classe =
-    "inline-flex min-h-11 shrink-0 items-center gap-1 rounded-lg border border-white/40 bg-white/15 px-3 text-sm font-medium text-white backdrop-blur-md hover:bg-white/25 sm:min-h-9";
+    "inline-flex min-h-11 shrink-0 items-center gap-1 rounded-lg border border-white/40 bg-white/15 px-3 text-sm font-medium text-white backdrop-blur-md hover:bg-white/25 lg:min-h-9";
 
   return (
     <nav

@@ -266,9 +266,12 @@ export function PetForm({
         />
       </Campo>
 
-      {/* min-h-6 e a caixa em size-4: o rótulo é o alvo de clique e tinha
-          16px de altura, abaixo dos 24 da norma. */}
-      <label className="flex min-h-6 items-start gap-2 py-1 text-xs text-ink-muted">
+      {/* O rótulo é o alvo de clique (clicar no texto marca a caixa), então
+          é ele que precisa de tamanho. Tinha 16px de altura, foi para 24 (o
+          mínimo da norma) e agora chega a 44 no dedo. Vale a pena aqui: um
+          toque errado aqui marca o animal como FALECIDO, e ele some dos
+          lembretes e da rotina da clínica. */}
+      <label className="flex min-h-11 items-start gap-2 py-1 text-xs text-ink-muted lg:min-h-6">
         <input
           type="checkbox"
           className="mt-0.5 size-4 accent-[#34D399]"

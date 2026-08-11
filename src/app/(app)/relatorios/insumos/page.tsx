@@ -312,7 +312,9 @@ export default async function RelatorioInsumosPage({
             key={valor}
             href={urlDoRelatorio(BASE, params, { modo: valor })}
             aria-current={valor === modo ? "page" : undefined}
-            className={`inline-flex h-8 items-center rounded-full px-3.5 text-sm font-medium capitalize transition-colors ${
+            // 32px no dedo era apertado para o botao que troca o formato do
+            // relatorio inteiro. 44px no toque, 32 no mouse.
+            className={`inline-flex h-11 items-center rounded-full px-3.5 text-sm font-medium capitalize transition-colors lg:h-8 ${
               valor === modo
                 ? "bg-white text-brand-dark shadow-sm"
                 : "border border-white/40 bg-white/15 text-ink-muted hover:bg-white/25 hover:text-white"

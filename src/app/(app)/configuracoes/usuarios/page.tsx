@@ -101,7 +101,7 @@ export default async function UsuariosPage({
                       <Select
                         name="papel"
                         defaultValue={m.papel}
-                        className="h-10 w-36 text-sm"
+                        className="h-11 w-36 text-sm lg:h-10"
                       >
                         {PAPEIS.map((p) => (
                           <option key={p.valor} value={p.valor}>

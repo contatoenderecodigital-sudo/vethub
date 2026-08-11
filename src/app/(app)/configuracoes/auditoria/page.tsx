@@ -169,7 +169,7 @@ export default async function AuditoriaPage({
           name="tabela"
           defaultValue={tabela ?? ""}
           aria-label="Filtrar por tipo de registro"
-          className="h-10 w-auto min-w-52"
+          className="h-11 w-auto min-w-52 lg:h-10"
         >
           <option value="">Tudo</option>
           {Object.entries(ROTULO_TABELA).map(([valor, rotulo]) => (

@@ -134,7 +134,7 @@ export function ItensEditor({
 
       {/* Cabeçalho das colunas (só em telas maiores): MESMA grade das linhas,
           para os títulos ficarem exatamente em cima dos campos */}
-      <div className="hidden text-xs font-medium text-ink-muted sm:grid sm:grid-cols-[minmax(0,1fr)_5.5rem_8rem_6.5rem_2rem] sm:gap-2">
+      <div className="hidden text-xs font-medium text-ink-muted lg:grid lg:grid-cols-[minmax(0,1fr)_5.5rem_8rem_6.5rem_2rem] lg:gap-2">
         <span>Descrição</span>
         <span>Qtd</span>
         <span>Valor unit. (R$)</span>
@@ -142,7 +142,7 @@ export function ItensEditor({
         <span />
       </div>
 
-      <ul className="space-y-3 sm:space-y-2">
+      <ul className="space-y-3 lg:space-y-2">
         {linhas.map((linha) => {
           const qtd = paraNumero(linha.quantidade);
           const valor = paraNumero(linha.valor_unitario);
@@ -170,12 +170,12 @@ export function ItensEditor({
           return (
             <li
               key={linha.chave}
-              className="rounded-lg border border-edge p-2 sm:rounded-none sm:border-0 sm:p-0"
+              className="rounded-lg border border-edge p-2 lg:rounded-none lg:border-0 lg:p-0"
             >
               {/* Uma grade só: no desktop os campos caem exatamente sob o
                   cabeçalho; no mobile a descrição ocupa a linha inteira e
                   qtd/valor/subtotal ficam na linha de baixo com rótulos. */}
-              <div className="space-y-2 sm:grid sm:grid-cols-[minmax(0,1fr)_5.5rem_8rem_6.5rem_2rem] sm:items-center sm:gap-2 sm:space-y-0">
+              <div className="space-y-2 lg:grid lg:grid-cols-[minmax(0,1fr)_5.5rem_8rem_6.5rem_2rem] lg:items-center lg:gap-2 lg:space-y-0">
                 <Input
                   aria-label="Descrição do item"
                   placeholder="Descrição (ex.: Consulta, Vacina V10…)"
@@ -187,9 +187,9 @@ export function ItensEditor({
                   }
                   onBlur={() => marcarTocado(linha.chave, "descricao")}
                 />
-                <div className="grid grid-cols-2 items-end gap-2 sm:contents">
-                  <label className="block sm:contents">
-                    <span className="mb-1 block text-[11px] font-medium text-ink-muted sm:hidden">
+                <div className="grid grid-cols-2 items-end gap-2 lg:contents">
+                  <label className="block lg:contents">
+                    <span className="mb-1 block text-[11px] font-medium text-ink-muted lg:hidden">
                       Qtd
                     </span>
                     <Input
@@ -211,8 +211,8 @@ export function ItensEditor({
                       onBlur={() => marcarTocado(linha.chave, "quantidade")}
                     />
                   </label>
-                  <label className="block sm:contents">
-                    <span className="mb-1 block text-[11px] font-medium text-ink-muted sm:hidden">
+                  <label className="block lg:contents">
+                    <span className="mb-1 block text-[11px] font-medium text-ink-muted lg:hidden">
                       Valor unit. (R$)
                     </span>
                     <Input
@@ -235,7 +235,7 @@ export function ItensEditor({
                       onBlur={() => marcarTocado(linha.chave, "valor_unitario")}
                     />
                   </label>
-                  <span className="pb-2.5 text-right text-sm font-medium text-ink tabular-nums sm:pb-0">
+                  <span className="pb-2.5 text-right text-sm font-medium text-ink tabular-nums lg:pb-0">
                     {formatBRL(subtotalDe(linha))}
                   </span>
                   <button
@@ -244,7 +244,7 @@ export function ItensEditor({
                     title="Remover item"
                     disabled={linhas.length === 1}
                     onClick={() => remover(linha.chave)}
-                    className="mb-1 flex size-11 shrink-0 cursor-pointer lg:size-8 items-center justify-center justify-self-end rounded-md text-ink-muted transition-colors hover:bg-red-400/25 hover:text-red-100 disabled:pointer-events-none disabled:opacity-40 sm:mb-0"
+                    className="mb-1 flex size-11 shrink-0 cursor-pointer lg:size-8 items-center justify-center justify-self-end rounded-md text-ink-muted transition-colors hover:bg-red-400/25 hover:text-red-100 disabled:pointer-events-none disabled:opacity-40 lg:mb-0"
                   >
                     <X className="size-4" />
                   </button>

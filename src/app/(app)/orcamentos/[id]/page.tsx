@@ -120,7 +120,7 @@ export default async function OrcamentoPage({
           </div>
         </div>
 
-        <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:shrink-0 sm:justify-end [&>a]:min-h-11 [&>form>button]:min-h-11 sm:[&>a]:min-h-10 sm:[&>form>button]:min-h-10">
+        <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:shrink-0 sm:justify-end [&>a]:min-h-11 [&>form>button]:min-h-11 lg:[&>a]:min-h-10 lg:[&>form>button]:min-h-10">
           {orcamento.status === "aberto" ? (
             // Quatro ações não cabem na linha do título: só "Aprovar" fica
             // visível, o resto entra no menu.

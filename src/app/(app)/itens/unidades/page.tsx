@@ -22,8 +22,10 @@ interface UnidadeLinha {
 function CaixaFracionavel({ marcada }: { marcada?: boolean }) {
   return (
     // O rótulo é o alvo de clique (clicar no texto marca a caixa), então é
-    // ele que precisa dos 24px da norma — tinha 20.
-    <label className="flex min-h-6 cursor-pointer items-center gap-2 text-sm text-ink-muted">
+    // ele que precisa do tamanho — tinha 20px, virou 24 (o mínimo da norma)
+    // e agora 44 no dedo, que é o conforto. No mouse fica compacto, senão a
+    // linha da tabela cresce sem motivo.
+    <label className="flex min-h-11 cursor-pointer items-center gap-2 text-sm text-ink-muted lg:min-h-6">
       <input
         type="checkbox"
         name="fracionavel"

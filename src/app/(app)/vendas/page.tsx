@@ -218,9 +218,15 @@ export default async function VendasPage({
                   key={v.id}
                   className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2.5 transition-colors hover:bg-white/10"
                 >
+                  {/* `basis-full` no celular: com tudo na mesma linha, este
+                      link é `flex-1` e cede espaço até virar uma tira de
+                      22px — abaixo do mínimo da norma, e é justamente o
+                      alvo principal da linha (o nome do tutor e a data).
+                      Ocupando a linha toda, o resto desce e cada coisa
+                      fica com o tamanho que precisa. */}
                   <Link
                     href={`/vendas/${v.id}`}
-                    className="flex min-w-0 flex-1 items-center gap-3 rounded-xl py-1"
+                    className="flex min-w-0 flex-1 basis-full items-center gap-3 rounded-xl py-1 sm:basis-auto"
                   >
                     <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white/20 text-xs font-bold text-white tabular-nums">
                       {v.numero}
@@ -261,7 +267,7 @@ export default async function VendasPage({
                   <Link
                     href={`/vendas/${v.id}`}
                     aria-label={`Abrir venda nº ${v.numero}`}
-                    className="inline-flex size-11 shrink-0 items-center justify-center rounded-lg text-ink-muted transition-colors hover:bg-white/15 hover:text-white sm:size-8"
+                    className="inline-flex size-11 shrink-0 items-center justify-center rounded-lg text-ink-muted transition-colors hover:bg-white/15 hover:text-white lg:size-8"
                   >
                     <ChevronRight className="size-4 shrink-0" />
                   </Link>

@@ -26,13 +26,13 @@ export default function NaoEncontrado() {
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <Link
             href="/dashboard"
-            className="inline-flex h-10 items-center rounded-lg bg-white px-4 text-sm font-semibold text-brand-dark shadow-lg shadow-black/10 transition-colors hover:bg-white/90"
+            className="inline-flex h-11 items-center rounded-lg bg-white px-4 lg:h-10 text-sm font-semibold text-brand-dark shadow-lg shadow-black/10 transition-colors hover:bg-white/90"
           >
             Ir para o início
           </Link>
           <Link
             href="/agenda"
-            className="inline-flex h-10 items-center rounded-lg border border-white/40 bg-white/15 px-4 text-sm font-medium text-white backdrop-blur-md transition-colors hover:bg-white/25"
+            className="inline-flex h-11 items-center rounded-lg border border-white/40 lg:h-10 bg-white/15 px-4 text-sm font-medium text-white backdrop-blur-md transition-colors hover:bg-white/25"
           >
             Abrir a agenda
           </Link>

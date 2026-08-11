@@ -176,7 +176,7 @@ export default async function PetPage({
 
             {/* Barra de ações: quebra linha em vez de escapar do card, e
                 Editar/Excluir vão para o menu para caber num celular. */}
-            <div className="mt-4 flex flex-wrap items-center gap-2 [&>a]:min-h-11 sm:[&>a]:min-h-10">
+            <div className="mt-4 flex flex-wrap items-center gap-2 [&>a]:min-h-11 lg:[&>a]:min-h-10">
               <ButtonLink href={`/agenda/novo?pet=${id}`} variante="secondary">
                 <CalendarDays className="size-4 shrink-0" />
                 Agendamento

@@ -27,6 +27,7 @@ import {
   History,
   KeyRound,
   LayoutDashboard,
+  LifeBuoy,
   Lock,
   Menu,
 
@@ -194,7 +195,7 @@ const GRUPOS: Grupo[] = [
 ];
 
 /** Todos os endereços do menu, para saber qual deles casa melhor. */
-const TODOS_OS_HREFS = [INICIO.href, BALCAO.href, "/dono", ...GRUPOS.flatMap((g) => g.itens.map((i) => i.href))];
+const TODOS_OS_HREFS = [INICIO.href, BALCAO.href, "/suporte", "/dono", ...GRUPOS.flatMap((g) => g.itens.map((i) => i.href))];
 
 /**
  * O endereço do menu que melhor descreve a tela atual.
@@ -315,6 +316,18 @@ export function NavLateral({
             {pendencias > 99 ? "99+" : pendencias}
           </span>
         )}
+      </Link>
+
+      <Link
+        href="/suporte"
+        className={`flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors lg:min-h-0 ${
+          estaAtivo(pathname, "/suporte")
+            ? "bg-white/25 text-white"
+            : "text-ink-muted hover:bg-white/15 hover:text-ink"
+        }`}
+      >
+        <LifeBuoy className="size-[18px] shrink-0" strokeWidth={1.8} />
+        Suporte
       </Link>
 
       {dono && (
@@ -527,6 +540,15 @@ export function NavInferior({
                   {pendencias > 99 ? "99+" : pendencias}
                 </span>
               )}
+            </Link>
+
+            <Link
+              href="/suporte"
+              onClick={() => setAberto(false)}
+              className="flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium text-ink-muted hover:bg-white/15 hover:text-ink"
+            >
+              <LifeBuoy className="size-[18px] shrink-0" strokeWidth={1.8} />
+              <span className="min-w-0 truncate">Suporte</span>
             </Link>
 
             {dono && (

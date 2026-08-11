@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Building2, Handshake, Link2, Users } from "lucide-react";
+import { Building2, Handshake, Headset, Link2, Users } from "lucide-react";
 import { exigirDono } from "@/lib/dono";
 import { formatBRL, formatDataISO, hojeISO } from "@/lib/format";
 import {
@@ -18,7 +18,12 @@ import { Estatistica } from "@/components/ui/estatistica";
 import { Input, Select, Textarea } from "@/components/ui/form";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { CampoData } from "@/components/ui/campo-data";
-import { alternarParceiro, esticarTeste, mudarPlano, salvarParceiro } from "./actions";
+import {
+  alternarParceiro,
+  esticarTeste,
+  mudarPlano,
+  salvarParceiro,
+} from "./actions";
 
 export const metadata = { title: "Painel do dono" };
 
@@ -76,23 +81,37 @@ export default async function DonoPage({
   const { admin, email } = await exigirDono();
   const emParceiros = aba === "parceiros";
 
-  const [{ data: clinicas }, { data: parceiros }, { data: usuarios }] = await Promise.all([
+  const [
+    { data: clinicas },
+    { data: parceiros },
+    { data: usuarios },
+    chamadosAbertos,
+  ] = await Promise.all([
     admin
       .from("clinica")
       .select(
-        "id, nome, plano, ciclo, trial_termina_em, renova_em, limite_usuarios, origem_ref, created_at, parceiro:parceiro_id (id, nome)"
+        "id, nome, plano, ciclo, trial_termina_em, renova_em, limite_usuarios, origem_ref, created_at, parceiro:parceiro_id (id, nome)",
       )
       .order("created_at", { ascending: false })
       .returns<ClinicaLinha[]>(),
     admin
       .from("parceiro")
       .select(
-        "id, nome, codigo, telefone, email, comissao_percentual, meses_de_comissao, observacao, ativo"
+        "id, nome, codigo, telefone, email, comissao_percentual, meses_de_comissao, observacao, ativo",
       )
       .order("nome")
       .returns<ParceiroLinha[]>(),
-    admin.from("usuario").select("clinica_id").returns<{ clinica_id: string }[]>(),
+    admin
+      .from("usuario")
+      .select("clinica_id")
+      .returns<{ clinica_id: string }[]>(),
+    // Chamados esperando resposta: o número que faz a caixa ser aberta.
+    admin
+      .from("ticket")
+      .select("id", { count: "exact", head: true })
+      .in("status", ["aberto", "aguardando_cliente"]),
   ]);
+  const emAberto = chamadosAbertos.count ?? 0;
 
   const lista = clinicas ?? [];
   const porClinica = new Map<string, number>();
@@ -101,48 +120,97 @@ export default async function DonoPage({
   }
 
   const pagantes = lista.filter((c) => c.plano !== "trial");
-  const receita = pagantes.reduce((s, c) => s + mensalidade(c.plano, c.ciclo), 0);
+  const receita = pagantes.reduce(
+    (s, c) => s + mensalidade(c.plano, c.ciclo),
+    0,
+  );
   const emTeste = lista.filter((c) => c.plano === "trial");
   const hoje = hojeISO();
   const vencendo = emTeste.filter(
-    (c) => c.trial_termina_em && c.trial_termina_em >= hoje
+    (c) => c.trial_termina_em && c.trial_termina_em >= hoje,
   ).length;
 
   // Comissão de cada parceiro: o que as clínicas dele pagam, na porcentagem
   // combinada. Só conta quem já saiu do teste — teste não gera receita, logo
   // não gera comissão.
-  const comissaoDe = new Map<string, { clinicas: number; pagantes: number; valor: number }>();
+  const comissaoDe = new Map<
+    string,
+    { clinicas: number; pagantes: number; valor: number }
+  >();
   for (const c of lista) {
     if (!c.parceiro?.id) continue;
     const p = parceiros?.find((x) => x.id === c.parceiro!.id);
-    const atual = comissaoDe.get(c.parceiro.id) ?? { clinicas: 0, pagantes: 0, valor: 0 };
+    const atual = comissaoDe.get(c.parceiro.id) ?? {
+      clinicas: 0,
+      pagantes: 0,
+      valor: 0,
+    };
     atual.clinicas += 1;
     if (c.plano !== "trial" && p) {
       atual.pagantes += 1;
-      atual.valor += (mensalidade(c.plano, c.ciclo) * Number(p.comissao_percentual)) / 100;
+      atual.valor +=
+        (mensalidade(c.plano, c.ciclo) * Number(p.comissao_percentual)) / 100;
     }
     comissaoDe.set(c.parceiro.id, atual);
   }
 
   return (
     <div>
-      <PageHeader titulo="Painel do dono" subtitulo={`Entrou como ${email}`} />
+      <PageHeader
+        titulo="Painel do dono"
+        subtitulo={`Entrou como ${email}`}
+        acao={
+          <Link
+            href="/dono/suporte"
+            className="flex min-h-11 items-center gap-2 rounded-lg bg-white px-4 text-sm font-semibold text-brand-dark"
+          >
+            <Headset className="size-4" strokeWidth={2} aria-hidden />
+            Suporte
+            {emAberto > 0 && (
+              <span className="min-w-5 rounded-full bg-brand-dark px-1.5 text-center text-xs font-bold text-white">
+                {emAberto}
+              </span>
+            )}
+          </Link>
+        }
+      />
 
       {erro && (
-        <p className="mb-4 rounded-lg bg-red-400/25 px-3 py-2 text-sm text-red-100">{erro}</p>
+        <p className="mb-4 rounded-lg bg-red-400/25 px-3 py-2 text-sm text-red-100">
+          {erro}
+        </p>
       )}
 
       <div className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <Estatistica rotulo="Clínicas" valor={String(lista.length)} icone={Building2} />
-        <Estatistica rotulo="Pagantes" valor={String(pagantes.length)} icone={Users} />
-        <Estatistica rotulo="Em teste" valor={`${emTeste.length} (${vencendo} no prazo)`} icone={Building2} />
-        <Estatistica rotulo="Receita mensal" valor={formatBRL(receita)} icone={Handshake} />
+        <Estatistica
+          rotulo="Clínicas"
+          valor={String(lista.length)}
+          icone={Building2}
+        />
+        <Estatistica
+          rotulo="Pagantes"
+          valor={String(pagantes.length)}
+          icone={Users}
+        />
+        <Estatistica
+          rotulo="Em teste"
+          valor={`${emTeste.length} (${vencendo} no prazo)`}
+          icone={Building2}
+        />
+        <Estatistica
+          rotulo="Receita mensal"
+          valor={formatBRL(receita)}
+          icone={Handshake}
+        />
       </div>
 
       <div className="mb-5 flex flex-wrap gap-2">
         {[
           { valor: "", rotulo: `Clínicas (${lista.length})` },
-          { valor: "parceiros", rotulo: `Parceiros (${parceiros?.length ?? 0})` },
+          {
+            valor: "parceiros",
+            rotulo: `Parceiros (${parceiros?.length ?? 0})`,
+          },
         ].map((t) => {
           const ativo = (aba ?? "") === t.valor;
           return (
@@ -174,7 +242,12 @@ export default async function DonoPage({
                 <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
                     <h2 className="flex flex-wrap items-center gap-2 text-lg font-bold text-ink">
-                      {c.nome}
+                      <Link
+                        href={`/dono/cliente/${c.id}`}
+                        className="hover:underline"
+                      >
+                        {c.nome}
+                      </Link>
                       {c.plano === "trial" ? (
                         expirado ? (
                           <Badge tom="danger">Teste vencido</Badge>
@@ -191,8 +264,10 @@ export default async function DonoPage({
                     <p className="text-sm text-ink-muted">
                       Criada em {formatDataISO(c.created_at.slice(0, 10))} ·{" "}
                       {usados} de {teto ?? "∞"} usuários
-                      {c.trial_termina_em && ` · teste até ${formatDataISO(c.trial_termina_em)}`}
-                      {c.renova_em && ` · renova em ${formatDataISO(c.renova_em)}`}
+                      {c.trial_termina_em &&
+                        ` · teste até ${formatDataISO(c.trial_termina_em)}`}
+                      {c.renova_em &&
+                        ` · renova em ${formatDataISO(c.renova_em)}`}
                     </p>
                     {(c.parceiro || c.origem_ref) && (
                       <p className="mt-0.5 text-sm text-ink">
@@ -204,7 +279,11 @@ export default async function DonoPage({
 
                   {c.plano === "trial" && (
                     <form action={esticarTeste.bind(null, c.id, 14)}>
-                      <SubmitButton variante="ghost" tamanho="sm" className="min-h-11">
+                      <SubmitButton
+                        variante="ghost"
+                        tamanho="sm"
+                        className="min-h-11"
+                      >
                         Esticar teste 14 dias
                       </SubmitButton>
                     </form>
@@ -216,7 +295,9 @@ export default async function DonoPage({
                   className="grid gap-3 border-t border-edge pt-3 sm:grid-cols-2 lg:grid-cols-5 lg:items-end"
                 >
                   <label className="block">
-                    <span className="mb-1 block text-xs font-medium text-ink-muted">Plano</span>
+                    <span className="mb-1 block text-xs font-medium text-ink-muted">
+                      Plano
+                    </span>
                     <Select name="plano" defaultValue={c.plano}>
                       {PLANOS.map((p) => (
                         <option key={p} value={p}>
@@ -227,7 +308,9 @@ export default async function DonoPage({
                   </label>
 
                   <label className="block">
-                    <span className="mb-1 block text-xs font-medium text-ink-muted">Ciclo</span>
+                    <span className="mb-1 block text-xs font-medium text-ink-muted">
+                      Ciclo
+                    </span>
                     <Select name="ciclo" defaultValue={c.ciclo}>
                       {CICLOS.map((ci) => (
                         <option key={ci} value={ci}>
@@ -271,7 +354,9 @@ export default async function DonoPage({
       ) : (
         <div className="space-y-4">
           <Card>
-            <h2 className="mb-3 text-base font-semibold text-ink">Novo parceiro</h2>
+            <h2 className="mb-3 text-base font-semibold text-ink">
+              Novo parceiro
+            </h2>
             <form
               action={salvarParceiro.bind(null, null)}
               className="grid gap-3 sm:grid-cols-2"
@@ -280,32 +365,57 @@ export default async function DonoPage({
                 <span className="mb-1 block text-sm font-medium text-ink">
                   Nome <span className="text-red-100">*</span>
                 </span>
-                <Input name="nome" required maxLength={120} placeholder="Ex.: Marcos Vendas" />
+                <Input
+                  name="nome"
+                  required
+                  maxLength={120}
+                  placeholder="Ex.: Marcos Vendas"
+                />
               </label>
 
               <label className="block">
                 <span className="mb-1 block text-sm font-medium text-ink">
                   Código do link <span className="text-red-100">*</span>
                 </span>
-                <Input name="codigo" required maxLength={40} placeholder="marcos" />
+                <Input
+                  name="codigo"
+                  required
+                  maxLength={40}
+                  placeholder="marcos"
+                />
                 <span className="mt-1 block text-xs text-ink-muted">
-                  Só minúsculas, números e hífen. Vai no link e é ditado por telefone.
+                  Só minúsculas, números e hífen. Vai no link e é ditado por
+                  telefone.
                 </span>
               </label>
 
               <label className="block">
-                <span className="mb-1 block text-sm font-medium text-ink">Telefone</span>
-                <Input name="telefone" maxLength={30} placeholder="49 99999-0000" />
+                <span className="mb-1 block text-sm font-medium text-ink">
+                  Telefone
+                </span>
+                <Input
+                  name="telefone"
+                  maxLength={30}
+                  placeholder="49 99999-0000"
+                />
               </label>
 
               <label className="block">
-                <span className="mb-1 block text-sm font-medium text-ink">E-mail</span>
+                <span className="mb-1 block text-sm font-medium text-ink">
+                  E-mail
+                </span>
                 <Input name="email" maxLength={160} />
               </label>
 
               <label className="block">
-                <span className="mb-1 block text-sm font-medium text-ink">Comissão (%)</span>
-                <Input name="comissao_percentual" defaultValue="20" inputMode="decimal" />
+                <span className="mb-1 block text-sm font-medium text-ink">
+                  Comissão (%)
+                </span>
+                <Input
+                  name="comissao_percentual"
+                  defaultValue="20"
+                  inputMode="decimal"
+                />
               </label>
 
               <label className="block">
@@ -320,7 +430,9 @@ export default async function DonoPage({
               </label>
 
               <label className="block sm:col-span-2">
-                <span className="mb-1 block text-sm font-medium text-ink">Observação</span>
+                <span className="mb-1 block text-sm font-medium text-ink">
+                  Observação
+                </span>
                 <Textarea name="observacao" rows={2} maxLength={300} />
               </label>
 
@@ -331,7 +443,11 @@ export default async function DonoPage({
           </Card>
 
           {(parceiros ?? []).map((p) => {
-            const c = comissaoDe.get(p.id) ?? { clinicas: 0, pagantes: 0, valor: 0 };
+            const c = comissaoDe.get(p.id) ?? {
+              clinicas: 0,
+              pagantes: 0,
+              valor: 0,
+            };
             const link = `https://vethub-tau.vercel.app/cadastro?ref=${p.codigo}`;
             return (
               <Card key={p.id}>
@@ -350,8 +466,13 @@ export default async function DonoPage({
                     </p>
 
                     <p className="mt-2 flex items-center gap-2 text-sm">
-                      <Link2 className="size-4 shrink-0 text-ink-muted" aria-hidden />
-                      <code className="rounded bg-white/15 px-2 py-1 text-ink">{link}</code>
+                      <Link2
+                        className="size-4 shrink-0 text-ink-muted"
+                        aria-hidden
+                      />
+                      <code className="rounded bg-white/15 px-2 py-1 text-ink">
+                        {link}
+                      </code>
                     </p>
                   </div>
 
@@ -363,10 +484,18 @@ export default async function DonoPage({
                       {formatBRL(c.valor)}
                     </p>
                     <p className="text-sm text-ink-muted">
-                      {c.clinicas} indicada{c.clinicas === 1 ? "" : "s"} · {c.pagantes} pagando
+                      {c.clinicas} indicada{c.clinicas === 1 ? "" : "s"} ·{" "}
+                      {c.pagantes} pagando
                     </p>
-                    <form action={alternarParceiro.bind(null, p.id, p.ativo)} className="mt-2">
-                      <SubmitButton variante="ghost" tamanho="sm" className="min-h-11">
+                    <form
+                      action={alternarParceiro.bind(null, p.id, p.ativo)}
+                      className="mt-2"
+                    >
+                      <SubmitButton
+                        variante="ghost"
+                        tamanho="sm"
+                        className="min-h-11"
+                      >
                         {p.ativo ? "Desligar" : "Religar"}
                       </SubmitButton>
                     </form>

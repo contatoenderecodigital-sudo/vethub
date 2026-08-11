@@ -18,6 +18,7 @@
  */
 
 import { chromium } from "playwright";
+import { createClient } from "@supabase/supabase-js";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
@@ -35,6 +36,88 @@ const registro = (etapa, ok, detalhe = "") => {
   diario.push({ etapa, ok, detalhe });
   console.log(`${ok ? "ok   " : "FALHA"} ${etapa}${detalhe ? ` — ${detalhe}` : ""}`);
 };
+
+/**
+ * Garante que existe uma receita para levar à impressora.
+ *
+ * A receita é um dos dois papéis que o cliente leva na mão, e mesmo assim
+ * este teste passou dias anunciando "nenhuma receita no banco" e seguindo
+ * em frente: a clínica de teste simplesmente não tinha nenhuma, e a folha
+ * que mais importa nunca foi olhada. Um teste que depende de o banco estar
+ * do jeito certo não é um teste, é sorte.
+ *
+ * Então ele monta a sua: tutor, pet e receita com dois medicamentos, todos
+ * marcados "ZZ Robo" e apagados no fim.
+ */
+async function garantirReceita(clinicaId) {
+  const banco = criarBanco();
+  if (!banco) return null;
+
+  const { data: existente } = await banco
+    .from("receita")
+    .select("id")
+    .eq("clinica_id", clinicaId)
+    .limit(1)
+    .maybeSingle();
+  if (existente) return { id: existente.id, criada: false };
+
+  const { data: tutor } = await banco
+    .from("tutor")
+    .insert({ clinica_id: clinicaId, nome: "ZZ Robo Tutor Impressao", telefone: "49999990000" })
+    .select("id")
+    .single();
+
+  const { data: pet } = await banco
+    .from("pet")
+    .insert({ clinica_id: clinicaId, tutor_id: tutor.id, nome: "ZZ Robo Pet", especie: "cao" })
+    .select("id")
+    .single();
+
+  const { data: receita } = await banco
+    .from("receita")
+    .insert({ clinica_id: clinicaId, pet_id: pet.id, tipo: "simples" })
+    .select("id")
+    .single();
+
+  await banco.from("receita_item").insert([
+    {
+      receita_id: receita.id,
+      medicamento: "Amoxicilina + Clavulanato",
+      concentracao: "250 mg",
+      forma_farmaceutica: "Comprimido",
+      quantidade: "1 caixa",
+      posologia: "Dar 1 comprimido a cada 12 horas, por 7 dias.",
+      via: "Oral",
+      ordem: 0,
+    },
+    {
+      receita_id: receita.id,
+      medicamento: "Meloxicam",
+      concentracao: "2 mg",
+      forma_farmaceutica: "Comprimido",
+      quantidade: "1 caixa",
+      posologia: "Dar 1 comprimido a cada 24 horas, por 3 dias.",
+      via: "Oral",
+      ordem: 1,
+    },
+  ]);
+
+  return { id: receita.id, criada: true, tutorId: tutor.id };
+}
+
+/** Apaga o que `garantirReceita` inventou. O tutor leva o resto em cascata. */
+async function limparReceita(feita) {
+  if (!feita?.criada) return;
+  const banco = criarBanco();
+  if (banco) await banco.from("tutor").delete().eq("id", feita.tutorId);
+}
+
+function criarBanco() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const chave = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !chave) return null;
+  return createClient(url, chave, { auth: { persistSession: false } });
+}
 
 async function entrar(pagina) {
   await pagina.goto(`${BASE}/login`, { waitUntil: "networkidle" });
@@ -177,6 +260,9 @@ async function principal() {
   });
   const pagina = await contexto.newPage();
 
+  /** A receita usada no teste, para saber se foi inventada e precisa sumir. */
+  let feita = null;
+
   try {
     await entrar(pagina);
     registro("login", true, EMAIL);
@@ -204,18 +290,19 @@ async function principal() {
       registro("comprovante", false, "nenhuma venda no banco para imprimir");
     }
 
-    await pagina.goto(`${BASE}/receitas`, { waitUntil: "networkidle" });
-    await pagina.waitForTimeout(700);
-    const receita = await pagina
-      .locator('main a[href^="/receitas/"]:not([href$="/nova"])')
-      .first()
-      .getAttribute("href")
-      .catch(() => null);
+    const banco = criarBanco();
+    const { data: eu } = banco
+      ? await banco.from("usuario").select("clinica_id").eq("email", EMAIL).maybeSingle()
+      : { data: null };
 
-    if (receita) {
-      await conferir(pagina, "receita", `${BASE}${receita}/imprimir`, ["RECEITU"]);
+    if (eu?.clinica_id) {
+      feita = await garantirReceita(eu.clinica_id);
+    }
+
+    if (feita?.id) {
+      await conferir(pagina, "receita", `${BASE}/receitas/${feita.id}/imprimir`, ["RECEITU"]);
     } else {
-      registro("receita", false, "nenhuma receita no banco para imprimir");
+      registro("receita", false, "não consegui uma receita para imprimir");
     }
 
     await conferir(pagina, "relatorio", `${BASE}/relatorios/faturamento`, ["Faturamento"]);
@@ -223,6 +310,7 @@ async function principal() {
     registro("execução", false, e.message.slice(0, 140));
   } finally {
     await navegador.close();
+    await limparReceita(feita);
   }
 
   const falhas = diario.filter((d) => !d.ok);

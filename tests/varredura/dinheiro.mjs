@@ -113,9 +113,22 @@ async function enviarFormulario(pagina) {
       { timeout: 10000 }
     )
     .catch(() => {});
+  const antes = pagina.url();
   await pagina.locator('main button[type="submit"]:visible').first().click({ timeout: 15000 });
+
+  // Esperar o ENDEREÇO mudar, e não um relógio fixo.
+  //
+  // Aqui havia 700 ms cravados. Salvar dispara uma server action e um
+  // desvio, e a primeira visita a uma tela em desenvolvimento ainda precisa
+  // compilá-la — o que passa folgado dos 700 ms. O teste conferia o
+  // endereço enquanto ele ainda era o do formulário e anunciava que o
+  // sistema não salvou. O sistema salvava; quem estava atrasado era o
+  // relógio. Isso apagou a bateria do dinheiro inteira por dias.
+  await pagina
+    .waitForFunction((anterior) => location.href !== anterior, antes, { timeout: 30000 })
+    .catch(() => {});
   await pagina.waitForLoadState("networkidle", { timeout: 20000 }).catch(() => {});
-  await pagina.waitForTimeout(700);
+  await pagina.waitForTimeout(300);
 }
 
 /** Digita num combobox de busca e escolhe a primeira sugestão. */

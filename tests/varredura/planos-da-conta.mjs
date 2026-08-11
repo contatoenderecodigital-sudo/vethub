@@ -401,9 +401,25 @@ async function main() {
       await pagina.fill('input[name="nome"]', nome);
       await pagina.fill('input[name="email"]', email);
       await pagina.fill('input[name="senha"]', `Senha${SUFIXO.slice(-5)}9`);
+      const antes = pagina.url();
       await pagina.locator('main button[type="submit"]').first().click();
+
+      // Esperar o desfecho, e não um relógio fixo: ou o endereço muda
+      // (entrou) ou aparece a tarja vermelha (o teto recusou). Com 600 ms
+      // cravados, o terceiro usuário ainda estava sendo gravado quando o
+      // teste foi contar, e o teto do plano parecia estar barrando cedo
+      // demais — um alarme falso sobre a trava que mais importa vender.
+      await pagina
+        .waitForFunction(
+          (anterior) =>
+            location.href !== anterior ||
+            !!document.querySelector('main [class*="bg-red"]'),
+          antes,
+          { timeout: 30000 }
+        )
+        .catch(() => {});
       await pagina.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
-      await pagina.waitForTimeout(600);
+      await pagina.waitForTimeout(300);
       return pagina.url();
     }
 

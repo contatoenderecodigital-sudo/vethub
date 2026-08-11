@@ -222,7 +222,7 @@ export default async function ValidadePage({
                         <ConfirmButton
                           variante="ghost"
                           tamanho="sm"
-                          className="min-h-11 sm:min-h-10"
+                          className="min-w-11 lg:min-w-0"
                           mensagem={`Excluir o lote "${lote.codigo}"?`}
                         >
                           <Trash2 className="size-4" />

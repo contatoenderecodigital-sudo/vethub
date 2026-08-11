@@ -159,7 +159,7 @@ export function CampoData({
 
       <div
         className={cn(
-          "flex h-10 w-full items-center gap-2 rounded-lg border border-white/30 bg-white/15 px-3",
+          "flex h-11 w-full items-center gap-2 rounded-lg border border-white/30 bg-white/15 px-3 lg:h-10",
           "text-sm text-white backdrop-blur-sm transition-colors",
           "focus-within:border-white/60 focus-within:outline-2 focus-within:outline-white/40",
           disabled && "bg-white/10 text-white/50"

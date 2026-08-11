@@ -109,7 +109,7 @@ export default async function UsuariosPage({
                           </option>
                         ))}
                       </Select>
-                      <SubmitButton variante="secondary" className="min-h-11 sm:min-h-10">
+                      <SubmitButton variante="secondary" className="min-w-11 lg:min-w-0">
                         <Check className="size-4" />
                         Salvar
                       </SubmitButton>
@@ -118,7 +118,7 @@ export default async function UsuariosPage({
                       <ConfirmButton
                         variante="ghost"
                         mensagem={`Remover ${m.nome} da clínica? O acesso será revogado.`}
-                        className="min-h-11 text-red-100 sm:min-h-10"
+                        className="min-w-11 text-red-100 lg:min-w-0"
                       >
                         <Trash2 className="size-4" />
                         Remover

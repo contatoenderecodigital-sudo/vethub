@@ -82,14 +82,14 @@ function GrupoForm({
           </SubmitButton>
         ) : (
           <>
-            <SubmitButton variante="secondary" tamanho="sm" className="min-h-11 sm:min-h-10">
+            <SubmitButton variante="secondary" tamanho="sm" className="min-w-11 lg:min-w-0">
               Salvar
             </SubmitButton>
             {grupo && (
               <ConfirmButton
                 variante="ghost"
                 tamanho="sm"
-                className="min-h-11 sm:min-h-10"
+                className="min-w-11 lg:min-w-0"
                 formAction={excluirGrupo.bind(null, grupo.id)}
                 mensagem={`Excluir "${grupo.nome}"? Os subgrupos dele também somem.`}
               >

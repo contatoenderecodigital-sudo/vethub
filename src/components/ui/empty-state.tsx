@@ -25,7 +25,7 @@ export function EmptyState({
         <p className="mt-1 max-w-sm text-sm text-ink-muted">{mensagem}</p>
       )}
       {acao && (
-        <div className="mt-4 flex flex-wrap justify-center gap-2 [&>a]:min-h-11 [&>button]:min-h-11 sm:[&>a]:min-h-10 sm:[&>button]:min-h-10">
+        <div className="mt-4 flex flex-wrap justify-center gap-2 [&>a]:min-h-11 [&>button]:min-h-11 lg:[&>a]:min-h-10 lg:[&>button]:min-h-10">
           {acao}
         </div>
       )}

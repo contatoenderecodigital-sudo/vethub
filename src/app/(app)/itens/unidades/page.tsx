@@ -129,13 +129,13 @@ export default async function UnidadesPage({
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <CaixaFracionavel marcada={u.fracionavel} />
                       <div className="flex flex-wrap items-center gap-2">
-                        <SubmitButton variante="secondary" tamanho="sm" className="min-h-11 sm:min-h-10">
+                        <SubmitButton variante="secondary" tamanho="sm" className="min-w-11 lg:min-w-0">
                           Salvar
                         </SubmitButton>
                         <ConfirmButton
                           variante="ghost"
                           tamanho="sm"
-                          className="min-h-11 sm:min-h-10"
+                          className="min-w-11 lg:min-w-0"
                           formAction={excluirUnidade.bind(null, u.id)}
                           mensagem={`Excluir a unidade "${u.nome}"?`}
                         >

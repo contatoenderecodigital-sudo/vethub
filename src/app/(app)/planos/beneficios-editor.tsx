@@ -219,7 +219,7 @@ export function BeneficiosEditor({
                   title="Remover benefício"
                   disabled={linhas.length === 1}
                   onClick={() => remover(linha.chave)}
-                  className="mb-1 flex size-8 shrink-0 cursor-pointer items-center justify-center justify-self-end rounded-md text-ink-muted transition-colors hover:bg-red-400/25 hover:text-red-100 disabled:pointer-events-none disabled:opacity-40 lg:mb-0"
+                  className="mb-1 flex size-11 shrink-0 cursor-pointer lg:size-8 items-center justify-center justify-self-end rounded-md text-ink-muted transition-colors hover:bg-red-400/25 hover:text-red-100 disabled:pointer-events-none disabled:opacity-40 lg:mb-0"
                 >
                   <X className="size-4" />
                 </button>

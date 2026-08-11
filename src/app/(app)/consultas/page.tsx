@@ -112,7 +112,7 @@ export default async function ConsultasPage({
         </label>
         <button
           type="submit"
-          className="inline-flex min-h-11 shrink-0 cursor-pointer items-center gap-2 rounded-lg border border-white/40 bg-white/15 px-4 text-sm font-medium text-white backdrop-blur-md transition-colors hover:bg-white/25 sm:min-h-10"
+          className="inline-flex min-h-11 shrink-0 cursor-pointer items-center gap-2 rounded-lg border border-white/40 bg-white/15 px-4 text-sm font-medium text-white backdrop-blur-md transition-colors hover:bg-white/25 lg:min-h-10"
         >
           Filtrar
         </button>

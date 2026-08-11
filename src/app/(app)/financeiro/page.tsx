@@ -327,7 +327,10 @@ function AlternadorRegime({ regime }: { regime: Regime }) {
           href={valor === "caixa" ? "/financeiro" : `/financeiro?regime=${valor}`}
           title={dica}
           aria-current={regime === valor ? "true" : undefined}
-          className={`rounded-md px-2.5 py-1 font-medium transition-colors ${
+          // 24px de altura era o piso da norma, e este é o botão que troca
+          // TODOS os números da tela. No dedo ele vira 44px; no mouse fica
+          // compacto como antes, para não empurrar a explicação ao lado.
+          className={`flex min-h-11 items-center rounded-md px-2.5 py-1 font-medium transition-colors lg:min-h-0 ${
             regime === valor
               ? "bg-white text-brand-dark"
               : "text-ink-muted hover:bg-white/15 hover:text-ink"

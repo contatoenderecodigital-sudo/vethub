@@ -16,9 +16,22 @@ const VARIANTES: Record<Variante, string> = {
   danger: "bg-danger text-white shadow-lg shadow-black/10 hover:bg-red-700",
 };
 
+/**
+ * Altura de botão: 44px no dedo, a densidade de sempre no mouse.
+ *
+ * Os tamanhos eram fixos, e a auditoria achou 1.230 alvos de 40px e mais
+ * 46 de 32px no celular e no tablet. Nenhum reprova na norma (o mínimo AA
+ * é 24px), mas 32px é o botão de remover uma linha de medicamento, apertado
+ * com o polegar, em pé, segurando um animal. Errar ali apaga a prescrição
+ * inteira que a pessoa acabou de digitar.
+ *
+ * O corte é em `lg` (1024px) porque é exatamente onde a auditoria para de
+ * exigir alvo de toque: dali para cima se usa mouse, e o botão volta ao
+ * tamanho compacto para a tabela do balcão continuar cabendo na tela.
+ */
 const TAMANHOS: Record<Tamanho, string> = {
-  sm: "h-8 px-3 text-sm rounded-md",
-  md: "h-10 px-4 text-sm rounded-lg",
+  sm: "h-11 px-3 text-sm rounded-md lg:h-8",
+  md: "h-11 px-4 text-sm rounded-lg lg:h-10",
   lg: "h-12 px-6 text-base rounded-lg",
 };
 

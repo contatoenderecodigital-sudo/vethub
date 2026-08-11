@@ -43,7 +43,10 @@ export function Pagination({
       ) : (
         <span />
       )}
-      <span className="order-last w-full text-center text-sm text-white/85 drop-shadow-sm sm:order-none sm:w-auto">
+      {/* Branco cheio, não 85%: a 14px o "Página 1 de 2" media 4.43:1, e o
+          mínimo da norma é 4.5:1. Faltava por sete centésimos, e mesmo assim
+          é a linha que diz à pessoa onde ela está na lista. */}
+      <span className="order-last w-full text-center text-sm text-white drop-shadow-sm sm:order-none sm:w-auto">
         Página {pagina} de {totalPaginas}
       </span>
       {pagina < totalPaginas ? (

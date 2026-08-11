@@ -69,7 +69,7 @@ export function AlternadorVisao({
     "inline-flex h-11 items-center justify-center gap-2 rounded-full px-4 text-sm lg:h-9 " +
     "font-medium transition-colors focus-visible:outline-2 " +
     "focus-visible:outline-offset-2 focus-visible:outline-white " +
-    "max-sm:h-10 max-sm:flex-1 max-sm:gap-0 max-sm:px-1 max-sm:text-xs";
+    "max-sm:h-11 max-sm:flex-1 max-sm:gap-0 max-sm:px-1 max-sm:text-xs";
   const ativo = "bg-white text-brand-dark font-semibold shadow-lg shadow-black/10";
   // No celular a borda e o vidro são do grupo, então o item inativo fica limpo.
   const inativo =

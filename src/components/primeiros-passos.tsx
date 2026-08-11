@@ -40,9 +40,14 @@ export function PrimeirosPassos({ passos }: { passos: Passo[] }) {
       </div>
 
       {/* A barra existe para a pessoa ver que está andando. Sem ela, marcar
-          o segundo passo de cinco não parece progresso nenhum. */}
+          o segundo passo de cinco não parece progresso nenhum.
+
+          As cores são as mesmas da barra de cota em `Estatistica`, de
+          propósito: aquelas já passaram pela auditoria de contraste nos dois
+          modos, e inventar um tom novo aqui seria estrear uma cor que
+          ninguém mediu na tela que todo mundo abre primeiro. */}
       <div
-        className="mb-4 h-1.5 overflow-hidden rounded-full bg-white/15"
+        className="mb-4 h-2 overflow-hidden rounded-full bg-white/20"
         role="progressbar"
         aria-valuenow={feitos}
         aria-valuemin={0}
@@ -50,7 +55,7 @@ export function PrimeirosPassos({ passos }: { passos: Passo[] }) {
         aria-label="Passos concluídos"
       >
         <div
-          className="h-full rounded-full bg-brand-mint transition-[width]"
+          className="h-full rounded-full bg-gradient-to-r from-white/70 to-white transition-[width]"
           style={{ width: `${(feitos / passos.length) * 100}%` }}
         />
       </div>

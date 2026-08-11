@@ -39,7 +39,7 @@ export function PageHeader({
         )}
       </div>
       {temAcoes && (
-        <div data-guia="acoes" className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:shrink-0 sm:justify-end [&>a]:min-h-11 [&>button]:min-h-11 [&>form>a]:min-h-11 [&>form>button]:min-h-11 sm:[&>a]:min-h-10 sm:[&>button]:min-h-10 sm:[&>form>a]:min-h-10 sm:[&>form>button]:min-h-10">
+        <div data-guia="acoes" className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:shrink-0 sm:justify-end [&>a]:min-h-11 [&>button]:min-h-11 [&>form>a]:min-h-11 [&>form>button]:min-h-11 lg:[&>a]:min-h-10 lg:[&>button]:min-h-10 lg:[&>form>a]:min-h-10 lg:[&>form>button]:min-h-10">
           {acao}
           {acaoPrincipal}
         </div>

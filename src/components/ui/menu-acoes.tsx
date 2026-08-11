@@ -66,7 +66,7 @@ export function MenuAcoes({
         aria-expanded={aberto}
         aria-label={rotulo}
         title={rotulo}
-        className="inline-flex h-11 min-w-11 cursor-pointer items-center justify-center gap-2 rounded-lg border border-white/40 bg-white/15 px-3 text-sm font-medium text-white backdrop-blur-md transition-colors hover:bg-white/25 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:h-10"
+        className="inline-flex h-11 min-w-11 cursor-pointer items-center justify-center gap-2 rounded-lg border border-white/40 bg-white/15 px-3 text-sm font-medium text-white backdrop-blur-md transition-colors hover:bg-white/25 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white lg:h-10"
       >
         <EllipsisVertical className="size-4 shrink-0" strokeWidth={1.8} />
         <span className="sr-only sm:not-sr-only">Mais</span>

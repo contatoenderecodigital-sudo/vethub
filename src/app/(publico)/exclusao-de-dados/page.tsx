@@ -66,6 +66,16 @@ export default function ExclusaoDeDadosPage() {
           dias.
         </li>
       </ol>
+      {/* Quem está indo embora precisa saber que pode levar a base junto.
+          Descobrir isso depois da exclusão não adianta nada. */}
+      <p className="mt-3 text-sm leading-relaxed text-ink-muted">
+        <strong className="text-ink">Antes de pedir a exclusão</strong>, baixe o
+        que é seu: dentro do sistema, em{" "}
+        <em className="text-ink">Configurações → Exportar dados</em>, o
+        administrador baixa tutores, pets, prontuários, agenda, vacinas, exames,
+        estoque, vendas e financeiro em planilha. Depois da exclusão não há como
+        recuperar.
+      </p>
 
       <h2 className="mb-2 mt-8 text-lg font-semibold text-ink">
         Sou tutor: como peço a exclusão dos meus dados?

@@ -1,5 +1,20 @@
 import type { ComponentProps, ReactNode } from "react";
 
+/**
+ * Altura de campo: 44px no dedo, 40px no mouse.
+ *
+ * 40px passa na norma (o mínimo AA é 24), mas é o valor de conforto errado
+ * para quem preenche ficha de pé, com o celular numa mão e o animal na
+ * outra. 44px é o alvo confortável, e é o que o resto do sistema já usa nos
+ * menus (`min-h-11`); os campos e botões tinham ficado para trás.
+ *
+ * O corte é em `lg` (1024px) de propósito: é exatamente onde a auditoria
+ * para de exigir alvo de toque, porque dali para cima se usa mouse. Assim o
+ * celular e o tablet ganham folga sem espichar os formulários do balcão,
+ * onde a tela cheia de campos é que ajuda.
+ */
+const ALTURA_CAMPO = "h-11 lg:h-10";
+
 const CAMPO_BASE =
   "w-full rounded-lg border border-white/30 bg-white/15 px-3 text-sm text-white " +
   "backdrop-blur-sm [color-scheme:dark] placeholder:text-white/50 transition-colors " +
@@ -7,7 +22,7 @@ const CAMPO_BASE =
   "disabled:bg-white/10 disabled:text-white/50";
 
 export function Input({ className = "", ...props }: ComponentProps<"input">) {
-  return <input className={`${CAMPO_BASE} h-10 ${className}`} {...props} />;
+  return <input className={`${CAMPO_BASE} ${ALTURA_CAMPO} ${className}`} {...props} />;
 }
 
 /**
@@ -29,7 +44,7 @@ const SETA_SELECT =
 export function Select({ className = "", ...props }: ComponentProps<"select">) {
   return (
     <select
-      className={`${CAMPO_BASE} ${SETA_SELECT} h-10 ${className}`}
+      className={`${CAMPO_BASE} ${SETA_SELECT} ${ALTURA_CAMPO} ${className}`}
       {...props}
     />
   );

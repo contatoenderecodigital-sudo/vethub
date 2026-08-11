@@ -225,7 +225,7 @@ export default async function MedicamentosPage({
                     <ConfirmButton
                       variante="ghost"
                       tamanho="sm"
-                      className="min-h-11 sm:min-h-10"
+                      className="min-w-11 lg:min-w-0"
                       formAction={excluirMedicamento.bind(null, m.id)}
                       mensagem={`Excluir "${m.nome}" do caderno de medicamentos? As receitas já emitidas não mudam.`}
                     >

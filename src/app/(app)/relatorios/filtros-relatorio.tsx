@@ -116,7 +116,7 @@ export function FiltrosRelatorio({
         <div className="flex shrink-0 gap-2">
           <button
             type="submit"
-            className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg bg-white px-4 text-sm font-semibold text-brand-dark shadow-lg shadow-black/10 transition-colors hover:bg-white/90"
+            className="inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-lg bg-white lg:h-10 px-4 text-sm font-semibold text-brand-dark shadow-lg shadow-black/10 transition-colors hover:bg-white/90"
           >
             <Search className="size-4" aria-hidden />
             Gerar
@@ -124,7 +124,7 @@ export function FiltrosRelatorio({
           {temFiltro && (
             <Link
               href={base}
-              className="inline-flex h-10 items-center justify-center rounded-lg px-3 text-sm font-medium text-ink-muted transition-colors hover:bg-white/15 hover:text-white"
+              className="inline-flex h-11 items-center justify-center rounded-lg px-3 lg:h-10 text-sm font-medium text-ink-muted transition-colors hover:bg-white/15 hover:text-white"
             >
               Limpar
             </Link>

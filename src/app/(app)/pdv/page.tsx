@@ -166,14 +166,14 @@ export default async function PdvPage({
           <>
             <Link
               href="/vendas"
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-white/40 bg-white/15 px-4 text-sm font-medium text-white backdrop-blur-md transition-colors hover:bg-white/25"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-white/40 lg:h-10 bg-white/15 px-4 text-sm font-medium text-white backdrop-blur-md transition-colors hover:bg-white/25"
             >
               <History className="size-4" />
               Vendas
             </Link>
             <Link
               href="/pdv/caixa"
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-white/40 bg-white/15 px-4 text-sm font-medium text-white backdrop-blur-md transition-colors hover:bg-white/25"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-white/40 lg:h-10 bg-white/15 px-4 text-sm font-medium text-white backdrop-blur-md transition-colors hover:bg-white/25"
             >
               <Wallet className="size-4" />
               Caixa

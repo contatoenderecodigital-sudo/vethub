@@ -1,7 +1,7 @@
 # O que depende de você
 
 Tudo que **eu não consigo fazer sozinho** porque exige uma conta, um
-documento ou um cartão no seu nome. Atualizado em 04/08/2026.
+documento ou um cartão no seu nome. Atualizado em 10/08/2026.
 
 Ordem sugerida: comece pela **1** (é a que demora dias por conta de terceiros),
 o resto pode ser feito em qualquer ordem.
@@ -87,7 +87,7 @@ estão lá e funcionando:
 
 ## 4. Supabase: não precisa fazer nada
 
-Todas as migrações (10 até agora) já foram aplicadas por mim no banco. Você
+Todas as migrações (29 até agora) já foram aplicadas por mim no banco. Você
 **não precisa criar coluna nem tabela manualmente**, nunca precisará, é sempre
 por migração versionada.
 
@@ -130,9 +130,13 @@ e é o tipo de falha que a clínica não avisa, só desiste.
 - [ ] **5.3** Trocar o e-mail de contato nas páginas legais, se quiser um
       institucional em vez do pessoal (hoje: `yungsandro23@gmail.com`)
 - [ ] **5.4** Decidir o meio de cobrança da assinatura do VetHub
-      (Stripe, Asaas, Pagar.me...). Quando decidir, eu integro
-- [ ] **5.5** Rodar o teste de isolamento uma última vez (`npm test`) e
-      fazer um teste completo com dados reais
+      (Stripe, Asaas, Pagar.me...). Quando decidir, eu integro. Enquanto
+      isso, o Pix na mão funciona: o painel do dono em `/dono` registra o
+      pagamento e libera o plano
+- [x] **5.5** ~~Rodar o teste de isolamento e um teste completo com dados
+      reais~~ — feito em 10/08/2026, contra produção: isolamento entre
+      clínicas 14/14, dinheiro 16/16, planos 48/48, impressão 16/16,
+      exportação 20/20, primeira hora de uma clínica nova 46/46
 
 ---
 

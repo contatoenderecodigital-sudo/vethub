@@ -163,7 +163,7 @@ export function BuscaCombobox({
         }}
         onFocus={() => opcoes.length > 0 && setAberto(true)}
         onKeyDown={aoTeclar}
-        className="h-10 w-full rounded-lg border border-white/30 bg-white/15 px-3 text-sm text-white backdrop-blur-sm placeholder:text-white/50 transition-colors focus:border-white/60 focus:bg-white/20 focus:outline-2 focus:outline-white/40"
+        className="h-11 w-full rounded-lg lg:h-10 border border-white/30 bg-white/15 px-3 text-sm text-white backdrop-blur-sm placeholder:text-white/50 transition-colors focus:border-white/60 focus:bg-white/20 focus:outline-2 focus:outline-white/40"
       />
       {buscando && (
         <span className="absolute right-3 top-2.5 text-xs text-ink-muted">…</span>

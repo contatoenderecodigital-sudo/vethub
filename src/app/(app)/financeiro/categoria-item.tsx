@@ -46,7 +46,7 @@ export function CategoriaItem({
             />
           </div>
           <div className="flex shrink-0 gap-2">
-            <SubmitButton tamanho="sm" carregando="…" className="min-h-11 sm:min-h-10">
+            <SubmitButton tamanho="sm" carregando="…" className="min-w-11 lg:min-w-0">
               <Check className="size-4" />
               <span className="sr-only">Salvar</span>
             </SubmitButton>
@@ -54,7 +54,7 @@ export function CategoriaItem({
               type="button"
               variante="ghost"
               tamanho="sm"
-              className="min-h-11 sm:min-h-10"
+              className="min-w-11 lg:min-w-0"
               onClick={() => setEditando(false)}
               aria-label="Cancelar edição"
             >
@@ -76,7 +76,7 @@ export function CategoriaItem({
             type="button"
             variante="ghost"
             tamanho="sm"
-            className="min-h-11 sm:min-h-10"
+            className="min-w-11 lg:min-w-0"
             onClick={() => setEditando(true)}
             aria-label={`Editar ${nome}`}
           >
@@ -89,7 +89,7 @@ export function CategoriaItem({
             <ConfirmButton
               variante="ghost"
               tamanho="sm"
-              className="min-h-11 sm:min-h-10"
+              className="min-w-11 lg:min-w-0"
               mensagem={`Excluir a categoria "${nome}"? As contas dela ficam sem categoria.`}
               aria-label={`Excluir ${nome}`}
             >

@@ -151,7 +151,7 @@ export default async function ItensPage({
         <Button
           type="submit"
           variante="secondary"
-          className="min-h-11 shrink-0 sm:min-h-10"
+          className="min-w-11 shrink-0 lg:min-w-0"
         >
           <Search className="size-4 shrink-0" />
           Filtrar

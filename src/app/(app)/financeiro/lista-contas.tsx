@@ -426,7 +426,7 @@ export async function ListaContas({
                           <ConfirmButton
                             variante="ghost"
                             tamanho="sm"
-                            className="min-h-11 sm:min-h-10"
+                            className="min-w-11 lg:min-w-0"
                             mensagem="Estornar a baixa? A conta volta para 'em aberto' e o valor pago é zerado."
                             aria-label={`Estornar baixa de ${c.descricao}`}
                           >
@@ -440,7 +440,7 @@ export async function ListaContas({
                         <Link
                           href={`/financeiro/${c.id}/editar`}
                           aria-label={`Editar ${c.descricao}`}
-                          className="inline-flex min-h-11 size-8 items-center justify-center rounded-md text-ink-muted transition-colors hover:bg-white/15 hover:text-white sm:min-h-10"
+                          className="inline-flex size-11 items-center justify-center rounded-md text-ink-muted transition-colors hover:bg-white/15 hover:text-white lg:size-8"
                         >
                           <Pencil className="size-4" />
                         </Link>
@@ -451,7 +451,7 @@ export async function ListaContas({
                           <ConfirmButton
                             variante="ghost"
                             tamanho="sm"
-                            className="min-h-11 sm:min-h-10"
+                            className="min-w-11 lg:min-w-0"
                             mensagem="Cancelar esta conta? Ela sai dos totais, mas fica no histórico."
                             aria-label={`Cancelar ${c.descricao}`}
                           >
@@ -466,7 +466,7 @@ export async function ListaContas({
                           <ConfirmButton
                             variante="ghost"
                             tamanho="sm"
-                            className="min-h-11 sm:min-h-10"
+                            className="min-w-11 lg:min-w-0"
                             mensagem="Excluir esta conta em definitivo?"
                             aria-label={`Excluir ${c.descricao}`}
                           >

@@ -207,7 +207,7 @@ export function CompraItensEditor({
                   title="Remover item"
                   disabled={linhas.length === 1}
                   onClick={() => remover(linha.chave)}
-                  className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-ink-muted transition-colors hover:bg-red-400/25 hover:text-red-100 disabled:pointer-events-none disabled:opacity-40"
+                  className="flex size-11 shrink-0 cursor-pointer lg:size-8 items-center justify-center rounded-md text-ink-muted transition-colors hover:bg-red-400/25 hover:text-red-100 disabled:pointer-events-none disabled:opacity-40"
                 >
                   <X className="size-4" />
                 </button>

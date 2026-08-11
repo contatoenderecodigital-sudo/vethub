@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useRef, useState } from "react";
 import { Plus, X } from "lucide-react";
 import { formatBRL } from "@/lib/format";
 import { Button } from "@/components/ui/button";
@@ -66,8 +66,15 @@ export function CompraItensEditor({
   /** Frete do cabeçalho, somado ao total geral do rodapé. */
   frete?: number;
 }) {
+  // Chave estável em vez de sorteada: um sorteio no primeiro desenho sai
+  // diferente no servidor e no navegador, e no dia em que essa chave virar
+  // um `name` ou um `id` o React descarta a tela pronta e refaz tudo. Foi
+  // exatamente o que aconteceu no editor de receitas.
+  const base = useId();
+  const criadas = useRef(0);
+
   const novaLinha = (): Linha => ({
-    chave: crypto.randomUUID(),
+    chave: `${base}-n${criadas.current++}`,
     item_id: "",
     descricao: "",
     quantidade: "1",
@@ -76,7 +83,17 @@ export function CompraItensEditor({
     validade: "",
   });
 
-  const [linhas, setLinhas] = useState<Linha[]>(() => [novaLinha()]);
+  const [linhas, setLinhas] = useState<Linha[]>(() => [
+    {
+      chave: `${base}-0`,
+      item_id: "",
+      descricao: "",
+      quantidade: "1",
+      valor_unitario: "",
+      lote: "",
+      validade: "",
+    },
+  ]);
 
   // Campos já tocados (blur): erros só aparecem depois disso.
   const [tocados, setTocados] = useState<Record<string, boolean>>({});

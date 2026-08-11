@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useRef, useState } from "react";
 import { Plus, X } from "lucide-react";
 import { FORMAS_FARMACEUTICAS, VIAS_ADMINISTRACAO } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -43,15 +43,34 @@ export function MedicamentosEditor({
 }: {
   medicamentosIniciais?: MedicamentoValores[];
 }) {
+  /**
+   * A chave da linha NÃO pode ser sorteada.
+   *
+   * Ela era `crypto.randomUUID()`, e vai parar no DOM (o `name` do combobox
+   * de modelo, mais abaixo). O servidor desenhava a tela com um sorteio e o
+   * navegador redesenhava com outro: o React encontrava dois HTML
+   * diferentes, jogava fora o que veio pronto e refazia tudo do zero. Na
+   * tela isso é a receita piscando ao abrir, e todo campo que a pessoa
+   * tivesse tocado nesse intervalo voltando ao vazio.
+   *
+   * `useId` dá o mesmo prefixo dos dois lados. As linhas iniciais numeram
+   * pela posição — que é igual em qualquer ambiente e não depende de o
+   * inicializador rodar uma ou duas vezes. As linhas criadas depois, no
+   * clique, já existem só no navegador e ganham um contador próprio, em
+   * outro espaço de nomes, para nunca colidirem com as iniciais.
+   */
+  const base = useId();
+  const criadas = useRef(0);
+
   const novaLinha = (): Linha => ({
-    chave: crypto.randomUUID(),
+    chave: `${base}-n${criadas.current++}`,
     ...MEDICAMENTO_VAZIO,
   });
 
   const [linhas, setLinhas] = useState<Linha[]>(() =>
     medicamentosIniciais && medicamentosIniciais.length > 0
-      ? medicamentosIniciais.map((m) => ({ chave: crypto.randomUUID(), ...m }))
-      : [novaLinha()]
+      ? medicamentosIniciais.map((m, i) => ({ chave: `${base}-${i}`, ...m }))
+      : [{ chave: `${base}-0`, ...MEDICAMENTO_VAZIO }]
   );
 
   // Campos já tocados (blur): erro nunca aparece no primeiro render.

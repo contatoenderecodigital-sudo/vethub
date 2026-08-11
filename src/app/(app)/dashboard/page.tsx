@@ -28,6 +28,7 @@ import {
 import { GraficoArea } from "@/components/ui/grafico";
 import { IconeEspecie } from "@/components/icone-especie";
 import { PageHeader } from "@/components/ui/page-header";
+import { PrimeirosPassos, type Passo } from "@/components/primeiros-passos";
 
 export const metadata = { title: "Início" };
 
@@ -143,6 +144,64 @@ export default async function DashboardPage() {
 
   const primeiroNome = usuario.nome.split(" ")[0];
 
+  /**
+   * Lista de primeiros passos, só para quem está começando.
+   *
+   * O corte é o número de tutores: passado disso a clínica claramente já
+   * sabe usar o sistema, e as consultas extras abaixo nem chegam a sair.
+   * Assim quem usa há meses não paga nada por uma lista que não veria.
+   */
+  const COMECANDO_ATE = 20;
+  const estaComecando = (tutores.count ?? 0) < COMECANDO_ATE;
+
+  let passos: Passo[] = [];
+  if (estaComecando) {
+    const [itens, agendamentos, clinica] = await Promise.all([
+      supabase.from("item").select("id", { count: "exact", head: true }),
+      supabase.from("agendamento").select("id", { count: "exact", head: true }),
+      supabase
+        .from("clinica")
+        .select("cnpj, telefone, cidade")
+        .eq("id", usuario.clinica_id)
+        .maybeSingle<{ cnpj: string | null; telefone: string | null; cidade: string | null }>(),
+    ]);
+
+    passos = [
+      {
+        feito: (tutores.count ?? 0) > 0,
+        titulo: "Cadastre o primeiro tutor",
+        descricao: "É por ele que tudo começa: o pet, a consulta e a conta.",
+        href: "/tutores/novo",
+      },
+      {
+        feito: (pets.count ?? 0) > 0,
+        titulo: "Cadastre o pet dele",
+        descricao: "Espécie, raça e peso já bastam para atender hoje.",
+        href: "/pets/novo",
+      },
+      {
+        feito: (itens.count ?? 0) > 0,
+        titulo: "Cadastre o que você cobra",
+        descricao: "Consulta, vacina, banho. Sem isso não dá para vender nem orçar.",
+        href: "/itens/novo",
+      },
+      {
+        feito: (agendamentos.count ?? 0) > 0,
+        titulo: "Marque o primeiro horário",
+        descricao: "A agenda é o que a recepção abre de manhã.",
+        href: "/agenda/novo",
+      },
+      {
+        // CNPJ, telefone e cidade: é o que sai impresso na receita e no
+        // orçamento que o cliente leva para casa.
+        feito: !!(clinica.data?.cnpj && clinica.data?.telefone && clinica.data?.cidade),
+        titulo: "Complete os dados da clínica",
+        descricao: "CNPJ, telefone e endereço saem impressos em receita e orçamento.",
+        href: "/configuracoes/clinica",
+      },
+    ];
+  }
+
   const tiles: EstatisticaProps[] = [
     {
       rotulo: "Agendamentos hoje",
@@ -215,6 +274,10 @@ export default async function DashboardPage() {
           </>
         }
       />
+
+      {/* Antes dos números, porque quem está começando não tem número
+          nenhum: seis zeros não dizem o que fazer, esta lista diz. */}
+      {passos.length > 0 && <PrimeirosPassos passos={passos} />}
 
       {/* Indicadores */}
       <GradeEstatisticas colunas={6} className="mb-6">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useRef, useState } from "react";
 import { Plus, X } from "lucide-react";
 import { formatBRL } from "@/lib/format";
 import { Button } from "@/components/ui/button";
@@ -59,8 +59,15 @@ export function ItensEditor({
 }: {
   itensIniciais?: ItemInicial[];
 }) {
+  // Chave estável em vez de sorteada: um sorteio no primeiro desenho sai
+  // diferente no servidor e no navegador, e no dia em que essa chave virar
+  // um `name` ou um `id` o React descarta a tela pronta e refaz tudo. Foi
+  // exatamente o que aconteceu no editor de receitas.
+  const base = useId();
+  const criadas = useRef(0);
+
   const novaLinha = (): Linha => ({
-    chave: crypto.randomUUID(),
+    chave: `${base}-n${criadas.current++}`,
     descricao: "",
     quantidade: "1",
     valor_unitario: "",
@@ -68,13 +75,13 @@ export function ItensEditor({
 
   const [linhas, setLinhas] = useState<Linha[]>(() =>
     itensIniciais && itensIniciais.length > 0
-      ? itensIniciais.map((item) => ({
-          chave: crypto.randomUUID(),
+      ? itensIniciais.map((item, i) => ({
+          chave: `${base}-${i}`,
           descricao: item.descricao,
           quantidade: String(Number(item.quantidade)),
           valor_unitario: Number(item.valor_unitario).toFixed(2).replace(".", ","),
         }))
-      : [novaLinha()]
+      : [{ chave: `${base}-0`, descricao: "", quantidade: "1", valor_unitario: "" }]
   );
 
   // Campos já tocados (blur): erros só aparecem depois disso, nunca no

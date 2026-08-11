@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useRef, useState } from "react";
 import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/form";
@@ -42,8 +42,15 @@ export function BeneficiosEditor({
   itens: OpcaoItemBeneficio[];
   iniciais?: BeneficioInicial[];
 }) {
+  // Chave estável em vez de sorteada: um sorteio no primeiro desenho sai
+  // diferente no servidor e no navegador, e no dia em que essa chave virar
+  // um `name` ou um `id` o React descarta a tela pronta e refaz tudo. Foi
+  // exatamente o que aconteceu no editor de receitas.
+  const base = useId();
+  const criadas = useRef(0);
+
   const novaLinha = (): Linha => ({
-    chave: crypto.randomUUID(),
+    chave: `${base}-n${criadas.current++}`,
     item_id: "",
     descricao: "",
     quantidade_mes: "1",
@@ -52,14 +59,22 @@ export function BeneficiosEditor({
 
   const [linhas, setLinhas] = useState<Linha[]>(() =>
     iniciais && iniciais.length > 0
-      ? iniciais.map((b) => ({
-          chave: crypto.randomUUID(),
+      ? iniciais.map((b, i) => ({
+          chave: `${base}-${i}`,
           item_id: b.item_id ?? "",
           descricao: b.descricao,
           quantidade_mes: String(b.quantidade_mes ?? 1),
           desconto_percentual: String(Number(b.desconto_percentual ?? 0)),
         }))
-      : [novaLinha()]
+      : [
+          {
+            chave: `${base}-0`,
+            item_id: "",
+            descricao: "",
+            quantidade_mes: "1",
+            desconto_percentual: "0",
+          },
+        ]
   );
 
   function atualizar(chave: string, campo: Campo, valor: string) {

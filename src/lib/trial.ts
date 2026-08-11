@@ -27,7 +27,9 @@ const SEMPRE_LIBERADAS = [
   "/assinatura", // onde se resolve o problema
   "/configuracoes/clinica", // dados da própria empresa
   "/configuracoes/senha",
+  "/configuracoes/exportar", // levar a base embora é justamente o que se quer aqui
   "/relatorios", // exportar e imprimir é direito da clínica
+  "/suporte", // quem não consegue pagar precisa conseguir falar com a gente
   "/dono", // o painel de quem vende não depende do teste de ninguém
 ];
 

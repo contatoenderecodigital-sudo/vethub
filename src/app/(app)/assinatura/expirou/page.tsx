@@ -60,9 +60,13 @@ export default async function TesteExpiradoPage() {
             <Eye className="size-4 shrink-0 text-brand-mint" strokeWidth={2} aria-hidden />
             Ver prontuário, agenda e financeiro
           </li>
+          {/* Link de verdade, não frase solta: a promessa só vale se o botão
+              estiver a um clique de quem acabou de ler que ela existe. */}
           <li className="flex items-center gap-2 text-sm text-ink">
             <Download className="size-4 shrink-0 text-brand-mint" strokeWidth={2} aria-hidden />
-            Imprimir e exportar tudo
+            <Link href="/configuracoes/exportar" className="link-vidro">
+              Imprimir e exportar tudo
+            </Link>
           </li>
           <li className="flex items-center gap-2 text-sm text-ink-muted">
             <Lock className="size-4 shrink-0" strokeWidth={2} aria-hidden />
